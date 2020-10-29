@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ctx.enti.bridge.asur.fattura.attiva.notifiche"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+
+        <!-- #############   MAIN ROUTE ############### -->
+
+        <route id="enti.bridge.asur.fatturazione.attiva.registrazione.notifiche">
+
+            <from uri="{{enti.bridge.asur.fatturazione.attiva.registrazione.notifiche.in.queue}}"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.asur.fatturazione.attiva.registrazione.areas.RegistrazioneMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log message="ASUR NOTIFICHE ATTIVA STARTED IDENTIFICATIVO SDI : ${headers.identificativoSdI}"/>
+
+            <enrich strategyRef="areasSessionTokenAggregationStrategy" id="idAreasSessionToken">
+                    <simple>{{enti.bridge.asur.registrazione.areas.openSession.notifiche.enricher}}</simple>
+            </enrich>
+
+
+            <!-- controllo la risposta di AREAS -->
+            <choice>
+                <when>
+                    <simple>${in.header.error-description} != null and ${in.header.error-description.trim} != ''</simple>
+                    <process ref="lanciaEccezioneErroreAreasProcessor"/>
+                </when>
+            </choice>
+
+            <!-- eseguo la registrazione su AREAS -->
+            <enrich strategyRef="areasRegistrazioneAggregationStrategy">
+                    <simple>{{enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.enricher}}</simple>
+            </enrich>
+
+            <choice>
+                <when>
+                    <simple>${in.header.error-description} != null and ${in.header.error-description.trim} != ''</simple>
+                    <process ref="lanciaEccezioneErroreAreasProcessor"/>
+                </when>
+                <otherwise>
+                    <!-- Salvare lo stato della notifica -->
+                    <setHeader headerName="nomeEnteHeader">
+                        <constant>ASUR</constant>
+                    </setHeader>
+
+                    <process ref="aggiornaStatoNotificaProcessor"/>
+
+                    <log message="ASUR NOTIFICHE ATTIVA: STATO INVIATA SALVATO IDENTIFICATIVO SDI : ${headers.identificativoSdI}"/>
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <!-- ##############   REGISTRAZIONE ENRICHER  ############## -->
+
+        <route id="enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.enricher">
+
+            <from uri="{{enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.enricher}}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="asurRegistrazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.asur.registrazione.notifiche.areas.RegistrazioneEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <log message="****** REGISTRAZIONE NOTIFICHE ENRICHER ASUR IDENTIFICATIVO SDI : ${headers.identificativoSdI} ******"/>
+
+            <process ref="estraiNotificaBase64"/>
+
+            <process ref="asurXmlStringSanitizerProcessor"/>
+
+            <!-- estraggo il tipo di messaggio -->
+
+            <choice>
+                <when>
+                    <!--RICEVUTA_CONSEGNA("001")-->
+                    <simple>${in.headers.tipoMessaggio} == 001</simple>
+
+                    <setHeader headerName="tipo-notifica">
+                        <constant>XC</constant>
+                    </setHeader>
+
+                </when>
+                <when>
+                    <!--NOTIFICA_MANCATA_CONSEGNA("002")-->
+                    <simple>${in.headers.tipoMessaggio} == 002</simple>
+
+                    <setHeader headerName="tipo-notifica">
+                        <constant>XN</constant>
+                    </setHeader>
+
+                </when>
+                <when>
+                    <!--NOTIFICA_SCARTO("003")-->
+                    <simple>${in.headers.tipoMessaggio} == 003</simple>
+
+                    <setHeader headerName="tipo-notifica">
+                        <constant>XS</constant>
+                    </setHeader>
+
+                </when>
+                <when>
+                    <!--NOTIFICA_ESITO("004")-->
+                    <simple>${in.headers.tipoMessaggio} == 004</simple>
+
+                    <setHeader headerName="notificaEsito">
+                        <xpath>//*[local-name()='Esito']/text()</xpath>
+                    </setHeader>
+
+                    <choice>
+                        <when>
+                            <!-- ACCETTAZIONE-->
+                            <simple>${in.headers.notificaEsito} == 'EC01'</simple>
+
+                            <setHeader headerName="tipo-notifica">
+                                <constant>XE</constant>
+                            </setHeader>
+                        </when>
+                        <when>
+                            <!-- RIFIUTO -->
+                            <simple>${in.headers.notificaEsito} == 'EC02'</simple>
+
+                            <setHeader headerName="tipo-notifica">
+                                <constant>XZ</constant>
+                            </setHeader>
+                        </when>
+
+                    </choice>
+
+                </when>
+                <when>
+                    <!--NOTIFICA_DECORRENZA_TERMINI("005")-->
+                    <simple>${in.headers.tipoMessaggio} == 005</simple>
+
+                    <setHeader headerName="tipo-notifica">
+                        <constant>XT</constant>
+                    </setHeader>
+
+                </when>
+                <when>
+                    <!--ATTESTAZIONE_TRASMISSIONE_FATTURA("006")-->
+                    <simple>${in.headers.tipoMessaggio} == 006</simple>
+
+                    <setHeader headerName="tipo-notifica">
+                        <constant>XR</constant>
+                    </setHeader>
+
+                </when>
+
+            </choice>
+
+            <process ref="creaRichiestaRegistraAttivaNotificheProcessor"/>
+
+            <to uri="velocity:it/extrasys/marche/regione/fatturapa/enti/bridge/areas/velocity/areasSOAPMessage.vm"/>
+
+            <setHeader headerName="Cookie">
+                <simple>${header.areas-cookie}</simple>
+            </setHeader>
+
+            <setHeader headerName="SOAPAction">
+                <simple></simple>
+            </setHeader>
+
+            <setHeader headerName="Content-Type">
+                <simple>text/xml;charset=UTF-8</simple>
+            </setHeader>
+
+            <log message="ASUR OUTBOUND MESSAGE REQUEST TO AREAS REGISTRAZIONE NOTIFICHE ATTIVA:\n\nHEADERS:\n\n${headers} \n\n***********\n\nBODY:\n\n${body}\n\n"
+                 loggingLevel="DEBUG"/>
+            <log message="ASUR OUTBOUND MESSAGE REQUEST TO AREAS REGISTRAZIONE NOTIFICHE ATTIVA IDENTIFICATIVO SDI : ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+
+            <to uri="{{asur.areas.indirizzo.ws}}?bridgeEndpoint=true&amp;headerFilterStrategy=#areasFilterStrategy&amp;httpClient.cookieSpec=ignoreCookies"/>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log message="ASUR INBOUND MESSAGE RESPONSE FROM AREAS REGISTRAZIONE NOTIFICHE ATTIVA:\n\nHEADERS:\n\n${headers} \n\n***********\n\nBODY:\n\n${body}\n\n"
+                 loggingLevel="DEBUG"/>
+            <log message="ASUR INBOUND MESSAGE RESPONSE FROM AREAS REGISTRAZIONE NOTIFICHE ATTIVA IDENTIFICATIVO SDI : ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+            <!-- Estraggo l'xml encodato dalla risposta -->
+            <process ref="asurEstraiRispostaRegistraFatturaProcessor"/>
+
+
+            <process ref="decodificaRispostaAREASProcessor"/>
+
+            <log message="ASUR:POST CALL REGISTRAZIONE NOTIFICHE ATTIVA :\n\nHEADERS:\n\n${headers} \n\n***********\n\n${body}:\n\n"
+                 loggingLevel="DEBUG"/>
+
+            <choice>
+                <when>
+                    <xpath>count(//*[local-name()='Exception']) > 0</xpath>
+                    <setHeader headerName="error-description">
+                        <xpath resultType="java.lang.String">//*[local-name()='Output']/Exception/Description/text()
+                        </xpath>
+                    </setHeader>
+                    <log message="ASUR POST CALL  REGISTRAZIONE NOTIFICHE ATTIVA, ERROR :\n\nHEADERS:\n\n${headers} \n\n***********\n\n${body}:\n\n"
+                         loggingLevel="DEBUG"/>
+                    <log message="ASUR: POST CALL REGISTRAZIONE NOTIFICHE ATTIVA IDENTIFICATIVO SDI : ${headers.identificativoSdI} , ERROR ${headers.error-description}"
+                         loggingLevel="ERROR"/>
+
+                </when>
+            </choice>
+
+
+        </route>
+
+        <!-- ############## FINE REGISTRAZIONE ENRICHER  ############## -->
+
+    </camelContext>
+</blueprint>

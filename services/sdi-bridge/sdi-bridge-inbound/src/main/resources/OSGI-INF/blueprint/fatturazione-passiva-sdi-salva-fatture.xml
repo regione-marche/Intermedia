@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+    <!--
+    Aries JTA provides a transaction manager that implements org.springframework.transaction.PlatformTransactionManager.
+    We can use <osgi:reference/> to lookup this unit from the OSGi Service Registry and start using it in this Spring file
+    -->
+
+    <bean id="salvaFattureRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${salvaFattureRedeliveryPolicyConfig.retry.attempts}"/>
+        <property name="redeliveryDelay" value="${salvaFattureRedeliveryPolicyConfig.retry.delay}"/>
+        <property name="useExponentialBackOff" value="true"/>
+        <property name="backOffMultiplier" value="${salvaFattureRedeliveryPolicyConfig.backOffMultiplier}"/>
+        <property name="retryAttemptedLogLevel" value="${sdiInboundRedeliveryPolicyConfig.retryAttemptedLogLevel}"/>
+    </bean>
+
+
+    <!-- Main Service blueprint for Saving Invoice ,  -->
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true" trace="{{enable.trace}}"
+                  id="sdi.bridge.inbound.salva.fatture" xmlns="http://camel.apache.org/schema/blueprint">
+
+
+        <!-- *********** EXCEPTION CATCHER DECLARATION *********** -->
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatalException</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+
+            <redeliveryPolicy maximumRedeliveries="0"/>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fattura.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="salvaFattureRedeliveryPolicyConfig">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPARecoverableException</exception>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fattura.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+        <!-- *********** END EXCEPTION CATCHER DECLARATION *********** -->
+
+
+
+        <!-- *********** ROTTA PRINCIPALE CHE PRENDE LE FATTURE IN INGRESSSO  *********** -->
+
+        <route id="salva.fatture.in">
+
+            <from uri="{{salva.fatture.in.queue}}"/>
+
+            <log message="SDI INBOUND: SCODATA FATTURA O LOTTO FATTURE con - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+            <transacted ref="XA_TX_REQUIRED" id="transactionId"/>
+
+            <process ref="fatturazionePassivaFatturaInIngressoProcessor" id="fattureProcessor"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.idSdiGiaPresente} == true</simple>
+                    <log message="SDI INBOUND: FATTURA O LOTTO FATTURE CON IDENTIFICATIVO SDI  ${in.header.identificativoSdI} GIA' PRESENTE"
+                         loggingLevel="INFO"/>
+                </when>
+                <otherwise>
+                    <to uri="{{validationServiceInQueueXA}}" id="toValidationQueue"/>
+
+                    <log message="SDI INBOUND: SALVATA FATTURA O LOTTO FATTURE con - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"
+                         loggingLevel="INFO"/>
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <route id="salva.notifica.decorrenza.termini.in">
+
+            <from uri="{{salva.notifica.decorrenza.termini.in.queue}}"/>
+
+            <log message="SDI INBOUND: SCODATA NOTIFICA DECORRENZA TERMINI - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <transacted ref="XA_TX_REQUIRED" id="transactionId"/>
+
+            <process ref="fatturazionePassivaNotificaDecorrenzaTerminiInIngressoProcessor"
+                     id="decorrenzaTerminiProcessor"/>
+
+            <!-- Se Dec Termini già ricevuto bisogna ignorare il mex -->
+            <choice>
+                <when>
+                    <simple>${headers.decorrenzaTerminiGiaRicevuta} == true</simple>
+
+                    <log message="SDI INBOUND: NOTIFICA DECORRENZA TERMINI - IDENTIFICATIVO SDI  ${in.header.identificativoSdI} GIA' PRESENTE! MESSAGGIO IGNORATO"
+                         loggingLevel="INFO"/>
+
+                    <!-- Non si invia nulla al modulo multiente -->
+
+                </when>
+                <otherwise>
+
+                    <to uri="{{elaborazioneMultienteInQueue}}" id="inboundMultienteTo"/>
+                    <log message="SDI INBOUND: SALVATA NOTIFICA DECORRENZA TERMINI - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"
+                         loggingLevel="INFO"/>
+
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <!-- ******************** FINE ROTTA PRINCIPALE *********************** -->
+
+    </camelContext>
+
+</blueprint>

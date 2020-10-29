@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!--  ##################   TRANSACTIONAL JMS CONFIGURATION ####################### -->
+
+    <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="${fatturapa.activemq.brokerURL}?jms.prefetchPolicy.all=1"/>
+        <property name="trustAllPackages" value="true"/>
+        <property name="userName" value="${fatturapa.activemq.username}"/>
+        <property name="password" value="${fatturapa.activemq.password}"/>
+    </bean>
+
+    <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+        <property name="connectionFactory" ref="jmsPooledConnectionFactory"/>
+    </bean>
+
+    <bean id="jmsPooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+          init-method="start" destroy-method="stop">
+        <property name="maxConnections" value="${fatturapa.activemq.max.connections}"/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="idleTimeout" value="0"/>
+    </bean>
+
+    <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="connectionFactory" ref="jmsPooledConnectionFactory"/>
+        <property name="transactionManager" ref="jmsTransactionManager"/>
+        <property name="transacted" value="true"/>
+        <property name="explicitQosEnabled" value="true"/>
+       <!-- <property name="jmsMessageType" value="Object"/>-->
+        <property name="cacheLevelName" value="${fatturapa.activemq.cacheLevelName}"/>
+    </bean>
+
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+        <property name="concurrentConsumers" value="${fatturapa.activemq.concurrent.consumers}"/>
+    </bean>
+
+</blueprint>
+
+
+
+
+
+

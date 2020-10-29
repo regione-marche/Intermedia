@@ -1,0 +1,161 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+
+    <!-- ********   IMPORTANTE:  OPENJPA HA UN BUG : nella  sincronizzazione del mapping in una transazione XA l'autocommit non viene disabilitato ******** -->
+    <!-- http://mail-archives.apache.org/mod_mbox/openjpa-users/201411.mbox/%3CCANHkoGx9WUkC+Cr1Dtabf5E-z9Y87b2BZXsqVnadkZDvubmydw@mail.gmail.com%3E -->
+
+
+    <persistence-unit name="persistence-unit-xa" transaction-type="JTA">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <jta-data-source>osgi:service/jdbc/persistenceDataSourceXA</jta-data-source>
+
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.FileFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.metadata.MetadatiFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.MessaggiSDIEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CodificaStatiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.DatiFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EntePaleoCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.TipoCanaleEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CanaleCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EndpointCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.EndpointAttivaCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.StatoFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.NotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.MailInToEntiAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoFatturaAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStatiAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.NotificheAttivaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.TipoNotificaAttivaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaRicevutaConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaRicevutaConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaMancataConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaMancataConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaScartoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaScartoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaEsitoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaEsitoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaAttestazioneTrasmissioneFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaAttestazioneTrasmissioneFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.enti.NotificaFromEntiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.sdi.NotificaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EntiOspedalieriValidazioneWhitelistEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.ZipFtpEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.ChiaveEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.TestCicloPassivoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.TestCicloAttivoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.UtenteEnteEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStati2Entity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CampoOpzionaleFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteCampoOpzionaleAssociazioneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+           <!-- <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction=refresh)"/>-->
+            <property name="openjpa.Log" value="slf4j" />
+            <property name="openjpa.TransactionMode" value="managed" />
+            <property name="openjpa.ConnectionFactoryProperties" value="autocommit=false" />
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
+            <property name="openjpa.DataCache" value="true"/>
+            <property name="openjpa.RemoteCommitProvider" value="sjvm"/>
+<!--
+            <property name="javax.persistence.sql-load-script-source" value="META-INF/load-script.sql"/>
+-->
+            <property name="openjpa.jdbc.DBDictionary" value="postgres"/>
+
+
+            <!-- Use the following for testing purpose only: To monitor executed SQL queries -->
+
+            <!--	<property name="openjpa.Log"
+                    value="File=/Users/luigi/OpenJPALog.log, DefaultLevel=TRACE, SQL=TRACE" /> -->
+            <!--<property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />-->
+
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="persistence-unit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <non-jta-data-source>osgi:service/jdbc/persistenceDataSource</non-jta-data-source>
+
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.FileFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.metadata.MetadatiFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.MessaggiSDIEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CodificaStatiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.DatiFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EntePaleoCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.TipoCanaleEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CanaleCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EndpointCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.EndpointAttivaCaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.StatoFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.NotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.MailInToEntiAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoFatturaAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStatiAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.NotificheAttivaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.TipoNotificaAttivaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaRicevutaConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaRicevutaConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaMancataConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaMancataConsegnaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaScartoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaScartoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaEsitoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaEsitoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaNotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaNotificaDecorrenzaTerminiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.StatoAttivaAttestazioneTrasmissioneFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaAttestazioneTrasmissioneFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.enti.NotificaFromEntiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.sdi.NotificaFromSdiEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EntiOspedalieriValidazioneWhitelistEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.ZipFtpEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.storico.FatturaPassivaStoricizzataEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.storico.FatturaAttivaStoricizzataEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.CodeEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.MonitorRielaborazioniEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.UtenteEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.UtenteServizioEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.ChiaveEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.MonitorFatturaAttivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.MonitorFatturaPassivaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.CodificaFlagWarningEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.TestCicloPassivoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio.TestCicloAttivoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.UtenteEnteEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStati2Entity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CampoOpzionaleFatturaEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteCampoOpzionaleAssociazioneEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+           <!-- <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction=refresh)"/>-->
+            <property name="openjpa.Log" value="slf4j" />
+            <property name="openjpa.TransactionMode" value="local" />
+            <property name="openjpa.ConnectionFactoryProperties" value="autocommit=true" />
+           <!-- <property name="openjpa.DataCache" value="true"/>
+            <property name="openjpa.RemoteCommitProvider" value="sjvm"/>-->
+
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
+<!--
+            <property name="javax.persistence.sql-load-script-source" value="META-INF/load-script.sql"/>
+-->
+            <property name="openjpa.jdbc.DBDictionary" value="postgres"/>
+
+
+            <!-- Use the following for testing purpose only: To monitor executed SQL queries -->
+
+            <!--	<property name="openjpa.Log"
+                    value="File=/Users/luigi/OpenJPALog.log, DefaultLevel=TRACE, SQL=TRACE" /> -->
+            <!--<property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true" />-->
+
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+           http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="creaEsitoConsegnaProcessor" class="it.extrasys.marche.regione.fatturapa.mock.agid.ca.CreaEsitoConsegnaProcessor"/>
+
+    <bean id="ricevutaConsegna" class="it.extrasys.marche.regione.fatturapa.mock.agid.ca.RicevutaConsegna"/>
+
+    <camelContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" managementNamePattern="#symbolicName#-#counter#"
+                  useMDCLogging="true" xmlns="http://camel.apache.org/schema/blueprint"
+                  id="agid.ca.mock.server.ctx"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <route id="agid.ca.mock.server">
+            <from uri="cxf:bean:cxfAgidServerMock"/>
+
+            <setHeader headerName="pathZip">
+                <simple>{{agid.mock.path.zip}}</simple>
+            </setHeader>
+
+            <process ref="ricevutaConsegna"/>
+
+            <process ref="creaEsitoConsegnaProcessor"/>
+
+        </route>
+    </camelContext>
+
+
+</blueprint>

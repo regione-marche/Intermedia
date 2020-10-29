@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="regma.148.creazione.dec.termini"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint">
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.regma148-CreazioneNotificheDecTermini?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <!-- Main Route -->
+        <route id="regma.148.main.route">
+
+            <from uri="{{regma.148.csv.source}}" />
+
+            <log message="REGMA 148 --> MAIN ROUTE START" loggingLevel="INFO"/>
+
+            <!-- 'skipFirstLine' deleted for Camel 2.15-->
+            <unmarshal>
+                <csv skipHeaderRecord="true" delimiter=";" />
+            </unmarshal>
+
+            <split>
+                <simple>${body}</simple>
+
+                <setHeader headerName="identificativoSdi">
+                    <simple>${body[0]}</simple>
+                </setHeader>
+
+                <setHeader headerName="nomeFile">
+                    <simple>${body[1]}</simple>
+                </setHeader>
+
+                <setHeader headerName="messageId">
+                    <simple>${body[2]}</simple>
+                </setHeader>
+
+                <inOut uri="velocity:velocity/notifica_dec_termini.vm?contentCache=true" />
+
+                <log message="REGMA 148 Notifica Decorrenza Termini creata per Identificativo SdI: ${header.identificativoSdi}" loggingLevel="INFO"/>
+
+                <to uri="{{regma.148.crea.dec.termini.db}}"/>
+
+                <to uri="{{regma.148.scrivi.csv.risultato}}"/>
+
+            </split>
+
+        </route>
+
+        <!-- Rotta scrittura su DB -->
+        <route id="regma.148.crea.dec.termini.db">
+            <from uri="{{regma.148.crea.dec.termini.db}}" />
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <process ref="notificaDecorrenzaTerminiProcessor" id="notificaDecorrenzaTerminiProcessor"/>
+
+            <log message="REGMA 148 Notifica Decorrenza Termini fine DB per Identificativo SdI: ${header.identificativoSdi}.\n *** Notifica Dec Termini: [[[${header.notificaDecorrenzaTerminiEntity}]]] ***" loggingLevel="INFO"/>
+
+        </route>
+
+        <route id="regma.148.scrivi.csv.risultato">
+            <from uri="{{regma.148.scrivi.csv.risultato}}" />
+
+            <marshal>
+                <csv delimiter=";" />
+            </marshal>
+
+            <to uri="{{regma.148.csv.destination}}?fileName=result.csv&amp;fileExist=Append"/>
+
+            <log message="REGMA 148 Notifica Decorrenza Termini fine scrittura csv per Identificativo SdI: ${header.identificativoSdi}" loggingLevel="INFO"/>
+
+        </route>
+
+    </camelContext>
+
+</blueprint>

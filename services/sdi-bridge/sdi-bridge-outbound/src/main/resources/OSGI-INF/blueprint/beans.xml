@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao"/>
+
+    <bean id="statoFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaDao"/>
+
+    <bean id="codificaStatiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiDao"/>
+
+    <bean id="notificaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromSdiDao"/>
+
+    <bean id="notificaFromEntiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromEntiDao"/>
+
+    <bean id="metadatiToEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.MetadatiToEntityConverter"/>
+
+    <bean id="notificaEsitoManager" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.NotificaEsitoManager">
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+    </bean>
+
+    <bean id="notificaEsitoPec" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.NotificaEsitoPec">
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+    </bean>
+
+    <bean id="notificaScartoProcessor" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.NotificaScartoProcessor">
+        <property name="notificaFromSdiManager" ref="notificaFromSdiManager" />
+    </bean>
+
+    <bean id="notificaOkProcessor" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.NotificaOkProcessor">
+        <property name="notificaFromSdiManager" ref="notificaFromSdiManager" />
+    </bean>
+
+    <bean id="loadRicevutaConsegnaProcessor" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.LoadRicevutaConsegnaProcessor">
+        <property name="ricevutaConsegnaPath" value="${ricevutaConsegnaPath}"/>
+    </bean>
+
+    <bean id="datiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.DatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+    </bean>
+
+    <bean id="notificaFromSdiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromSdiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="notificaFromSdiDao" ref="notificaFromSdiDao"/>
+        <property name="notificaFromEntiDao" ref="notificaFromEntiDao"/>
+
+    </bean>
+
+    <bean id="gestioneCodaWait"
+          class="it.extrasys.marche.regione.fatturapa.services.notificaesito.GestioneCodaWaitProcessor">
+        <property name="codaSend" value="${sdi.outbound.invio.notifica.send.queue}"/>
+        <property name="codaWait" value="${sdi.outbound.invio.notifica.wait.queue}"/>
+        <property name="producer" ref="producer"/>
+        <property name="consumer" ref="consumer"/>
+    </bean>
+
+    <bean id="originalSoapMessageInHeaderInterceptor" class="it.extrasys.marche.regione.fatturapa.core.utils.cxf.interceptors.OriginalSoapMessageInHeaderInterceptor"/>
+
+    <bean id="inviaNotificheFilterStrategy" class="org.apache.camel.impl.DefaultHeaderFilterStrategy">
+        <property name="outFilterPattern">
+            <!--  Regex custom filter: sending to cxf endpoint only the SOAPAction header -->
+            <value>^((?!(SOAPAction)).)*$</value>
+        </property>
+        <!-- The 'relayHeaders' property is 'true' by default -->
+    </bean>
+
+    <!-- REGMA 112 flusso semplificato -->
+    <bean id="notificaEsitoFlussoSemplificatoProcessor" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.NotificaEsitoFlussoSemplificatoProcessor"/>
+    <!-- fine REGMA 112 -->
+
+
+    <bean id="gestioneFatturaDiTest" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.GestioneFatturaDiTest">
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+    </bean>
+
+    <bean id="sdiOutboundAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.SdiOutboundAggregationStrategy"/>
+    <bean id="protocollazioneCANotificaECScartataStrategy" class="it.extrasys.marche.regione.fatturapa.services.notificaesito.ProtocollazioneCANotificaECScartataStrategy"/>
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5" />
+    </bean>
+</blueprint>

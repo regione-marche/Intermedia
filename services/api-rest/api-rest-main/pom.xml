@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>api-rest</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa.rest</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.api.rest-main</groupId>
+    <artifactId>api-rest-main</artifactId>
+
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICES :: API REST :: API-REST-MAIN</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-unit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+            <artifactId>exceptions</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.api.rest-model</groupId>
+            <artifactId>api-rest-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-client-java</artifactId>
+            <version>2.0.0-M3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.enti-bridge</groupId>
+            <artifactId>paleo-lib</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-annotations</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-databind</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-blueprint</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>org.apache.aries.blueprint</artifactId>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- cxf dependencies -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http4</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-cxf</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>org.apache.aries.blueprint</artifactId>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-base</artifactId>
+        </dependency>
+
+
+        <!-- for testing -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-blueprint</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- javax annotation for rest interface class  -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-quartz2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-bindy</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <!-- to generate the MANIFEST-FILE of the bundle -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            org.apache.cxf.transport.http,
+                            io.fabric8.cxf,
+                            org.osgi.service.blueprint,
+                            org.apache.activemq.pool,
+                            org.apache.activemq.camel.component,
+                            org.apache.activemq.transport.failover,
+                            org.apache.activemq.util,
+                            org.apache.activemq.*
+                            org.slf4j,
+                            io.fabric8.zookeeper,
+                            org.apache.activemq,
+                            org.apache.camel.processor.interceptor,
+                            org.springframework.jms.connection,
+                            org.apache.camel,
+                            org.apache.camel.processor.validation,
+                            org.apache.camel.component.jms,
+                            org.apache.commons.collections.map,
+                            org.apache.camel.converter.jaxb,
+                            org.apache.camel.component.jpa,
+                            serp.util,
+                            org.springframework.orm.jpa,
+                            org.springframework.transaction,
+                            org.apache.geronimo.transaction.manager,
+                            javax.transaction,
+                            javax.persistence,
+                            org.apache.camel.processor,
+                            org.xml.sax,
+                            it.extrasys.marche.regione.fatturapa.core.api.persistence;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.core.utils.validator;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.core.exceptions;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.api.rest.model;version="${project.version}",
+                            com.fasterxml.jackson.jaxrs.json,
+                            *</Import-Package>
+                        <!-- <_removeheaders>Import-Service</_removeheaders>-->
+                    </instructions>
+                </configuration>
+            </plugin>
+            <!-- Add other required plugins -->
+        </plugins>
+    </build>
+</project>

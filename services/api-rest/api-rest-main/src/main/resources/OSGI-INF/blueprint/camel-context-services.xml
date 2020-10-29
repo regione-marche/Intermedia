@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xmlns:jaxws="http://cxf.apache.org/blueprint/jaxws" xmlns:cxf="http://cxf.apache.org/blueprint/core"
+           xmlns:camel="http://camel.apache.org/schema/blueprint"
+           xmlns:camelcxf="http://camel.apache.org/schema/blueprint/cxf"
+           xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://cxf.apache.org/blueprint/jaxws http://cxf.apache.org/schemas/blueprint/jaxws.xsd http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd ">
+
+
+    <routeContext id="api.rest.services.ctx" xmlns="http://camel.apache.org/schema/blueprint">
+
+        <route id="api.rest.services.route">
+            <from uri="cxfrs://bean://apiRestServer"/>
+
+            <log message="REST MAIN  START"/>
+
+            <!--ADMINISTRATION-->
+            <choice>
+                <when>
+                    <simple>${in.header.operationName} == 'getToken'</simple>
+
+                    <bean ref="administrationResourceImpl" method="getToken"/>
+
+                    <log message="getTokenLog"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'getUser'</simple>
+
+                    <bean ref="administrationResourceImpl" method="getUser"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'updateUser'</simple>
+
+                    <bean ref="administrationResourceImpl" method="updateUser"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'createUser'</simple>
+
+                    <bean ref="administrationResourceImpl" method="createUser"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'reimpostaPsw'</simple>
+
+                    <bean ref="administrationResourceImpl" method="reimpostaPsw"/>
+
+                    <inOnly uri="seda:sendMail"/>
+
+                    <setBody>
+                        <simple>${body[0]}</simple>
+                    </setBody>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'updateUserPassword'</simple>
+
+                    <bean ref="administrationResourceImpl" method="updateUserPassword"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <!--ENTITIES-->
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesGET" />
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPUT" />
+
+                    <setHeader headerName="idEnte">
+                        <simple>${body.idEnte}</simple>
+                    </setHeader>
+
+                    <marshal ref="jack"/>
+
+                    <wireTap uri="direct:updateFTP"/>
+
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPOST"/>
+
+                    <setHeader headerName="idEnte">
+                        <simple>${body.idEnte}</simple>
+                    </setHeader>
+
+                    <marshal ref="jack"/>
+
+                    <wireTap uri="direct:postFTP"/>
+
+                    <!-- &lt;!&ndash;Todo: va bene chiamare un servizio esposto dal ftp?
+                         Aspetto la creazione della rotta e poi rispondo al FE?
+                     &ndash;&gt;
+                     &lt;!&ndash;In caso di ente FTP, bisogna creare le rotte dinamiche&ndash;&gt;
+                     <choice>
+                         <when>
+                             <simple>${headers.CamelHttpResponseCode} == '201' &#38;&#38; ${headers.tipoCanale} =~ 'ftp' </simple>
+
+                             <to uri="{{api.rest.url.ftp}}"/>
+                         </when>
+                     </choice>-->
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleRicezioneFattureGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleRicezioneFattureGET"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleRicezioneFatturePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleRicezioneFatturePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleRicezioneFatturePOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleRicezioneFatturePOST"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleInoltroNotificheGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleInoltroNotificheGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleInoltroNotifichePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleInoltroNotifichePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleInoltroNotifichePOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleInoltroNotifichePOST"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCyclePassaggioProduzionePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCyclePassaggioProduzionePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesActiveCycleStoricoTestGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesActiveCycleStoricoTestGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleEsitoCommittenteGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleEsitoCommittenteGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleEsitoCommittentePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleEsitoCommittentePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleEsitoCommittentePOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleEsitoCommittentePOST"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCyclePassaggioProduzionePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCyclePassaggioProduzionePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleProtocolloGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleProtocolloGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleProtocolloPUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleProtocolloPUT"/>
+
+                    <setHeader headerName="idEnte">
+                        <simple>${body.idEnte}</simple>
+                    </setHeader>
+
+                    <marshal ref="jack"/>
+
+                    <wireTap uri="direct:updateFTP"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleProtocolloPOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleProtocolloPOST"/>
+
+                    <setHeader headerName="idEnte">
+                        <simple>${body.idEnte}</simple>
+                    </setHeader>
+
+                    <marshal ref="jack"/>
+
+                    <wireTap uri="direct:postFTP"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleRegistrazioneGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleRegistrazioneGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleRegistrazionePUT'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleRegistrazionePUT"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleRegistrazionePOST'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleRegistrazionePOST"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleStoricoTestGET'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleStoricoTestGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioEntitiesPassiveCycleTestRunPOST'</simple>
+
+                    <setHeader headerName="Content-Type">
+                        <constant>text/xml</constant>
+                    </setHeader>
+
+                    <bean ref="entitiesResourceImpl" method="servizioEntitiesPassiveCycleTestRunPOST"/>
+
+                    <inOnly uri="seda:keepGoing"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getAllTipoCanaleCa'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="getAllTipoCanaleCa"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getConfigPassiveCycle'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="getConfigPassiveCycle"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getConfigActiveCycle'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="getConfigActiveCycle"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getAllCampiOpzionali'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="getAllCampiOpzionali"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getAllCampiOpzionaliEnte'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="getAllCampiOpzionaliEnte"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'setCampiOpzionaliEnte'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="setCampiOpzionaliEnte"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'updateCampiOpzionaliEnte'</simple>
+
+                    <bean ref="entitiesResourceImpl" method="updateCampiOpzionaliEnte"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+
+                <!--INVOICES-->
+                <when>
+                    <simple>${in.header.operationName} == 'servizioInvoicesCampiGET'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioInvoicesCampiGET"/>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioCountInvoicesPassiveCyclePOST'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioCountInvoicesPassiveCyclePOST"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioInvoicesPassiveCyclePOST'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioInvoicesPassiveCyclePOST"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioInvoicesPassiveCycleDettaglioGET'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioInvoicesPassiveCycleDettaglioGET"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioInvoicesActiveCyclePOST'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioInvoicesActiveCyclePOST"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'servizioInvoicesActiveCycleDettaglioGET'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="servizioInvoicesActiveCycleDettaglioGET"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getFileFatturaPassiva'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="getFileFatturaPassiva"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'getFileFatturaAttiva'</simple>
+
+                    <bean ref="invoicesResourceImpl" method="getFileFatturaAttiva"/>
+
+                    <marshal ref="jack"/>
+                </when>
+
+
+                <!--MONITORAGGIO-->
+                <when>
+                    <simple>${in.header.operationName} == 'acServizioMessaggiGET'</simple>
+                    <removeHeaders pattern="*"/>
+
+                    <setHeader headerName="ciclo">
+                        <constant>Attivo</constant>
+                    </setHeader>
+
+                    <setHeader headerName="token">
+                        <simple>${body[0]}</simple>
+                    </setHeader>
+
+                    <!--Nel 'failover' bisogna chiamare per forza due rotte, non è possibile ad esempio fare 'setheader' altrimenti termina correttamente-->
+                    <loadBalance>
+                        <failover></failover>
+                        <to uri="direct:setta-headers-jolokia-master"/>
+                        <to uri="direct:setta-headers-jolokia-slave"/>
+                    </loadBalance>
+
+                    <marshal ref="jack"/>
+
+                </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'pcServizioMessaggiGET'</simple>
+                    <removeHeaders pattern="*"/>
+
+                    <setHeader headerName="ciclo">
+                        <constant>Passivo</constant>
+                    </setHeader>
+
+                    <setHeader headerName="token">
+                        <simple>${body[0]}</simple>
+                    </setHeader>
+
+                    <!--Nel 'failover' bisogna chiamare per forza due rotte, non è possibile ad esempio fare 'setheader' altrimenti termina correttamente-->
+                    <loadBalance>
+                        <failover></failover>
+                        <to uri="direct:setta-headers-jolokia-master"/>
+                        <to uri="direct:setta-headers-jolokia-slave"/>
+                    </loadBalance>
+
+                    <marshal ref="jack"/>
+
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'servizioMessaggiPOST'</simple>
+
+                    <setHeader headerName="token">
+                        <simple>${body[1]}</simple>
+                    </setHeader>
+
+                    <setHeader headerName="MONITORAGGIO.ciclo">
+                        <simple>${body[0].ciclo}</simple>
+                    </setHeader>
+
+                    <setBody>
+                        <simple>${body[0].nomeCoda}</simple>
+                    </setBody>
+
+                    <process ref="autenticazioneProcess"/>
+
+                    <!--Identifica univocamente tutti le code rielaborate dall'utente-->
+                    <setHeader headerName="MONITORAGGIO.nomeReport">
+                        <simple>${headers.username}_${date:now:dd-MM-yyyy HH:mm:ss}.csv</simple>
+                    </setHeader>
+
+                    <setHeader headerName="MONITORAGGIO.username">
+                        <simple>${headers.username}</simple>
+                    </setHeader>
+
+                    <removeHeaders pattern="*"
+                                   excludePattern="MONITORAGGIO.username|MONITORAGGIO.ciclo|MONITORAGGIO.dataRielaborazione|MONITORAGGIO.nomeReport"/>
+
+                    <setProperty propertyName="original_body">
+                        <simple>${body}</simple>
+                    </setProperty>
+
+                    <process ref="rielaboraMessaggiResponseProcess"/>
+
+                    <marshal ref="jack"/>
+
+                    <multicast>
+                        <wireTap uri="direct:rielabora-messaggi-dlq"/>
+                        <wireTap uri="direct:invia-nome-report-coda"/>
+                    </multicast>
+
+                </when>
+
+
+            <when>
+                <simple>${in.header.operationName} == 'acServizioWarningStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFattureAttiveImpl" method="acServizioWarningStatiFattureGET"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'acServizioCountWarningStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFattureAttiveImpl" method="acServizioCountWarningStatiFattureGET"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'acServizioStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFattureAttiveImpl" method="acServizioStatiFattureGET"/>
+
+                <setHeader headerName="MONITORAGGIO.nomeReport">
+                    <simple>warning_stato_fatture_${headers.username}_${date:now:dd-MM-yyyy HH:mm:ss}.csv</simple>
+                </setHeader>
+
+                <marshal ref="bindy-fatture"/>
+
+                <convertBodyTo type="java.lang.String"/>
+
+                <process ref="monitoraggioReportResponseProcessor"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'pcServizioWarningStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFatturePassiveImpl" method="pcServizioWarningStatiFattureGET"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'pcServizioCountWarningStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFatturePassiveImpl" method="pcServizioCountWarningStatiFattureGET"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'pcServizioStatiFattureGET'</simple>
+
+                <bean ref="warningStatiFatturePassiveImpl" method="pcServizioStatiFattureGET"/>
+
+                <setHeader headerName="MONITORAGGIO.nomeReport">
+                    <simple>warning_stato_fatture_${headers.username}_${date:now:dd-MM-yyyy HH:mm:ss}.csv</simple>
+                </setHeader>
+
+                <marshal ref="bindy-fatture"/>
+
+                <convertBodyTo type="java.lang.String"/>
+
+                <process ref="monitoraggioReportResponseProcessor"/>
+
+                <marshal ref="jack"/>
+            </when>
+
+            <when>
+                <simple>${in.header.operationName} == 'reinviaFattura'</simple>
+
+                <setProperty propertyName="originalBody">
+                    <simple>${body}</simple>
+                </setProperty>
+
+                <setHeader headerName="token">
+                    <simple>${body[0]}</simple>
+                </setHeader>
+
+                <process ref="autenticazioneProcess"/>
+
+                <setBody>
+                    <simple>${property.originalBody}</simple>
+                </setBody>
+
+                <wireTap uri="direct:reinvia-fattura"/>
+
+            </when>
+
+                <when>
+                    <simple>${in.header.operationName} == 'reinviaDecorrenzaTermini'</simple>
+
+                    <setProperty propertyName="originalBody">
+                        <simple>${body}</simple>
+                    </setProperty>
+
+                    <setHeader headerName="token">
+                        <simple>${body[0]}</simple>
+                    </setHeader>
+
+                    <process ref="autenticazioneProcess"/>
+
+                    <setBody>
+                        <simple>${property.originalBody}</simple>
+                    </setBody>
+
+                    <wireTap uri="direct:reinvia-decorrenza-termini"/>
+                </when>
+
+            <!--STATISTICS-->
+                <when>
+                    <simple>${in.header.operationName} == 'getStatisticheFatturePassiveUltimoMese'</simple>
+
+                    <bean ref="statisticsResourceImpl" method="getStatisticheFatturePassiveUltimoMese"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'getStatisticheFattureAttiveUltimoMese'</simple>
+
+                    <bean ref="statisticsResourceImpl" method="getStatisticheFattureAttiveUltimoMese"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'getStatisticheFatturePassiveUltimoAnno'</simple>
+
+                    <bean ref="statisticsResourceImpl" method="getStatisticheFatturePassiveUltimoAnno"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'getStatisticheFattureAttiveUltimoAnno'</simple>
+
+                    <bean ref="statisticsResourceImpl" method="getStatisticheFattureAttiveUltimoAnno"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'getStatisticheEnti'</simple>
+
+                    <bean ref="statisticsResourceImpl" method="getStatisticheEnti"/>
+
+                    <marshal ref="jack"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'reinviaPecNonConsegnate'</simple>
+                    <removeHeaders pattern="CamelHttp*"/>
+                    <marshal ref="jack"/>
+                    <to uri="direct:reinviaPecNonConsegnate"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'reinviaPecCaNonConsegnate'</simple>
+                    <removeHeaders pattern="CamelHttp*"/>
+                    <marshal ref="jack"/>
+                    <to uri="direct:reinviaPecCaNonConsegnate"/>
+                </when>
+
+            </choice>
+
+        </route>
+    </routeContext>
+
+</blueprint>

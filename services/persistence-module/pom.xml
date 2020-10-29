@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>services</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.services</groupId>
+    <artifactId>persistence-module</artifactId>
+    <packaging>pom</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICE :: PERSISTENCE</name>
+
+    <modules>
+        <module>persistence-datasource</module>
+        <module>persistence-unit</module>
+        <module>persistence-service</module>
+    </modules>
+
+
+</project>

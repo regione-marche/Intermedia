@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="regma.123.report.stato.fatture.correnti"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+
+        <dataFormats>
+            <bindy type="Csv" id="bindy-ente" classType="it.extrasys.marche.regione.fatturapa.patch.bean.Ente"/>
+        </dataFormats>
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.regma123-ReportStatoFattureCorrenti?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <!-- STARTER PER REPORT BASE -->
+        <route id="regma.123.jetty">
+            <from uri="{{regma.123.report.stato.fatture.correnti.jetty.endpoint}}"/>
+
+            <log message="REGMA 123 REPORT STATO FATTURE CORRENTI Jetty IN"/>
+
+            <to uri="direct:{{regma.123.report.stato.fatture.correnti.in}}"/>
+        </route>
+        <route id="regma.123.quartz">
+            <from uri="{{regma.123.report.stato.fatture.correnti.quartz.endpoint}}"/>
+
+            <log message="REGMA 123 REPORT STATO FATTURE CORRENTI Quartz IN"/>
+
+            <to uri="direct:{{regma.123.report.stato.fatture.correnti.in}}"/>
+        </route>
+
+        <!-- STARTER PER REPORT ENTI OSPEDALIERI: ASUR (da 0 a 5, AORMN e ORMARCHE -->
+        <route id="regma.123.enti.ospedalieri.jetty">
+            <from uri="{{regma.123.report.enti.ospedalieri.stato.fatture.correnti.jetty.endpoint}}"/>
+
+            <log message="REGMA 123 REPORT ENTI OSPEDALIERI STATO FATTURE CORRENTI Jetty IN"/>
+
+            <to uri="direct:{{regma.123.report.enti.ospedalieri.stato.fatture.correnti.in}}"/>
+        </route>
+        <route id="regma.123.enti.ospedalieri.quartz">
+            <from uri="{{regma.123.report.enti.ospedalieri.stato.fatture.correnti.quartz.endpoint}}"/>
+
+            <log message="REGMA 123 REPORT ENTI OSPEDALIERI STATO FATTURE CORRENTI Quartz IN"/>
+
+            <to uri="direct:{{regma.123.report.enti.ospedalieri.stato.fatture.correnti.in}}"/>
+        </route>
+
+        <route id="regma.123.report.stato.fatture.correnti.in">
+            <from uri="direct:{{regma.123.report.stato.fatture.correnti.in}}"/>
+
+            <setBody>
+                <simple>IDENTIFICATIVO SDI;DATA;CEDENTE ID FISCALE_IVA;CODICE DESTINATARIO;DATA FATTURA;NOME FILE;NUMERO FATTURA;NUMERO PROTOCOLLO;DESC STATO\n</simple>
+            </setBody>
+
+            <to uri="file://{{path.report.file.folder}}?fileName=report-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Append"/>
+
+            <to uri="sql:select identificativo_sdi,m as data, cedente_id_fiscale_iva, codice_destinatario, data_fattura,nome_file,numero_fattura,numero_protocollo,desc_stato from (
+                    select * from (
+                    SELECT DISTINCT r1.id_dati_fattura, id_cod_stato,m
+                    FROM
+                    (SELECT id_dati_fattura,max(data) as m FROM stato_fattura where data > CURRENT_TIMESTAMP - INTERVAL '20 days' GROUP BY id_dati_fattura ) as r1
+                    INNER JOIN stato_fattura as r2 ON r1.id_dati_fattura=r2.id_dati_fattura and r1.m=r2.data
+                    ) stati inner join dati_fattura on dati_fattura.id_dati_fattura=stati.id_dati_fattura ) fatture
+                    inner join codifica_stati on codifica_stati.cod_stato=fatture.id_cod_stato?dataSource=fatturazioneDb"/>
+
+            <split>
+                <simple>${body}</simple>
+
+                <bean ref="dbEnte" method="dbToEnte"/>
+
+                <marshal ref="bindy-ente"/>
+
+                <to uri="file://{{path.report.file.folder}}?fileName=report-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Append"/>
+            </split>
+
+            <setHeader headerName="from">
+                <simple>{{report.indirizzo.email.username.intero}}</simple>
+            </setHeader>
+
+            <setHeader headerName="to">
+                <simple>{{report.indirizzi.destinatari}}</simple>
+            </setHeader>
+
+            <setHeader headerName="subject">
+                <simple>{{report.subject}} ${date:now:dd-MM-yyyy}</simple>
+            </setHeader>
+
+            <setHeader headerName="content-type">
+                <constant>text/html</constant>
+            </setHeader>
+
+            <setHeader headerName="fileNameReport">
+                <simple>report-${date:now:dd-MM-yyyy}.csv</simple>
+            </setHeader>
+
+            <setBody>
+                <simple>Salve, in allegato il report relativo alla data ${date:now:dd-MM-yyyy}</simple>
+            </setBody>
+
+            <process ref="reportMailAttacherProcessor"/>
+
+            <to uri="smtp://{{report.indirizzo.email.username.intero}}@{{report.indirizzo.email.host}}?password={{report.indirizzo.email.password}}&amp;username={{report.indirizzo.email.username}}&amp;port={{report.indirizzo.email.port}}"/>
+
+            <!--<to uri="file://{{path.report.file.folder}}?fileName=report-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Move&amp;moveExisting=done"/>-->
+
+            <log message="REGMA 123 END"/>
+
+        </route>
+
+
+        <!-- ROUTE che crea il report per i soli enti ospedalieri: Asur (da 0 a 5), Ormarche e Aormn -->
+        <route id="regma.123.report.enti.ospedalieri.stato.fatture.correnti.in">
+            <from uri="direct:{{regma.123.report.enti.ospedalieri.stato.fatture.correnti.in}}"/>
+
+            <setBody>
+                <simple>IDENTIFICATIVO SDI;DATA;CEDENTE ID FISCALE_IVA;CODICE DESTINATARIO;DATA FATTURA;NOME FILE;NUMERO FATTURA;NUMERO PROTOCOLLO;DESC STATO\n</simple>
+            </setBody>
+
+            <to uri="file://{{path.report.file.folder}}?fileName=report-entiOspedalieri-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Append"/>
+
+            <to uri="sql:select identificativo_sdi,m as data, cedente_id_fiscale_iva, codice_destinatario, data_fattura,nome_file,numero_fattura,numero_protocollo,desc_stato from (
+                select * from (
+                SELECT DISTINCT r1.id_dati_fattura, id_cod_stato,m
+                FROM
+                    (SELECT id_dati_fattura,max(data) as m FROM stato_fattura where data > CURRENT_TIMESTAMP - INTERVAL '20 days'
+                    GROUP BY id_dati_fattura ) as r1
+                    INNER JOIN stato_fattura as r2 ON r1.id_dati_fattura=r2.id_dati_fattura and r1.m=r2.data
+                    ) stati inner join dati_fattura on dati_fattura.id_dati_fattura=stati.id_dati_fattura
+                ) fatture inner join codifica_stati on codifica_stati.cod_stato=fatture.id_cod_stato
+                and codice_destinatario in ('UFKSW3','UCQLED','KQESGN','0SH9XI','0TXQBM','B7TZLF','UF9BEG','UFL0NM')?dataSource=fatturazioneDb"/>
+
+            <split>
+                <simple>${body}</simple>
+
+                <bean ref="dbEnte" method="dbToEnte"/>
+
+                <marshal ref="bindy-ente"/>
+
+                <to uri="file://{{path.report.file.folder}}?fileName=report-entiOspedalieri-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Append"/>
+            </split>
+
+            <setHeader headerName="from">
+                <simple>{{report.indirizzo.email.username.intero}}</simple>
+            </setHeader>
+
+            <setHeader headerName="to">
+                <simple>{{report.enti.osperdalieri.indirizzi.destinatari}}</simple>
+            </setHeader>
+
+            <setHeader headerName="subject">
+                <simple>{{report.enti.ospedalieri.subject}} ${date:now:dd-MM-yyyy}</simple>
+            </setHeader>
+
+            <setHeader headerName="content-type">
+                <constant>text/html</constant>
+            </setHeader>
+
+            <setHeader headerName="fileNameReport">
+                <simple>report-entiOspedalieri-${date:now:dd-MM-yyyy}.csv</simple>
+            </setHeader>
+
+            <setBody>
+                <simple>Salve, in allegato il report relativo alla data ${date:now:dd-MM-yyyy} per gli enti Ospedalieri con i seguenti codici IPA: \nUFKSW3,UCQLED,KQESGN,0SH9XI,0TXQBM,B7TZLF,UF9BEG,UFL0NM</simple>
+            </setBody>
+
+            <process ref="reportMailAttacherProcessor"/>
+
+            <to uri="smtp://{{report.indirizzo.email.username.intero}}@{{report.indirizzo.email.host}}?password={{report.indirizzo.email.password}}&amp;username={{report.indirizzo.email.username}}&amp;port={{report.indirizzo.email.port}}"/>
+
+            <!--<to uri="file://{{path.report.file.folder}}?fileName=report-${date:now:dd-MM-yyyy}.csv&amp;fileExist=Move&amp;moveExisting=done"/>-->
+
+            <log message="REGMA 123 END"/>
+
+        </route>
+
+
+    </camelContext>
+
+
+</blueprint>

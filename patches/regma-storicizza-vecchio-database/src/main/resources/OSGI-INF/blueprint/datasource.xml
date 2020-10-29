@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Instanzia il datasource di test -->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="fatturazioneNuovoDb"
+          class="org.apache.commons.dbcp.BasicDataSource" >
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="${db.nuovo.url}" />
+        <property name="username" value="${db.nuovo.username}" />
+        <property name="password" value="${db.nuovo.password}" />
+        <property name="initialSize" value="1"/>
+        <property name="validationQuery" value="select 1" />
+    </bean>
+
+    <service ref="fatturazioneNuovoDb" interface="javax.sql.DataSource">
+        <service-properties>
+            <entry key="osgi.jndi.service.name" value="jdbc/fatturazioneNuovoDb" />
+        </service-properties>
+    </service>
+
+    <bean id="fatturazioneVecchioDb"
+          class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="${db.vecchio.url}" />
+        <property name="username" value="${db.vecchio.username}" />
+        <property name="password" value="${db.vecchio.password}" />
+        <property name="validationQuery" value="select 1" />
+    </bean>
+
+    <service ref="fatturazioneVecchioDb" interface="javax.sql.DataSource">
+        <service-properties>
+            <entry key="osgi.jndi.service.name" value="jdbc/fatturazioneVecchioDb" />
+        </service-properties>
+    </service>
+</blueprint>

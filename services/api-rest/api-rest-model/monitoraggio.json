@@ -1,0 +1,743 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "IntermediaMarche_Service",
+    "version": "2.1.0",
+    "description": "IntermediaMarche API Documentation",
+    "contact": {
+    }
+  },
+  "paths": {
+    "/monitoraggio/acStatoCode": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/monitoraggioResponseList"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Monitoraggio code DLQ (GET)",
+        "description": "Servizio utilizzato per monitorare le code DLQ della fatturazione attiva"
+      }
+    },
+    "/monitoraggio/pcStatoCode": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/monitoraggioResponseList"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Monitoraggio code DLQ (GET)",
+        "description": "Servizio utilizzato per monitorare le code DLQ della fatturazione passiva"
+      }
+    },
+    "/monitoraggio/statoCode": {
+      "post": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/rielaboraMessaggiRequest"
+            },
+            "in": "body",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/rielaboraMessaggiResponse"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Rielaborazione messaggi da code DLQ (POST)",
+        "description": "Servizio utilizzato per rielaborare i messaggi presenti nelle code DLQ"
+      }
+    },
+    "/monitoraggio/acStatoFatture/warning": {
+      "post": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/orderRequest"
+            },
+            "in": "body",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/warningStatiFatturaResponseList"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca delle fatture attive in errore",
+        "description": "Servizio utilizzato per ricercare le fatture attive in stato di errore "
+      }
+    },
+    "/monitoraggio/acStatoFatture/warning/count": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/warningStatiFatturaCountResponse"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca del numero delle fatture attive in errore",
+        "description": "Servizio utilizzato per ricercare il numero delle fatture attive in stato di errore "
+      }
+    },
+    "/monitoraggio/acStatoFatture": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/monitoraggioReportResponse"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca di tutte le fatture attive",
+        "description": "Servizio utilizzato per ricercaredi tutte le fatture attive"
+      }
+    },
+    "/monitoraggio/pcStatoFatture/warning": {
+      "post": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/orderRequest"
+            },
+            "in": "body",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/warningStatiFatturaResponseList"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca delle fatture passive in errore",
+        "description": "Servizio utilizzato per ricercare le fatture passive in stato di errore "
+      }
+    },
+    "/monitoraggio/pcStatoFatture/warning/count": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/warningStatiFatturaCountResponse"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca del numero delle fatture passive in errore",
+        "description": "Servizio utilizzato per ricercare il numero delle fatture passive in stato di errore "
+      }
+    },
+    "/monitoraggio/pcStatoFatture": {
+      "get": {
+        "tags": [
+          "intermediaMarche"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/monitoraggioReportResponse"
+            }
+          },
+          "204": {
+            "description": "No Content",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio per ricerca di tutte le fatture passive",
+        "description": "Servizio utilizzato per ricercaredi tutte le fatture passive"
+      }
+    }
+  },
+  "definitions": {
+    "rielaboraMessaggiRequest": {
+      "description": "",
+      "required": [
+        "nome_coda"
+      ],
+      "type": "object",
+      "properties": {
+        "nome_coda": {
+          "description": "Contiene i nomi delle code per le quali effettuare la rielaborazione dei messaggi",
+          "type": "array",
+          "items": {
+            "$ref": "string"
+          }
+        },
+        "ciclo": {
+          "description": "Indica se il monitoraggio è per il ciclo passivo o attivo. Prende i valori 'attivo' o 'passivo' ",
+          "type": "string"
+        }
+      }
+    },
+    "orderRequest": {
+      "description": "Per ordinamento e paginazione",
+      "type": "object",
+      "properties": {
+        "orderBy": {
+          "description": "Campo per il quale effettuare l'ordinamento",
+          "type": "string"
+        },
+        "ordering": {
+          "description": "ASC o DESC",
+          "type": "string"
+        },
+        "numberOfElements": {
+          "description": "Nuemro di elementi richiesti per la pagina",
+          "type": "integer"
+        },
+        "pageNumber": {
+          "description": "Numero di pagina richeista",
+          "type": "integer"
+        }
+      }
+    },
+    "monitoraggioResponseList": {
+      "description": "",
+      "required": [
+        "monitoraggio_response_list"
+      ],
+      "type": "object",
+      "properties": {
+        "monitoraggio_response_list": {
+          "description": "Contiene il dettaglio del monitoraggio",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/monitoraggioResponse"
+          }
+        }
+      }
+    },
+    "monitoraggioResponse": {
+      "description": "",
+      "required": [
+        "nome_coda",
+        "label_coda",
+        "numero_messaggi",
+        "tipo_canale"
+      ],
+      "type": "object",
+      "properties": {
+        "nome_coda": {
+          "description": "Nome della coda da passare quando si chiama il servizio di rielaborazione",
+          "type": "string"
+        },
+        "label_coda": {
+          "description": "Nome della coda da mostrare a video",
+          "type": "string"
+        },
+        "numero_messaggi": {
+          "description": "Numero di messaggi presenti nella coda",
+          "type": "integer"
+        },
+        "tipo_canale": {
+          "description": "Attivo o Passivo",
+          "type": "string"
+        }
+      }
+    },
+    "rielaboraMessaggiResponse": {
+      "description": "",
+      "required": [
+        "esito"
+      ],
+      "type": "object",
+      "properties": {
+        "esito": {
+          "description": "Esito della presa in carico della rielaborazione",
+          "type": "string"
+        },
+        "messaggio": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    },
+    "warningStatiFatturaResponseList": {
+      "description": "",
+      "required": [
+        "warning_stati_fattura_response_list"
+      ],
+      "type": "object",
+      "properties": {
+        "warning_stati_fattura_response": {
+          "description": "Lista dettagli dello stato delle fatture",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/warningStatiFattureResponse"
+          }
+        }
+      }
+    },
+    "warningStatiFattureResponse": {
+      "description": "",
+      "required": [
+        "identificativo_sdi",
+        "data_ultimo_stato",
+        "codice_ufficio_destinatario",
+        "data_creazione",
+        "nome_file",
+        "tipo_canale",
+        "stato",
+        "flag"
+      ],
+      "type": "object",
+      "properties": {
+        "identificativo_sdi": {
+          "description": "identificativo sdi",
+          "type": "string"
+        },
+        "data_ultimo_stato": {
+          "description": "data ultimo stato",
+          "format": "date",
+          "type": "string"
+        },
+        "codice_ufficio_destinatario": {
+          "description": "codice ufficio destinatario",
+          "type": "string"
+        },
+        "data_creazione": {
+          "description": "data creazione",
+          "format": "date",
+          "type": "string"
+        },
+        "nome_file": {
+          "description": "nome file",
+          "type": "string"
+        },
+        "tipo_canale": {
+          "description": "tipo canale",
+          "type": "string"
+        },
+        "stato": {
+          "description": "stato fattura",
+          "type": "string"
+        },
+        "flag": {
+          "description": "Flag che indica se la fattura è in stato warning o no. Prende i valori: verde,giallo,rosso",
+          "type": "string"
+        }
+      }
+    },
+    "warningStatiFatturaCountResponse": {
+      "description": "",
+      "required": [
+        "count"
+      ],
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "numero di elementi",
+          "type": "integer"
+        }
+      }
+    },
+    "monitoraggioReportResponse": {
+      "description": "",
+      "required": [
+        "contenuto",
+        "nomeReport"
+      ],
+      "type": "object",
+      "properties": {
+        "contenuto": {
+          "description": "contenuto del file",
+          "type": "array",
+          "items": {
+            "format": "byte",
+            "type":"string"
+          }
+        },
+        "nomeReport": {
+          "description": "",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "intermediaMarche",
+      "description": "Progetto Intermedia Marche"
+    }
+  ]
+}

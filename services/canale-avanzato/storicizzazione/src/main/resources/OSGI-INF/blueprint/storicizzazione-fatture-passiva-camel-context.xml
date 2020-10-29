@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!-- Servizio di storicizzazione delle fatture  -->
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true" trace="{{enable.trace}}"
+                  id="storicizzazione.fatture.passiva.ctx" xmlns="http://camel.apache.org/schema/blueprint">
+
+        <threadPoolProfile id="splitterExecutorService"
+                           defaultProfile="false" poolSize="{{poolSize}}" maxPoolSize="{{maxPoolSize}}" maxQueueSize="{{maxQueueSize}}" keepAliveTime="{{keepAliveTime}}"
+                           rejectedPolicy="CallerRuns"/>
+
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.storicizzazione.fatture.passiva?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <route id="storicizzazione.fatture.passiva.start.rest.route">
+            <from uri="{{storicizzazione.fatture.passiva.rest.start.endpoint}}"/>
+
+            <log message="STORICIZZAZIONE FATTURE PASSIVA REST STARTED"/>
+
+            <to uri="{{storicizzazione.fatture.passiva.main.endpoint}}"/>
+        </route>
+
+        <route id="storicizzazione.fatture.passiva.start.batch.route">
+            <from uri="{{storicizzazione.fatture.passiva.batch.start.endpoint}}"/>
+
+            <choice>
+                <when>
+                    <simple>'{{storicizzazione.fatture.passiva.batch.start}}' == 'ON'</simple>
+
+                    <log message="STORICIZZAZIONE FATTURE PASSIVA QUARTZ STARTED"/>
+
+                    <setHeader headerName="giorniHeader">
+                        <simple>{{storicizzazione.fatture.passiva.giorni}}</simple>
+                    </setHeader>
+
+                    <to uri="{{storicizzazione.fatture.passiva.main.endpoint}}"/>
+
+                </when>
+            </choice>
+        </route>
+
+
+        <route id="storicizzazione.fatture.passiva.main.route">
+            <from uri="{{storicizzazione.fatture.passiva.main.endpoint}}"/>
+
+            <log message="STORICIZZAZIONE FATTURE PASSIVA MAIN STARTED"/>
+
+            <process ref="recuperaListaIdentificativiSdiProcessorPassiva"/>
+
+            <split strategyRef="reportAggregationStrategy" parallelProcessing="true" executorServiceRef="splitterExecutorService">
+                <simple>${body}</simple>
+
+                <process ref="salvaFatturaPassivaStoricizzataProcessor"/>
+            </split>
+
+            <setBody>
+                <simple>${property.reportListFinale}</simple>
+            </setBody>
+
+            <to uri="velocity:velocity/ReportStoricizzazione.vm"/>
+
+            <setHeader headerName="CamelFileName">
+                <simple>Report_Passiva_${date:now:dd-MM-yyyy}.csv</simple>
+            </setHeader>
+
+            <to uri="file://{{storicizzazione.fatture.passiva.directory.report}}"/>
+
+            <log message="STORICIZZAZIONE FATTURE PASSIVA MAIN END"/>
+        </route>
+
+
+    </camelContext>
+
+
+</blueprint>

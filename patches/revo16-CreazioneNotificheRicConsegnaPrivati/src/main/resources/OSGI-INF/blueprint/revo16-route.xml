@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="revo.16.creazione.ric.consegna"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint">
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.revo16-CreazioneNotificheRicConsegna?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <!-- Main Route -->
+        <route id="revo.16.main.route">
+
+            <from uri="{{revo.16.csv.source}}" />
+
+            <log message="REVO 16 --> MAIN ROUTE START" loggingLevel="INFO"/>
+
+            <unmarshal>
+                <csv skipHeaderRecord="true" delimiter=";" />
+            </unmarshal>
+
+            <split>
+                <simple>${body}</simple>
+
+                <setHeader headerName="identificativoSdi">
+                    <simple>${body[0]}</simple>
+                </setHeader>
+
+                <setHeader headerName="nomeFileFattura">
+                    <simple>${body[1]}</simple>
+                </setHeader>
+
+                <setHeader headerName="codDest">
+                    <simple>${body[2]}</simple>
+                </setHeader>
+
+                <setHeader headerName="pec">
+                    <simple>${body[3]}</simple>
+                </setHeader>
+
+                <setHeader headerName="dataOraRic">
+                    <simple>${body[4]}</simple>
+                </setHeader>
+
+                <setHeader headerName="dataOraCons">
+                    <simple>${body[5]}</simple>
+                </setHeader>
+
+                <setHeader headerName="messageId">
+                    <simple>${body[6]}</simple>
+                </setHeader>
+
+                <setHeader headerName="dataFirma">
+                    <simple>${body[7]}</simple>
+                </setHeader>
+
+                <process ref="codiceHashFatturaAttivaProcessor"/>
+
+                <inOut uri="velocity:velocity/notifica_ric_consegna.vm?contentCache=true" />
+
+                <convertBodyTo type = "java.lang.byte[]"/>
+
+                <process ref="ricevutaConsegnaProcessor"/>
+
+                <log message="REVO 16 Notifica Ricevuta Consegna creata per Identificativo SdI: ${header.identificativoSdi}" loggingLevel="INFO"/>
+
+                <convertBodyTo type="java.lang.String" />
+
+                <removeHeaders pattern="CamelFile*"/>
+
+                <!-- Metto il mex nella coda per essere gestito -->
+                <to uri="{{sdi.inbound.ricevi.notifiche.in.queue}}" id="riceviNotifiche"/>
+
+            </split>
+
+        </route>
+
+    </camelContext>
+
+</blueprint>

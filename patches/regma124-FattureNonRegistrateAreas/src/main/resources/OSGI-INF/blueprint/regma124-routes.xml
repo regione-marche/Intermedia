@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="regma.124.fatture.non.registrate.areas"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+    <route id="regma124.asur.invia.fatture.areas">
+
+            <from uri="{{regma124.asur.invia.fatture.areas.jetty.endpoint}}"/>
+
+            <log message="REGMA 124 REGISTRAZIONE SU AREAS STARTED ${header.identificativoSdI}"/>
+        
+            <process ref="fromByteArrayToStringProcessor"/>
+
+            <removeHeaders pattern="Camel*"/>
+            <removeHeader headerName="Host"/>
+
+            <log message="REGMA 124 REGISTRAZIONE SU AREAS: body [${body}]"/>
+
+            <choice>
+                <when>
+                    <simple>${header.enteAsur} == "ars"</simple>
+                    <log message="regma 124 ENTE ARS"/>
+                    <inOnly uri="activemq:enti.bridge.ars.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur"</simple>
+                    <log message="regma 124 ENTE ASUR"/>
+                    <inOnly uri="activemq:enti.bridge.asur.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur1"</simple>
+                    <log message="regma 124 ENTE ASUR1"/>
+                    <inOnly uri="activemq:enti.bridge.asurav1.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur2"</simple>
+                    <log message="regma 124 ENTE ASUR2"/>
+                    <inOnly uri="activemq:enti.bridge.asurav2.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur3"</simple>
+                    <log message="regma 124 ENTE ASUR3"/>
+                    <inOnly uri="activemq:enti.bridge.asurav3.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur4"</simple>
+                    <log message="regma 124 ENTE ASUR4"/>
+                    <inOnly uri="activemq:enti.bridge.asurav4.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "asur5"</simple>
+                    <log message="regma 124 ENTE ASUR5"/>
+                    <inOnly uri="activemq:enti.bridge.asurav5.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "ormarche"</simple>
+                    <log message="regma 124 ENTE ORMARCHE"/>
+                    <inOnly uri="activemq:enti.bridge.ormarche.registrazione.fatture.in.queue"/>
+                </when>
+                <when>
+                    <simple>${header.enteAsur} == "aormn"</simple>
+                    <log message="regma 124 ENTE AORMN"/>
+                    <inOnly uri="activemq:enti.bridge.aormn.registrazione.fatture.in.queue"/>
+                </when>
+                <otherwise>
+                    <log message="regma 124 NESSUN VALORE NELL'HEADER 'enteAsur' O VALORE ERRATO"/>
+                </otherwise>
+            </choice>
+
+
+            <log message="REGMA 124 REGISTRAZIONE SU AREAS END"/>
+        </route>
+
+    </camelContext>
+
+</blueprint>

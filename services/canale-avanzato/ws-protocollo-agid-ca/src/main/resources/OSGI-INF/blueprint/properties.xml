@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.ws.protocollo.agid.ca"
+                             persistent-id="it.extrasys.marche.regione.fatturapa.ws.protocollo.agid.ca">
+
+        <cm:default-properties>
+
+            <cm:property name="enable.trace" value="false"/>
+
+            <cm:property name="agid.server.address" value=""/>
+            <cm:property name="agid.server.port" value=""/>
+
+            <!-- ########## ACTIVEMQ ########## -->
+            <cm:property name="fatturapa.activemq.brokerURL" value="discovery:(fabric:fatturapa-broker)"/>
+            <cm:property name="fatturapa.activemq.username" value="admin"/>
+            <cm:property name="fatturapa.activemq.password" value="admin"/>
+            <cm:property name="fatturapa.activemq.max.connections" value="10"/>
+            <cm:property name="fatturapa.activemq.cacheLevelName" value="CACHE_CONSUMER"/>
+            <cm:property name="fatturapa.activemq.concurrent.consumers" value="5"/>
+
+            <!-- ########## ACTIVEMQ XA ########## -->
+            <cm:property name="fatturapa.activemq.max.XAconnections" value="2"/>
+            <cm:property name="fatturapa.activemq.jtaCacheLevelName" value="CACHE_CONNECTION"/>
+
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retry.attempts" value="3"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retry.delay" value="1000"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.backOffMultiplier" value="2"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retryAttemptedLogLevel" value="WARN"/>
+
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.queue"
+                         value="activemq:enti.bridge.ente.ws.ca.protocollo.agid.invio.queue"/>
+
+            <!-- FATTURA -->
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.infoEnteAgidCA.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.infoEnteAgidCA.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.infoMittente.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.infoMittente.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.rup.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.rup.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.protocollazione.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.protocollazione.in"/>
+
+            <!-- EC -->
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.infoEnteAgidCA.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.infoEnteAgidCA.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.segnaturaProtocolloFattura.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.segnaturaProtocolloFattura.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.classificazioni.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.classificazioni.in"/>
+            <cm:property name="enti.bridge.ente.ws.ca.protocollo.agid.invio.protocollazione.in"
+                         value="direct:enti.bridge.ente.ws.ca.protocollo.agid.invio.protocollazione.in"/>
+
+
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retry.attempts" value="3"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retry.delay" value="1000"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.backOffMultiplier" value="2"/>
+            <cm:property name="agidCAProtocollazioneRedeliveryPolicyConfig.retryAttemptedLogLevel" value="WARN"/>
+
+            <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+        </cm:default-properties>
+
+    </cm:property-placeholder>
+
+</blueprint>

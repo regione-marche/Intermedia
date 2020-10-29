@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<bean id="response" class="it.extrasys.marche.regione.fatturapa.mock.sdi.ricevi.notifiche.GeneraRispostaSDINotificheProcessor" />
+
+	<bean id="sdiRestClientMockManager" class="it.extrasys.marche.regione.fatturapa.mock.sdi.ricevi.notifiche.SdiRestClientMockManager">
+		<property name="indirizzoServizioCxf" value="${sdi.rest.client.indirizzo.servizio.cxf}" />
+	</bean>
+	
+	<bean id="sdiRiceviFileMock" class="it.extrasys.marche.regione.fatturapa.mock.sdi.ricevi.fatture.SdIRiceviFileMock">
+		<property name="connectionUrl" value="${openjpa.ConnectionURL}"/>
+		<property name="driverName" value="${openjpa.ConnectionDriverName}"/>
+		<property name="log" value="${openjpa.Log}"/>
+		<property name="transactionMode" value="${openjpa.TransactionMode}"/>
+		<property name="connectionFactoryProperties" value="${openjpa.ConnectionFactoryProperties}"/>
+		<property name="connectionUserName" value="${openjpa.ConnectionUserName}"/>
+		<property name="connectionPassword" value="${openjpa.ConnectionPassword}"/>
+	</bean>
+	
+	<bean id="impostaNotifica" class="it.extrasys.marche.regione.fatturapa.mock.sdi.setup.ImpostaNotificaServiceImpl" />
+
+	<bean id="generaRispostaAccettazioneScartoECProcessor" class="it.extrasys.marche.regione.fatturapa.mock.sdi.ricevi.notifiche.GeneraRispostaAccettazioneScartoECProcessor"/>
+
+</blueprint>

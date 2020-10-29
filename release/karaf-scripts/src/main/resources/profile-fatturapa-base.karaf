@@ -1,0 +1,36 @@
+##########################################
+### Ensure Fabric commands are present ###
+##########################################
+
+# The role of this script is to specify all standards modifications that are generic and do not belong to specific Business Services
+
+wait-for-service org.apache.karaf.features.FeaturesService
+
+version1 = (new java.lang.String "${project.version}")
+PROFILE_VERSION = ($version1 replace  "-SNAPSHOT" "")
+
+fabric:version-create --default $PROFILE_VERSION
+
+################
+### Profiles ###
+################
+
+## changed while splitting. now all the following mod apply to "fatturapa-base" profile
+fabric:profile-edit --repositories mvn:it.extrasys.marche.regione.fatturapa/features/${project.version}/xml/features fatturapa-base $PROFILE_VERSION
+
+
+sleep 5
+
+###########################################################
+### custom settings and features for business profiles  ###
+###########################################################
+
+
+sleep 50
+
+################
+### upgrade  ###
+################
+
+
+#if { $SPECIFIC_CONTAINERS }  { each ($SPECIFIC_CONTAINERS split ",") { fabric:container-upgrade $PROFILE_VERSION $it }  }  { fabric:container-upgrade --all $PROFILE_VERSION }

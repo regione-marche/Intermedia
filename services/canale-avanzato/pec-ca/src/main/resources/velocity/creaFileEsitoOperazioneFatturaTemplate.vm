@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <DataRicezione>${headers.dataRicezione}</DataRicezione>
+    <Codice>${headers.codiceEsito}</Codice>
+    <Descrizione>${headers.descrizioneEsito}</Descrizione>
+    <NomeFile>${headers.nomeFileFattura}</NomeFile>
+    <RicevutaComunicazione>${headers.ricevutaComunicazione}</RicevutaComunicazione>
+</Response>

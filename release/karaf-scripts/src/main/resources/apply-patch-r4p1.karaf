@@ -1,0 +1,15 @@
+##########################################
+### Apply Patch 					   ###
+##########################################
+
+# PATCHPATH must be passed as first argument
+PATCHPATH=$1
+
+
+echo STARTING applaying patch: Rollup 4 - patch 1 to fabric version: 1.2
+fabric:version-create --default 1.2
+fabric:patch-apply --version 1.2 file://$PATCHPATH/jboss-fuse-6.1.1.redhat-458-r4p1.zip
+container-upgrade 1.2
+echo "### Wait for any ongoing provisioning actions..."
+wait-for-provisioning
+echo DONE applaying patch: Rollup 4 - patch 1  to fabric version: 1.2

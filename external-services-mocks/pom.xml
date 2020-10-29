@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fatturazione-elettronica-regione-marche</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+    <artifactId>external-services-mocks</artifactId>
+
+    <packaging>pom</packaging>
+  
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: EXTERNAL SERVICES MOCKS</name>
+
+    <modules>
+        <module>sdi-mock</module>
+        <module>paleo-test</module>
+        <module>paleo-ca-mock</module>
+        <module>agid-ca-mock</module>
+        <module>registrazione-ca-mock</module>
+        <module>registrazione-attiva-ca-mock</module>
+    </modules>
+    
+</project>

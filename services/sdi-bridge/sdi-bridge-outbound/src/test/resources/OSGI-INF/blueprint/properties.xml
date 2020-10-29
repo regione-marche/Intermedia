@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+	<cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.sdi.brigde.outbound" persistent-id="it.extrasys.marche.regione.fatturapa.sdi.brigde.outbound">
+
+		<cm:default-properties>
+
+			<cm:property name="enable.trace" value="true" />
+			<cm:property name="sdi.outbound.cxf.endpoint.invio.notifica" value="cxf:bean:sdi.outbound.cxf.endpoint.invio.notifica" />
+			<cm:property name="sdi.outbound.cxf.address" value="" />
+			<cm:property name="sdi.outbound.cxf.port" value="" />
+			<cm:property name="sdi.outbound.cxf.context" value="SdIRicezioneNotifiche/NotificaEsito" />
+
+			<cm:property name="giunta.paleo-gateway.cxf.address" value="" />
+			<cm:property name="giunta.paleo-gateway.cxf.port" value="" />
+			<cm:property name="giunta.paleo-gateway.cxf.context" value="Paleo4/PaleoWebServicesR_MARCHE/PaleoWebService.svc" />
+
+			<cm:property name="sdi.outbound.invio.notifica.queue" value="direct:sdi.outbound.invio.notifica.queue" />
+
+			<cm:property name="sdi.outbound.invio.risposta.sdi.to.enti" value="mock:validationServiceOutQueue" />
+			<cm:property name="sdi.outbound.notifica.scarto.direct" value="direct-vm:sdi.outbound.notifica.scarto.direct" />
+			<cm:property name="sdi.outbound.notifica.ok.direct" value="direct-vm:sdi.outbound.notifica.ok.direct" />
+
+
+
+
+			<cm:property name="notifica.esito.dlq" value="mock:notifica.esito.dlq" />
+			<cm:property name="notifica.esito.sdi.dlq" value="mock:notifica.esito.sdi.dlq" />
+			<cm:property name="notifica.esito.persistence.dlq" value="mock:notifica.esito.persistence.dlq" />
+			<cm:property name="error.notification.queue" value="mock:error.notification.queue" />
+
+			<!-- ########## REDELIVERY POLICY PARAMETERS ########## -->
+			<cm:property name="notifica.esito.sdi.retry.delay" value="10000" />
+			<cm:property name="notifica.esito.sdi.retry.attempts" value="6" />
+
+			<cm:property name="sdi.outbound.invio.file.fatture.cxf.address" value="localhost" />
+			<cm:property name="sdi.outbound.invio.file.fatture.cxf.port" value="8080" />
+			<cm:property name="sdi.outbound.invio.file.fatture.cxf.context" value="ricevi_file" />
+
+			<cm:property name="fatturazione.attiva.inoltra.fatture.queue" value="mock:enti.bridge.fattura.attiva.inoltro" />
+
+
+		</cm:default-properties>
+
+	</cm:property-placeholder>
+
+</blueprint>

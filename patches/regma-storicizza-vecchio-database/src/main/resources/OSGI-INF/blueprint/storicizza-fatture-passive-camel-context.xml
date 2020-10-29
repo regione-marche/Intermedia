@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                                  http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
+                               http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <!-- Servizio di storicizzazione delle fatture  -->
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true" trace="{{enable.trace}}"
+                  id="storicizza.vecchie.fatture.passive.ctx" xmlns="http://camel.apache.org/schema/blueprint"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <threadPoolProfile id="splitterExecutorService"
+                           defaultProfile="false" poolSize="{{poolSize}}" maxPoolSize="{{maxPoolSize}}"
+                           maxQueueSize="{{maxQueueSize}}" keepAliveTime="{{keepAliveTime}}"
+                           rejectedPolicy="CallerRuns"/>
+
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.storicizza.fatture.passiva?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <route id="storicizzazione.vecchie.fatture.passiva.start.rest.route">
+            <from uri="{{storicizzazione.vecchie.fatture.passive.jetty.endpoint}}"/>
+
+            <log message="STORICIZZAZIONE VECCHIE FATTURE PASSIVE REST START"/>
+
+            <setHeader headerName="data_inserimento">
+                <simple>${date:now:yyyy-MM-dd}</simple>
+            </setHeader>
+
+            <setBody>
+                <simple>SELECT ffe.identificativo_sdi , id_file_fattura FROM file_fattura ffe WHERE ffe.data_ricezione &lt; '{{data.riferimento}}'</simple>
+            </setBody>
+            <!--Prende tutti gli identificativiSdI delle fatture passive precedenti alla data passata come parametro-->
+            <to uri="jdbc:fatturazioneVecchioDb?outputType=SelectList"/>
+
+            <log message="STORICIZZAZIONE VECCHIE FATTURE PASSIVE - Trovati ${body.size()} identificativiSdI"/>
+
+            <!--Per ogni identificativoSdi recupera info da dati_fattura-->
+            <split parallelProcessing="true" executorServiceRef="splitterExecutorService">
+                <simple>${body}</simple>
+
+                <bean ref="queryResultProcessor" method="getIdentificativoSDI"/>
+
+                <!--Non funziona più prendere cosi' i valori :O-->
+             <!--   <setHeader headerName="identificativoSdI">
+                    <simple>${body[identificativo_sdi]}</simple>
+                </setHeader>-->
+
+                <setBody>
+                    <simple>SELECT df.identificativo_sdi, df.cedente_id_fiscale_iva, df.committente_id_fiscale_iva,
+                        df.codice_destinatario, df.data_fattura, df.data_creazione, df.nome_file, df.numero_fattura,
+                        df.numero_protocollo, df.id_dati_fattura, df.fatturazione_interna, e.id_tipo_canale
+                        FROM dati_fattura df, ente e WHERE e.codice_ufficio=df.codice_destinatario AND
+                        identificativo_sdi = ${headers.identificativoSdI}
+                    </simple>
+                </setBody>
+
+                <to uri="jdbc:fatturazioneVecchioDb"/>
+
+                <!--Per ogni idFattura recupera lo stato-->
+                <split>
+                    <simple>${body}</simple>
+
+                    <setProperty propertyName="datiFattura">
+                        <simple>${body}</simple>
+                    </setProperty>
+
+                    <bean ref="queryResultProcessor" method="getIdDatiFattura"/>
+                    <!--Non funziona piu' prendere cosi' i valori :O-->
+                   <!-- <setHeader headerName="idDatiFattura">
+                        <simple>${body[id_dati_fattura]}</simple>
+                    </setHeader>-->
+
+                    <setBody>
+                        <simple>SELECT cs.desc_stato, sf.data FROM stato_fattura sf, codifica_stati cs WHERE
+                            sf.id_cod_stato = cs.cod_stato AND id_dati_fattura = ${headers.idDatiFattura}
+                        </simple>
+                    </setBody>
+
+                    <to uri="jdbc:fatturazioneVecchioDb"/>
+
+                    <setProperty propertyName="statoFattura">
+                        <simple>${body}</simple>
+                    </setProperty>
+
+                    <process ref="createQueryInsertPassiveProcessor"/>
+
+                    <to uri="jdbc:fatturazioneNuovoDb"/>
+                </split>
+
+            </split>
+            <log message="STORICIZZAZIONE VECCHIE FATTURE PASSIVE REST END"/>
+        </route>
+
+    </camelContext>
+
+
+</blueprint>

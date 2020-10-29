@@ -1,0 +1,17 @@
+##########################################
+### Create broker 					   ###
+##########################################
+
+# This files override the normal containers creation.
+
+PATCHED_VERSION=$1
+
+fabric:profile-create --parents mq-base --version $PATCHED_VERSION fatturapa-mq-profile
+
+fabric:container-create-child --jvm-opts "-XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m -Xmx1024m -Xms1024m  -XX:NewRatio=3 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=0.0.0.0" --version $PATCHED_VERSION root fatturapa-broker-container
+
+fabric:mq-create --profile fatturapa-mq-profile --assign-container fatturapa-broker-container --config fatturapa-broker.xml --group fatturapa-broker --kind MasterSlave --version $PATCHED_VERSION fatturapa-mq-profile
+
+
+fabric:profile-create --parents mq-client-base --version $PATCHED_VERSION mq-client-fatturapa-broker
+

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:tns="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:types="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services/types"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  targetNamespace="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services">
+
+
+    <wsdl:types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:import schemaLocation="../xsd/EsitoFatturaFromEnte.xsd" namespace="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services/types" />
+        </xsd:schema>
+    </wsdl:types>
+    
+    <wsdl:message name="EsitoFatturaRequest" >
+        <wsdl:part name="parametersIn" element="types:esitoFatturaMessageRequest"/>
+    </wsdl:message>
+    <wsdl:message name="EsitoFatturaResponse">
+        <wsdl:part name="parametersOut" element="types:esitoFatturaMessageResponse" />
+    </wsdl:message>
+    <wsdl:message name="EsitoFatturaResponseFault">
+        <wsdl:part name="Fault" element="types:FaultDetail" />
+    </wsdl:message>
+
+    <wsdl:portType name="RicezioneEsitoFatturaFromEnte">        
+        <wsdl:operation name="riceviEsitoFattura">
+            <wsdl:input  message="tns:EsitoFatturaRequest"/>
+            <wsdl:output message="tns:EsitoFatturaResponse"/>
+            <wsdl:fault message="tns:EsitoFatturaResponseFault" name="EsitoFatturaResponseFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="EsitoFatturaFromEnteServiceSoapBinding" type="tns:RicezioneEsitoFatturaFromEnte">
+        
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    
+        <wsdl:operation name="riceviEsitoFattura">
+            <soap:operation soapAction="riceviEsitoFattura" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="EsitoFatturaResponseFault">
+                <soap:fault name="EsitoFatturaResponseFault"
+                                namespace="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services" use="literal" />
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="EsitoFatturaFromEnteService">
+        <wsdl:port name="RicezioneEsitoFatturaFromEnte" binding="tns:EsitoFatturaFromEnteServiceSoapBinding">
+            <soap:address location="http://www.regione.marche.it/intermediamarche/fatturaPassiva/notificheEnte"/>
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>services</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+    <artifactId>enti-bridge</artifactId>
+
+    <packaging>pom</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICES :: ENTI BRIDGE</name>
+    
+    
+    <modules>
+        <module>enti-bridge-inbound</module>
+        <module>giunta</module>
+        <module>consiglio</module>
+        <module>pec</module>
+
+        <!-- disabilitato poiché l'ente INRCA è passato a PEC -->
+        <!-- <module>inrca</module>-->
+        <module>ars</module>
+        <module>asur</module>
+        <module>paleo-lib</module>
+        <module>areas-lib</module>
+        <module>aormn</module>
+        <module>asurav1</module>
+        <module>asurav2</module>
+        <module>asurav3</module>
+        <module>asurav4</module>
+        <module>asurav5</module>
+        <module>ormarche</module>
+
+    </modules>
+
+</project>

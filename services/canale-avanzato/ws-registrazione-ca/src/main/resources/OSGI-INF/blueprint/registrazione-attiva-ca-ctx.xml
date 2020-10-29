@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.o\rg/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ws.registrazione.attiva.ca.ctx"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <route id="ws.registrazione.attiva.ca">
+            <from uri="{{enti.bridge.ente.ws.ca.attiva.registrazione.invio.queue}}"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.attiva.ca.RegistrazioneFatturaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE ATTIVA - STARTED **************"/>
+
+            <setHeader headerName="tipoFatturazione">
+                <constant>FA</constant>
+            </setHeader>
+
+            <bean ref="registrazioneCAManager" method="setInfoEnteConfigHeaders"/>
+            <bean ref="registrazioneCAManager" method="verificaBodyNotificaAttiva"/>
+
+            <setHeader headerName="identificativoSdI">
+                <xpath resultType="java.lang.String">//*[local-name()='IdentificativoSdI']/text()</xpath>
+            </setHeader>
+
+            <setHeader headerName="notificaNote">
+                <xpath resultType="java.lang.String">//*[local-name()='Note']/text()</xpath>
+            </setHeader>
+
+            <to uri="direct:callRegistrazioneEndpoint"/>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE ATTIVA - END **************"/>
+
+        </route>
+
+        <route id="ws.registrazione.ca.in.call.endpoint">
+            <from uri="direct:callRegistrazioneEndpoint" />
+
+            <log message="WS Canale Avanzato REGISTRAZIONE ATTIVA - ${headers.tipoMessaggio} START" loggingLevel="INFO"/>
+
+            <process ref="creaRichiestaRegistrazioneAttivaProcessor"/>
+
+            <bean ref="registrazioneCAManager" method="salvaRicevutaComunicazione"/>
+
+            <setHeader headerName="SOAPAction">
+                <constant>RiceviNotifica</constant>
+            </setHeader>
+            <setHeader headerName="operationName">
+                <constant>RiceviNotifica</constant>
+            </setHeader>
+            <setHeader headerName="operationNamespace">
+                <constant>http://www.regione.marche.it/intermediamarche/fatturazione/attiva/registrazione/services</constant>
+            </setHeader>
+
+            <removeHeaders pattern="^((?!(address|wsdlURL|operationNamespace|operationName|SOAPAction|Content-Type|identificativoSdI|tipoMessaggio|idNotifica|Authorization)).)*$"/>
+
+            <otherwise>
+                <toD uri="cxf:bean:RegistrazioneAttivaCAService?address=${headers.address}&amp;defaultOperationName=RiceviNotifica" id="idRegistrazioneAttivaCAService"/>
+            </otherwise>
+
+            <process ref="aggiornaStatoNotificaProcessor"/>
+
+            <log message="WS Canale Avanzato REGISTRAZIONE ATTIVA - ${headers.tipoMessaggio} - IDENTIFICATIVO SDI ${headers.identificativoSdI} END" loggingLevel="INFO"/>
+        </route>
+
+    </camelContext>
+</blueprint>

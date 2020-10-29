@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/blueprint"
+           xsi:schemaLocation="
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+    <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao"/>
+
+    <bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao"/>
+
+    <bean id="notificaDecorrenzaTerminiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaDecorrenzaTerminiDao"/>
+
+    <bean id="statoFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaDao"/>
+
+    <bean id="codificaStatiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiDao"/>
+
+    <bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao"/>
+
+    <bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao"/>
+
+    <bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao"/>
+
+    <bean id="fileFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FileFatturaDao"/>
+
+    <bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter"/>
+
+    <bean id="mailInToEntiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.MailInToEntiAttivaDao"/>
+
+    <bean id="fatturaAttivaRicevutaConsegnaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaRicevutaConsegnaDao"/>
+
+    <bean id="fatturaAttivaNotificaMancataConsegnaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaNotificaMancataConsegnaDao"/>
+
+    <bean id="fatturaAttivaNotificaScartoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaNotificaScartoDao"/>
+
+    <bean id="fatturaAttivaNotificaEsitoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaNotificaEsitoDao"/>
+
+    <bean id="fatturaAttivaNotificaDecorrenzaTerminiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaNotificaDecorrenzaTerminiDao"/>
+
+    <bean id="fatturaAttivaAttestaioneTrasmissioneFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaAttestaioneTrasmissioneFatturaDao"/>
+
+    <bean id="statoAttivaAttestazioneTrasmissioneFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaAttestazioneTrasmissioneFatturaDao"/>
+
+    <bean id="statoAttivaRicevutaConsegnaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaRicevutaConsegnaDao"/>
+
+    <bean id="statoAttivaNotificaMancataConsegnaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaNotificaMancataConsegnaDao"/>
+
+    <bean id="statoAttivaNotificaScartoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaNotificaScartoDao"/>
+
+    <bean id="statoAttivaNotificaEsitoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaNotificaEsitoDao"/>
+
+    <bean id="statoAttivaNotificaDecorrenzaTerminiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoAttivaNotificaDecorrenzaTerminiDao"/>
+
+    <bean id="metadatiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.MetadatiFatturaDao"/>
+
+    <bean id="notificaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromSdiDao"/>
+
+    <bean id="notificaFromEntiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromEntiDao"/>
+
+    <bean id="utentiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.UtentiDao"/>
+    <bean id="tipoCanaleDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TipoCanaleDao"/>
+    <bean id="endpointAttivaCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointAttivaCaDao"/>
+    <bean id="endpointCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointCaDao"/>
+    <bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
+    <bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
+    <bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+
+    <bean id="fatturazionePassivaFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+        <property name="fileFatturaDao" ref="fileFatturaDao"/>
+    </bean>
+
+    <bean id="fatturaAttivaNotificheManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaNotificheManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao"/>
+
+        <property name="fatturaAttivaRicevutaConsegnaDao" ref="fatturaAttivaRicevutaConsegnaDao"/>
+        <property name="fatturaAttivaNotificaMancataConsegnaDao" ref="fatturaAttivaNotificaMancataConsegnaDao"/>
+        <property name="fatturaAttivaNotificaScartoDao" ref="fatturaAttivaNotificaScartoDao"/>
+        <property name="fatturaAttivaNotificaEsitoDao" ref="fatturaAttivaNotificaEsitoDao"/>
+        <property name="fatturaAttivaNotificaDecorrenzaTerminiDao" ref="fatturaAttivaNotificaDecorrenzaTerminiDao"/>
+        <property name="fatturaAttivaAttestaioneTrasmissioneFatturaDao" ref="fatturaAttivaAttestaioneTrasmissioneFatturaDao"/>
+
+        <property name="statoAttivaRicevutaConsegnaDao" ref="statoAttivaRicevutaConsegnaDao"/>
+        <property name="statoAttivaNotificaMancataConsegnaDao" ref="statoAttivaNotificaMancataConsegnaDao"/>
+        <property name="statoAttivaNotificaScartoDao" ref="statoAttivaNotificaScartoDao"/>
+        <property name="statoAttivaAttestazioneTrasmissioneFatturaDao" ref="statoAttivaAttestazioneTrasmissioneFatturaDao"/>
+        <property name="statoAttivaNotificaEsitoDao" ref="statoAttivaNotificaEsitoDao"/>
+        <property name="statoAttivaNotificaDecorrenzaTerminiDao" ref="statoAttivaNotificaDecorrenzaTerminiDao"/>
+    </bean>
+
+    <bean id="fatturaAttivaFromEntiManagerImpl" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter"/>
+        <property name="fatturaAttivaDao" ref="fatturaAttivaDao"/>
+        <property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao"/>
+        <property name="statoFatturaAttivaDao" ref="statoFatturaAttivaDao"/>
+        <property name="enteDao" ref="enteDao"/>
+    </bean>
+
+    <!--bean id="mailInToEntiAttivaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.MailInToEntiAttivaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="mailInToEntiAttivaDao" ref="mailInToEntiAttivaDao"/>
+    </bean-->
+
+    <bean id="metadatiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.MetadatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="metadatiFatturaDao" ref="metadatiFatturaDao"/>
+    </bean>
+
+    <bean id="enteManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.EnteManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="enteDao" ref="enteDao"/>
+        <property name="utentiDao" ref="utentiDao"/>
+        <property name="tipoCanaleDao" ref="tipoCanaleDao"/>
+        <property name="endpointAttivaCaDao" ref="endpointAttivaCaDao"/>
+        <property name="endpointCaDao" ref="endpointCaDao"/>
+        <property name="canaleCaDao" ref="canaleCaDao"/>
+        <property name="chiaveDao" ref="chiaveDao"/>
+        <property name="entePaleoCaDao" ref="entePaleoCaDao"/>
+    </bean>
+
+    <bean id="datiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.DatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+    </bean>
+
+    <bean id="notificaDecorrenzaTerminiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificaDecorrenzaTerminiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="notificaDecorrenzaTerminiDao" ref="notificaDecorrenzaTerminiDao"/>
+    </bean>
+
+    <bean id="notificaFromSdiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromSdiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="notificaFromSdiDao" ref="notificaFromSdiDao"/>
+        <property name="notificaFromEntiDao" ref="notificaFromEntiDao"/>
+    </bean>
+
+    <bean id="notificaFromEntiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromEntiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="notificaFromEntiDao" ref="notificaFromEntiDao"/>
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+    </bean>
+
+
+    <bean id="pecCAManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.PecCAManager">
+        <property name="enteManager" ref="enteManager"/>
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+        <property name="metadatiFatturaManager" ref="metadatiFatturaManager"/>
+    </bean>
+
+    <bean id="pecCAFatturaPassivaCreaSubjectProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.processors.PecCAFatturaPassivaCreaSubjectProcessor">
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+        <property name="notificaDecorrenzaTerminiManager" ref="notificaDecorrenzaTerminiManager"/>
+        <property name="notificaFromSdiManager" ref="notificaFromSdiManager"/>
+        <property name="firstPartSubject" value="${ente.pec.ca.subject.fattura}"/>
+    </bean>
+
+    <bean id="FatturaHeadersMailFilterStrategy" class="org.apache.camel.impl.DefaultHeaderFilterStrategy">
+        <property name="outFilterPattern">
+            <!--  Regex custom filter: sending to cxf endpoint only the SOAPAction header -->
+            <value>^((?!(to|from|subject|content-type)).)*$</value>
+        </property>
+        <!-- The 'relayHeaders' property is 'true' by default -->
+    </bean>
+
+    <bean id="pecCAAttivaManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.PecCAAttivaManager">
+        <property name="fatturaAttivaFromEntiManager" ref="fatturaAttivaFromEntiManagerImpl"/>
+        <!--property name="mailInToEntiAttivaManager" ref="mailInToEntiAttivaManager"/-->
+        <property name="enteManager" ref="enteManager"/>
+        <property name="fatturaAttivaNotificheManager" ref="fatturaAttivaNotificheManager"/>
+        <property name="mailHost" value="${ente.pec.ca.attiva.indirizzo.email.host}"/>
+        <property name="mailTransportProtocol" value="${ente.pec.ca.attiva.indirizzo.email.protocollo}"/>
+        <property name="providerEmarche" value="${ente.pec.ca.attiva.indirizzo.email.provider.regione.marche}"/>
+    </bean>
+
+    <bean id="pecCAAttivaInvioFatturaRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${pec.ca.attiva.invio.retry.attempts}" />
+        <property name="redeliveryDelay" value="${pec.ca.attiva.invio.retry.delay}" />
+    </bean>
+
+    <bean id="pecCANotificaEsitoCommittente" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.PecCANotificaEsitoCommittente">
+        <property name="enteManager" ref="enteManager"/>
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+        <property name="mailHost" value="${ente.pec.ca.attiva.indirizzo.email.host}"/>
+        <property name="mailTransportProtocol" value="${ente.pec.ca.attiva.indirizzo.email.protocollo}"/>
+        <property name="providerEmarche" value="${ente.pec.ca.attiva.indirizzo.email.provider.regione.marche}"/>
+        <property name="notificaFromEntiManager" ref="notificaFromEntiManager"/>
+    </bean>
+
+    <bean id="pecCAInvioFatturaRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${pec.ca.invio.retry.attempts}" />
+        <property name="redeliveryDelay" value="${pec.ca.invio.retry.delay}" />
+    </bean>
+
+    <bean id="pecCAAccettazioneRifiutoRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${pec.ca.invio.retry.attempts}" />
+        <property name="redeliveryDelay" value="${pec.ca.invio.retry.delay}" />
+    </bean>
+
+    <bean id="pecCAInvioNotificaDecorrenzaRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${pec.ca.invio.retry.attempts}" />
+        <property name="redeliveryDelay" value="${pec.ca.invio.retry.delay}" />
+    </bean>
+
+    <bean id="pecCAScansioneCasellaCheckSubject" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.processors.PecCAScansioneCasellaCheckSubjectProcessor"/>
+    <bean id="pecCAAggiornaStatoAccettataConsegnataPassivaProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.processors.PecCAAggiornaStatoAccettataConsegnataPassivaProcessor">
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+    </bean>
+
+    <bean id="pecValidazioneEsitoCommittenteProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.processors.PecValidazioneEsitoCommittenteProcessor" />
+
+
+    <!-- trust store connessione server imap regione marche -->
+    <!--
+    <camel:sslContextParameters id="sslContextParameters" camelContextId="ctx.enti.bridge.pec.ca.fatturazione.attiva">
+        <camel:trustManagers>
+            <camel:keyStore resource="certificati/regma.jks" password="{{pec.ca.truststore.password}}" type="JKS" />
+        </camel:trustManagers>
+    </camel:sslContextParameters>
+    -->
+
+    <bean id="pecCAEsitoOperazioneFatturaAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.PecCAEsitoOperazioneFatturaAggregationStrategy"/>
+    <bean id="pecCAEsitoOperazioneEsitoCommittenteAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.PecCAEsitoOperazioneEsitoCommittenteAggregationStrategy"/>
+    <bean id="pecCAProtocollazioneEsitoCommittenteAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.PecCAProtocollazioneEsitoCommittenteAggregationStrategy"/>
+    <bean id="pecCAPreparazioneInvioStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.PecCAPreparazioneInvioStrategy"/>
+    <bean id="pecEsitoCommittenteValidationAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.PecEsitoCommittenteValidationAggregationStrategy" />
+    <bean id="fatturaAttivaPecValidationAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.aggregationstrategy.FatturaAttivaPecValidationAggregationStrategy" />
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5" />
+    </bean>
+
+    <bean id="fatturaPAValidazioneFallitaException" class="it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAValidazioneFallitaException"/>
+
+</blueprint>

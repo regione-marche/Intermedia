@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="regma.135.reinvia.messaggi.da.dlq"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint">
+
+        <!-- define a producer template -->
+        <template id="producer"/>
+        <!-- define a consumer template -->
+        <consumerTemplate id="consumer"/>
+
+        <dataFormats>
+            <json id="jack" library="Jackson"/>
+        </dataFormats>
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.regma135-PatchReinviaMessaggiDaDlq?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <!-- effettua lo spostamento dei messaggi da dlq a relativa coda operativa, prendendo la lista
+         delle dlq sulle quali operare da una property -->
+        <route id="regma.135.scoda.dlq.property">
+            <from uri="{{regma.135.scoda.dlq.property.endpoint}}"/>
+
+            <log message="REGMA 135 SCODA DLQ DA PROPERTY STARTED"/>
+
+            <setBody>
+                <simple>{{regma.135.lista.dlq.da.reinviare}}</simple>
+            </setBody>
+
+            <!-- aggiungo header http method per effettuare correttamente la chiamata al broker -->
+            <setHeader headerName="CamelHttpMethod">
+                <constant>GET</constant>
+            </setHeader>
+
+            <to uri="{{regma135.scoda.lista.dlq.endpoint}}"/>
+        </route>
+
+        <!-- effettua lo spostamento dei messaggi da dlq a relativa coda operativa, prendendo la lista
+            delle dlq sulle quali operare da un header ("listaDlq")che gli viene passato e che contiene
+            la lista delle dlq, separate da virgola -->
+        <route id="regma.135.scoda.dlq.header">
+            <from uri="{{regma.135.scoda.dlq.header.endpoint}}"/>
+
+            <log message="REGMA 135 SCODA DLQ DA HEADER STARTED"/>
+
+            <setBody>
+                <simple>${header.listaDlqDaReinviare}</simple>
+            </setBody>
+
+            <to uri="{{regma135.scoda.lista.dlq.endpoint}}"/>
+
+        </route>
+
+        <route id="regma135.scoda.lista.dlq">
+            <from uri="{{regma135.scoda.lista.dlq.endpoint}}"/>
+
+            <log message="REGMA 135 SCODA LISTA DLQ STARTED"/>
+
+            <split>
+                <tokenize token=","  includeTokens="false" trim="true"/>
+
+                <setHeader headerName="DLQqueueName">
+                    <simple>${body}</simple>
+                </setHeader>
+
+                <log message="REGMA 135 coda in oggetto: ${body}"/>
+
+                <!-- le code per il quale effettuare il riavvio sono una lista, dunque questa operazione deve essere effettuata
+                una volta per ognuna di queste-->
+
+                <!-- chiamata al broker per trovare il size attuale della coda -->
+                <!-- basic authentication -->
+                <setHeader headerName="Authorization">
+                    <simple>{{regma.135.basic.authorization.macchina.code}}</simple>
+                </setHeader>
+
+                <setHeader headerName="urlBrokerDlqSize">
+                    <simple>{{regma135.broker.url.first.part}}${header.DLQqueueName}{{regma135.broker.url.second.part}}</simple>
+                </setHeader>
+
+                <!-- la url contiene delle virgole che e' il valore di default dell'attributo uriDelimiter. L'ho cambiato con un altro che invece non e' presente -->
+                <routingSlip uriDelimiter="#" id="regma135UrlBrokerDlqSize">
+                    <header>urlBrokerDlqSize</header>
+                </routingSlip>
+
+                <unmarshal ref="jack"/>
+
+                <setHeader headerName="dlqInSize">
+                    <simple>${body[value]}</simple>
+                </setHeader>
+
+                <log message="REGMA 135 coda ${header.DLQqueueName} size ${header.dlqInSize}"/>
+
+                <choice>
+                    <when>
+                        <simple>${header.dlqInSize} == null</simple>
+
+                        <log message="REGMA 135 coda VUOTA, vado avanti alla prossima"/>
+                    </when>
+                    <otherwise>
+
+                        <bean ref="regma135ReinviaMessaggiDaDlq" method="scodaDlq" id="regma135BeanJava"/>
+                    </otherwise>
+                </choice>
+
+            </split>
+
+        </route>
+
+    </camelContext>
+
+</blueprint>

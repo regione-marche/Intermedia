@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="revo.18.flusso.sempl.ciclo.pass"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint">
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.revo18-FlussoSemplificatoCicloPassivo?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <route id="revo18.jetty">
+            <from uri="{{revo.18.flusso.semplificato.ciclo.passivo.jetty.endpoint}}"/>
+
+            <log message="REVO 18 FLUSSO SEMPLIFICATO CICLO PASSIVO JETTY IN"/>
+
+            <to uri="{{revo.18.main.route}}"/>
+        </route>
+
+        <!-- Main Route -->
+        <route id="revo.18.main.route">
+            <from uri="{{revo.18.main.route}}" />
+
+            <log message="REVO 18 - MAIN ROUTE START" loggingLevel="INFO"/>
+
+            <bean ref="utils" method="controllaListaSDI"/>
+
+            <setBody>
+                <header>listaIdentificativiSdI</header>
+            </setBody>
+
+            <log message="REVO 18 listaIdentificativiSdI: [${headers.listaIdentificativiSdI}]"/>
+
+            <split>
+                <tokenize token=","  includeTokens="false" trim="true"/>
+
+                <log message="REVO 18 Identificaitivo SdI: ${body}"/>
+
+                <setHeader headerName="identificativoSdI">
+                    <simple>${body}</simple>
+                </setHeader>
+
+                <to uri="{{revo.18.mex.ciclo.passivo.route}}"/>
+
+            </split>
+
+            <log message="REVO 18 - MAIN ROUTE END"/>
+        </route>
+
+        <route id="revo.18.mex.ciclo.passivo.route">
+            <from uri="{{revo.18.mex.ciclo.passivo.route}}" />
+
+            <log message="REVO 18 - CREAZIONE MEX CICLO PASSIVO START" loggingLevel="INFO"/>
+
+            <!-- Setto flag fatturazione interna sul record della fattura attiva -->
+            <bean ref="flussoSemplificatoProcessor" method="imporstaFlagFatturazioneInterna"/>
+
+            <!-- Carico la fattura dal database (dalla tabella fattura_attiva; l'identificativo SdI e' presente in un header)-->
+            <bean ref="flussoSemplificatoProcessor" method="prelevaFatturaAttiva" />
+
+            <!-- costruire il file dei metadati -->
+            <enrich strategyRef="flussoSemplificatoMetadatiAggregationStrategy">
+                    <simple>{{revo.18.mex.crea.metadati.enricher.route}}</simple>
+            </enrich>
+
+            <to uri="{{revo.18.mex.set.headers.route}}"/>
+
+            <inOnly uri="{{fatturazione.passiva.salva.fatture.in.queue}}" />
+
+            <log message="REVO 18 - CREAZIONE MEX CICLO PASSIVO END"/>
+        </route>
+
+        <route id="revo.18.mex.crea.metadati.enricher" >
+            <from uri="{{revo.18.mex.crea.metadati.enricher.route}}"/>
+
+            <bean ref="flussoSemplificatoProcessor" method="creaNomeFileMetadati"/>
+
+            <log message="REVO 18 - MEX CREA METADATI ENRICHER, Identificativo SdI [${in.header.identificativoSdI}]"/>
+
+            <to uri="velocity:velocity/creaFileMetadatiTemplate.vm"/>
+
+        </route>
+
+        <route id="revo.18.mex.set.headers.route">
+            <from uri="{{revo.18.mex.set.headers.route}}"/>
+
+            <setHeader headerName="codiceUfficio">
+                <simple>${in.header.codiceEnteDestinatarioFlussoSemplificato}</simple>
+            </setHeader>
+
+            <removeHeader headerName="codiceEnteDestinatarioFlussoSemplificato"/>
+
+            <setHeader headerName="nomeFile">
+                <simple>${in.header.nomeFileFatturaAttiva}</simple>
+            </setHeader>
+
+            <setHeader headerName="tipoMessaggio">
+                <constant>FatturaElettronica</constant>
+            </setHeader>
+        </route>
+
+    </camelContext>
+
+</blueprint>

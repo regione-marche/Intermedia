@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>fatturazione-passiva</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa.contracts</groupId>
+        <version>1.1.20-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+    <artifactId>navision-contract</artifactId>
+
+
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: CONTRACTS :: FATTURAZIONE PASSIVA :: NAVISION</name>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- attach sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <!-- add resources to classpath -->
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${project.build.directory}/java-gen</sourceRoot>
+                            <defaultOptions>
+                                <noAddressBinding>true</noAddressBinding>
+                            </defaultOptions>
+
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>
+                                        ${project.build.directory}/classes/it/extrasys/marche/regione/fatturapa/contracts/navision/wsdl/Navision.wsdl
+                                    </wsdl>
+                                    <extraargs>
+                                        <extraarg>-p</extraarg>
+                                        <extraarg>it.extrasys.marche.regione.fatturapa.contracts.navision.beans</extraarg>
+                                    </extraargs>
+                                    <bindingFiles>
+                                        <bindingFile>${basedir}/binding.xml</bindingFile>
+                                    </bindingFiles>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>
+                            it.extrasys.marche.regione.fatturapa.contracts.navision.beans;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.navision.wsdl;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.navision.xsd;version="${project.version}"
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

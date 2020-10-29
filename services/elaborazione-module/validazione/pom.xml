@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>elaborazione-module</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.elaborazione-module</groupId>
+    <artifactId>validazione</artifactId>
+
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICES :: ELABORAZIONE MODULE :: VALIDAZIONE</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-unit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-blueprint</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-camel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jms</artifactId>
+        </dependency>
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-blueprint</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- to generate the MANIFEST-FILE of the bundle -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            org.osgi.service.blueprint,
+                            org.apache.camel.component.jpa,
+                            org.apache.camel.impl,
+                            javax.persistence,
+                            net.sf.saxon.expr.instruct,
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.managers,
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.dao,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <!-- Add other required plugins -->
+        </plugins>
+    </build>
+
+</project>

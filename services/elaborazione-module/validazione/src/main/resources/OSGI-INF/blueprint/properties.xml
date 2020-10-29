@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder update-strategy="none" id="myProperties" persistent-id="it.extrasys.marche.regione.fatturapa.elaborazione.validazione.props">
+
+        <cm:default-properties>
+            
+            <cm:property name="committenteValidazione" value=""/>
+            <cm:property name="committenteValidazioneCF" value=""/>
+
+
+            <cm:property name="enable.trace" value="true"/>
+            
+            <cm:property name="validationServiceInQueue" value="activemq:validationServiceInQueue"/>
+            <cm:property name="validationServiceOutQueue" value="activemq:validationServiceOutQueue"/>
+
+            <cm:property name="committenti.codiciUfficio.CSV" value=""/>
+
+            <!-- ########## ACTIVEMQ ##########-->
+            <cm:property name="esb.activemq.brokerURL" value="discovery:(fabric:fatturapa-broker)" />
+            <cm:property name="esb.activemq.username" value="admin" />
+            <cm:property name="esb.activemq.password" value="admin" />
+            <cm:property name="esb.activemq.concurrent.consumers" value="20" />
+            <cm:property name="esb.activemq.max.connections" value="2" />
+            <cm:property name="esb.activemq.cacheLevelName" value="CACHE_CONSUMER" />
+            <cm:property name="esb.activemq.maximumRedeliveries" value="0" />
+            <!-- ########## END ACTIVEMQ ########## -->
+
+            <cm:property name="isAsurValidationActive" value="true" />
+            <cm:property name="notaCreditoValidate" value="false" />
+
+        </cm:default-properties>
+
+    </cm:property-placeholder>
+
+</blueprint>

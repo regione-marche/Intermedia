@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../html/include/fatturapa_v1.1.xsl"?>
+<p:FatturaElettronica versione="1.1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:p="http://www.fatturapa.gov.it/sdi/fatturapa/v1.1">
+<FatturaElettronicaHeader>    <DatiTrasmissione>
+<IdTrasmittente>
+<IdPaese>IT</IdPaese>
+<IdCodice>04530950486</IdCodice>
+</IdTrasmittente>
+      <ProgressivoInvio>5</ProgressivoInvio>
+      <FormatoTrasmissione>SDI11</FormatoTrasmissione>
+      <CodiceDestinatario>UFKSW3</CodiceDestinatario>
+<ContattiTrasmittente>
+<Telefono>0556812565</Telefono>
+<Email>info@infosvil.it</Email>
+</ContattiTrasmittente>
+    </DatiTrasmissione>
+    <CedentePrestatore>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>01789640503</IdCodice>
+        </IdFiscaleIVA>
+        <Anagrafica>
+          <Denominazione>Extra S.r.l.</Denominazione>
+        </Anagrafica>
+        <RegimeFiscale>RF01</RegimeFiscale>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Salvo D Acquisto, 40/P</Indirizzo>
+        <CAP>56025</CAP>
+        <Comune>Pontedera</Comune>
+        <Provincia>PI</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+      <IscrizioneREA>
+        <Ufficio>PI</Ufficio>
+        <NumeroREA>155186</NumeroREA>
+        <CapitaleSociale>100000.00</CapitaleSociale>
+        <SocioUnico>SM</SocioUnico>
+        <StatoLiquidazione>LN</StatoLiquidazione>
+      </IscrizioneREA>
+    </CedentePrestatore>
+    <CessionarioCommittente>
+      <DatiAnagrafici>
+        <IdFiscaleIVA>
+          <IdPaese>IT</IdPaese>
+          <IdCodice>02175860424</IdCodice>
+        </IdFiscaleIVA>
+        <Anagrafica>
+          <Denominazione>REGIONE MARCHE P.F.</Denominazione>
+        </Anagrafica>
+      </DatiAnagrafici>
+      <Sede>
+        <Indirizzo>Via Tiziano n 44</Indirizzo>
+        <CAP>60125</CAP>
+        <Comune>ANCONA</Comune>
+        <Provincia>AN</Provincia>
+        <Nazione>IT</Nazione>
+      </Sede>
+    </CessionarioCommittente>
+<TerzoIntermediarioOSoggettoEmittente>
+<DatiAnagrafici>
+<IdFiscaleIVA>
+<IdPaese>IT</IdPaese>
+<IdCodice>04530950486</IdCodice>
+</IdFiscaleIVA>
+<CodiceFiscale>04530950486</CodiceFiscale>
+<Anagrafica>
+<Denominazione>InfoSvil Srl</Denominazione>
+</Anagrafica>
+</DatiAnagrafici>
+</TerzoIntermediarioOSoggettoEmittente>
+<SoggettoEmittente>TZ</SoggettoEmittente>
+  </FatturaElettronicaHeader>
+<FatturaElettronicaBody>    <DatiGenerali>
+      <DatiGeneraliDocumento>
+        <TipoDocumento>TD01</TipoDocumento>
+        <Divisa>EUR</Divisa>
+        <Data>2015-02-28</Data>
+        <Numero>33</Numero>
+        <ImportoTotaleDocumento>27755.00</ImportoTotaleDocumento>
+      </DatiGeneraliDocumento>
+    </DatiGenerali>
+    <DatiBeniServizi>
+      <DettaglioLinee>
+        <NumeroLinea>10</NumeroLinea>
+        <Descrizione>SERVIZI MIDDLEWARE T M - CODICE COMMESSA C14060.00.REGMA  Servizi middleware T M 65gg X 350 euro CIG 57699644EB  Acquisto di servizi per costituzione del Centro di OCmpetenza Open Source della Regione Marche e sperimentazione fatturazione elettronica </Descrizione>
+        <Quantita>1.00</Quantita>
+        <UnitaMisura>d  </UnitaMisura>
+        <PrezzoUnitario>22750.00</PrezzoUnitario>
+        <PrezzoTotale>22750.00</PrezzoTotale>
+        <AliquotaIVA>22.00</AliquotaIVA>
+      </DettaglioLinee>
+      <DatiRiepilogo>
+        <AliquotaIVA>22.00</AliquotaIVA>
+        <ImponibileImporto>22750.00</ImponibileImporto>
+        <Imposta>5005.00</Imposta>
+        <EsigibilitaIVA>S</EsigibilitaIVA>
+      </DatiRiepilogo>
+    </DatiBeniServizi>
+    <DatiPagamento>
+      <CondizioniPagamento>TP02</CondizioniPagamento>
+      <DettaglioPagamento>
+        <ModalitaPagamento>MP05</ModalitaPagamento>
+        <DataScadenzaPagamento>2015-04-30</DataScadenzaPagamento>
+        <ImportoPagamento>22750.00</ImportoPagamento>
+        <IstitutoFinanziario>Cassa di Risparmio Lucca Pisa Livorno</IstitutoFinanziario>
+        <IBAN>IT08J0503414011000000601143</IBAN>
+      </DettaglioPagamento>
+    </DatiPagamento>
+  </FatturaElettronicaBody>
+<ds:Signature Id="xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:SignedInfo>
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+<ds:Reference URI="#xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-keyinfo">
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>c7GevrDUTupz4Ss5npNz7JSF/bR7SAUKAQlFf7a5r6w=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference Id="xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-ref0" URI="">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2002/06/xmldsig-filter2"><dsig-xpath:XPath Filter="subtract" xmlns:dsig-xpath="http://www.w3.org/2002/06/xmldsig-filter2">/descendant::ds:Signature</dsig-xpath:XPath></ds:Transform>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>XxvWbO9xUHvBhYmMmkvVePeIIabTHukoF0itk+g5JKc=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" URI="#xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-signedprops">
+<ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+<ds:DigestValue>jY4ATA7B1aYx/QuvkyEHE55iI25/keWqkM1wyMcZVCA=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue Id="xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-sigvalue">
+MRgx68YJrrhCaqnseQxYPoAD48Ul9/lm2wLW01aN9rNp6Lnvb3NjJJsCDF9IdGKw0yyYj1E3Z9vj
+afy8zpqzEjAN4kN/qYr4MGcNdgjo99SVk7O8dqK9Ve2SODz+OnbbC3JjOp9BHinEqxVrqDLXmw4j
+OyVoElQ6o2YPCTqkL2cbFWtjBsbJ1/D2+tdLg78LttAY3/DZOGNqNILvg6HbNRyCyZ2ckMsPH0Zc
+cIc4a1PxqpTKJH1juvWxO+6CGNRpB/Pwvtni9bgXi+/JItkAVw/DspMk8Ntbh2BlAF4CrsMOPlD+
+DDKgiQBK4950gs680bESad17WQIBUQgqw8tWqw==
+</ds:SignatureValue>
+<ds:KeyInfo Id="xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-keyinfo">
+<ds:X509Data>
+<ds:X509Certificate>
+MIIGrjCCBZagAwIBAgIIFyJ5EXnh9EIwDQYJKoZIhvcNAQELBQAwfTELMAkGA1UEBhMCSVQxJDAi
+BgNVBAoMG05hbWlyaWFsIFMucC5BLi8wMjA0NjU3MDQyNjEgMB4GA1UECwwXQ2VydGlmaWNhdGlv
+biBBdXRob3JpdHkxJjAkBgNVBAMMHU5hbWlyaWFsIENBIEZpcm1hIFF1YWxpZmljYXRhMB4XDTE1
+MDIxNzE2NTgwMFoXDTE4MDIxNjIzMDAwMFowgeAxCzAJBgNVBAYTAklUMSQwIgYDVQQKDBtJTkZP
+U1ZJTCBTLlIuTC4vMDQ1MzA5NTA0ODYxLDAqBgNVBAwMIzIuNS40LjMgQW1taW5pc3RyYXRvcmUg
+dW5pY28gZGkgU1JMMRQwEgYDVQQEDAtNQVJDQU5URUxMSTEOMAwGA1UEKgwFTUFSQ08xHDAaBgNV
+BAUTE0lUOk1SQ01SQzcxRTI2RzcxM0gxGjAYBgNVBAMMEU1BUkNBTlRFTExJIE1BUkNPMR0wGwYD
+VQQuExRBVU1NMjAxNTAyMTc4OTE5ODU2ODCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+AKnTv9/N/qXkzTTLNL+kL2sLgwxYw1sdLdVew3Oz3Gewf7Uv0i8/F4X/nPEpPE8MtQiIrZ2XIhYC
++F1yZB1m/yU53A32xG7lxgXniRKbh68LmvOHlEls4M8oHmnST2FFIXGzn9bNq3rH7fQr6W8WqIot
+a6fvfXGrm2algDCecrdxUS4SFZgx8b0AhEHUqBE3s+CJ6jVka04ZKK0Dy/yNKgT1+rYTWJusTBLd
++3X1dUMhqV+MFkzSpxkTNSUM4+DAH1amhL5PAjnoE22jZmszPbZUOCN661wBTT+vT7sI4tJ6Uc22
+0Y7b1M1XU8MLVGnHJsND1u62CAiTj0uqHPNeOPcCAwEAAaOCAswwggLIMEUGCCsGAQUFBwEBBDkw
+NzA1BggrBgEFBQcwAYYpaHR0cDovL29jc3AuZmlybWFjZXJ0YS5pdC9vY3NwL2NlcnRzdGF0dXMw
+HQYDVR0OBBYEFIfygLt15HtNzYt76PYj70nAvfUbMB8GA1UdIwQYMBaAFGP97eaMYkdIz+oJQXN2
+EeJkYnsQMDsGCCsGAQUFBwEDBC8wLTAKBggrBgEFBQcLATAIBgYEAI5GAQEwCwYGBACORgEDAgEU
+MAgGBgQAjkYBBDCCAaoGA1UdIASCAaEwggGdMIIBmQYLKwYBBAGCmmsBAQMwggGIMDAGCCsGAQUF
+BwIBFiRodHRwOi8vd3d3LmZpcm1hY2VydGEuaXQvbWFudWFsaS1NTy8wggFSBggrBgEFBQcCAjCC
+AUQeggFAAEkAbAAgAHAAcgBlAHMAZQBuAHQAZQAgAGMAZQByAHQAaQBmAGkAYwBhAHQAbwAgAOgA
+IAB2AGEAbABpAGQAbwAgAHMAbwBsAG8AIABwAGUAcgAgAGYAaQByAG0AZQAgAGEAcABwAG8AcwB0
+AGUAIABjAG8AbgAgAHAAcgBvAGMAZQBkAHUAcgBhACAAYQB1AHQAbwBtAGEAdABpAGMAYQAuAC8A
+VABoAGkAcwAgAGMAZQByAHQAaQBmAGkAYwBhAHQAZQAgAG0AYQB5ACAAbwBuAGwAeQAgAGIAZQAg
+AHUAcwBlAGQAIABmAG8AcgAgAHUAbgBhAHQAdABlAG4AZABlAGQALwBhAHUAdABvAG0AYQB0AGUA
+ZAAgAGQAaQBnAGkAdABhAGwAIABzAGkAZwBuAGEAdAB1AHIAZQBzAC4wRAYDVR0fBD0wOzA5oDeg
+NYYzaHR0cDovL2NybC5maXJtYWNlcnRhLml0L0Zpcm1hQ2VydGFRdWFsaWZpY2F0YTEuY3JsMA4G
+A1UdDwEB/wQEAwIGQDANBgkqhkiG9w0BAQsFAAOCAQEAeo8ru3j6oyG4aYTQsYxEtFIdeS3NNCqF
+OAuuZrCBtWrn1nVF31xEwlg6s07RNel9Z4KfkOBT6Sqs+iZ7DnOhwbQWyBIuugdv7IplhpSiqvRs
+UW2s6RqHtEEF3kMHR6+af+faAUtkWlSgnPFmceSbh9WBTmYhHG6cKrDpq6LmhgXXyIWCxENNjfEq
+1A7NtYfwaB0uvYwITOyiWnzTb0s+mqIpRufq4WxYtJpNkhL8QEvmUx3hOtiWsA72ELlv9Gd/mMlM
+yzJk9XlmmlK2TGTky3iqUjmim3fD7CyW89LK10qNI8NffUos8xhxSlsXOvKnpiXpqEZd1E6yjNXb
+Fi9w5w==
+</ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+<ds:Object>
+  <xades:QualifyingProperties Target="#xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd"
+                              xmlns:xades="http://uri.etsi.org/01903/v1.3.2#"><xades:SignedProperties Id="xmldsig-e1ec23fa-c224-4de6-a00b-2f4b4d6750dd-signedprops"><xades:SignedSignatureProperties><xades:SigningTime>2015-03-19T09:43:22.944+01:00</xades:SigningTime><xades:SigningCertificate><xades:Cert><xades:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>SNwg3OV9m5wMosa7u3ryGGNXg2N43S4I9ZMOedlAe/c=</ds:DigestValue></xades:CertDigest><xades:IssuerSerial><ds:X509IssuerName>CN=Namirial CA Firma Qualificata,OU=Certification Authority,O=Namirial S.p.A./02046570426,C=IT</ds:X509IssuerName><ds:X509SerialNumber>1667027928046761026</ds:X509SerialNumber></xades:IssuerSerial></xades:Cert><xades:Cert><xades:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>wC+V94r4CySaNIHKQZJK5g12Y4Z8XyL/hDeg6Mw0QTc=</ds:DigestValue></xades:CertDigest><xades:IssuerSerial><ds:X509IssuerName>CN=Namirial CA Firma Qualificata,OU=Certification Authority,O=Namirial S.p.A./02046570426,C=IT</ds:X509IssuerName><ds:X509SerialNumber>4708725866506655769</ds:X509SerialNumber></xades:IssuerSerial></xades:Cert></xades:SigningCertificate></xades:SignedSignatureProperties></xades:SignedProperties></xades:QualifyingProperties></ds:Object>
+</ds:Signature></p:FatturaElettronica>

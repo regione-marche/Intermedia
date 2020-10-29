@@ -1,0 +1,2788 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "IntermediaMarcheEnti_Service",
+        "version": "2.1.0",
+        "description": "IntermediaMarcheEnti API Documentation",
+        "contact": {
+
+        }
+    },
+    "paths": {
+        "/entities": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "denominazione_ente",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "id_fiscale_committente",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "codice_ufficio",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "token",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesResponseList"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities (GET)",
+                "description": "Servizio utilizzato per ricercare un ente"
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entitiesRequestPut"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities (PUT)",
+                "description": "Servizio utilizzato per aggiornare la configurazione di un ente"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entitiesRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities (POST)",
+                "description": "Servizio utilizzato per creare un nuovo ente"
+            }
+        },
+        "/entities/{id_ente}/acInvoices": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "description": "",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ACinvoicesResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle - Ricezione Fatture (GET)",
+                "description": "Servizio utilizzato per recuperare la configurazione dell’integrazione del sistema di ricezione delle fatture"
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ACinvoicesRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle Ricezione Fatture (PUT)",
+                "description": "Servizio utilizzato per aggiornare la configurazione dell’integrazione del sistema di ricezione delle fatture"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ACinvoicesRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle - Ricezione Fatture (POST)",
+                "description": "Servizio utilizzato per configurare l’integrazione del sistema di ricezione delle fatture"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/acNotifications": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ACnotificationsResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle - Inoltro Notifiche (GET)",
+                "description": "Servizio utilizzato per recuperare la configurazione dell’integrazione del sistema di inoltro delle notifiche"
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ACnotificationsRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle - Inoltro Notifiche (PUT)",
+                "description": "Servizio utilizzato per aggiornare la configurazione dell’integrazione del sistema di inoltro delle notifiche"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/ACnotificationsRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle - Inoltro Notifiche (POST)",
+                "description": "Servizio utilizzato per configurare l’integrazione del sistema di inoltro delle notifiche"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/acProduction": {
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle – Passaggio Produzione (PUT)",
+                "description": "Servizio utilizzato per gestire il passaggio dall’ambiente di staging all’ambiente di produzione del Ciclo Attivo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/acTestHistory": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/TestACHistoryDto"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle – Storico Test (GET)",
+                "description": "Servizio utilizzato per recuperare lo storico dei test effettuati nel ciclo attivo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/TipoCanaleCa": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/TipoCanaleCaList"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "",
+                "description": ""
+            },
+            "parameters": [
+                {
+                    "name": "token",
+                    "in": "query",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/{id_ente}/configPassiveCycle": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ConfigPassiveCycleDTO"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "",
+                "description": ""
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/{id_ente}/configActiveCycle": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ConfigActiveCycleDTO"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "",
+                "description": ""
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/{id_ente}/acTestRun": {
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Active Cycle – Test Run (POST)",
+                "description": "Servizio utilizzato per effettuare test del ciclo attivo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "nome_file_fattura",
+                    "in": "query",
+                    "type": "string"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/{id_ente}/pcEc": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PCesitoCommittenteResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Esito Committente (GET)",
+                "description": "Servizio utilizzato per recuperare la configurazione dell’integrazione del sistema di ricezione esito committente"
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PCesitoCommittenteRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "description": "Servizio utilizzato per aggiornare la configurazione dell’integrazione del sistema di ricezione esito committente"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PCesitoCommittenteRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Esito Committente (POST)",
+                "description": "Servizio utilizzato per configurare l’integrazione del sistema di ricezione esito committente"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/pcProduction": {
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle – Passaggio Produzione (PUT)",
+                "description": "Servizio utilizzato per gestire il passaggio dall’ambiente di staging all’ambiente di produzione"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/pcProtocol": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PCprotocolResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Inetrnal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Protocollo (GET)",
+                "description": "Servizio utilizzato per recuperare la configurazione dell’integrazione del sistema di protocollo "
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PCprotocolRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Inetrnal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Protocollo (PUT)",
+                "description": "Servizio utilizzato per aggiornare la configurazione dell’integrazione con il sistema di protocollo"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "description": "Campi configurazione protocollo",
+                        "schema": {
+                            "$ref": "#/definitions/PCprotocolRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Protocollo (POST)",
+                "description": "Servizio utilizzato per configurare l’integrazione con il sistema di protocollo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "description": "identificativo dell'ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/{id_ente}/pcRegistration": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/PCregistrationResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Registrazione (GET)",
+                "description": "Servizio utilizzato per recuperare la configurazione dell’integrazione del sistema di registrazione"
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PCregistrationRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Registrazione (PUT)",
+                "description": "Servizio utilizzato per aggiornare la configurazione dell’integrazione del sistema di registrazione"
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/PCregistrationRequest"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle - Registrazione (POST)",
+                "description": "Servizio utilizzato per configurare l’integrazione del sistema di registrazione"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
+        "/entities/campiOpzionali": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/CampiOpzionaliDto"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Get All Campi Opzionali",
+                "description": ""
+            },
+            "parameters": [
+                {
+                    "name": "token",
+                    "in": "query",
+                    "type": "string"
+                }
+            ]
+        },"/entities/{id_ente}/campiOpzionali": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/CampiOpzionaliDto"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "summary": "Recupera Campi Opzionali associati all'ente",
+                "description": ""
+            },
+            "put": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CampiOpzionaliDto"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "summary": "Associa Campi Opzionali all'ente",
+                "description": ""
+            },
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "201": {
+                        "description": "CREATED",
+                        "schema": {
+                            "$ref": "#/definitions/EntitiesIdResponse"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "id_ente",
+                        "in": "path",
+                        "type": "integer",
+                        "required": true
+                    },
+                    {
+                        "name": "body",
+                        "schema": {
+                            "$ref": "#/definitions/CampiOpzionaliDto"
+                        },
+                        "in": "body",
+                        "required": true
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "summary": "Associa Campi Opzionali all'ente",
+                "description": ""
+            }
+        },
+        "/entities/{id_ente}/pcTestHistory": {
+            "get": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/TestPCHistoryDto"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle – Storico Test (GET)",
+                "description": "Servizio utilizzato per recuperare lo storico dei test effettuati nel ciclo passivo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "type": "string"
+                }
+            ]
+        },
+        "/entities/{id_ente}/pcTestRun": {
+            "post": {
+                "tags": [
+                    "intermediaMarcheEnti"
+                ],
+                "consumes": [ "application/json" ],
+                "produces": [ "application/json" ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "summary": "Servizio Entities Passive Cycle – Test Run (POST):",
+                "description": "Servizio utilizzato per effettuare test del ciclo passivo"
+            },
+            "parameters": [
+                {
+                    "name": "id_ente",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                },
+                {
+                    "name": "token",
+                    "in": "query",
+                    "type": "string"
+                }
+            ]
+        }
+    },
+    "definitions": {
+        "entitiesRequest": {
+            "description": "Anagrafica Ente: Request configurazione dell'ente",
+            "required": [
+                "nome",
+                "nome_ufficio_fatturazione",
+                "id_fiscale_committente",
+                "codice_ufficio",
+                "email_supporto",
+                "tipo_canale",
+                "ciclo_attivo",
+                "ciclo_passivo",
+                "campi_opzionali",
+                "username_utente",
+                "ambiente_cicloPassivo",
+                "ambiente_cicloAttivo",
+                "invio_unico"
+            ],
+            "type": "object",
+            "properties": {
+                "nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_ufficio_fatturazione": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_fiscale_committente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_ufficio": {
+                    "description": "",
+                    "type": "string"
+                },
+                "email_supporto": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_canale": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ciclo_attivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ciclo_passivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "campi_opzionali": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "invio_unico": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "entitiesResponse": {
+            "description": "Anagrafica Ente: Response configurazione dell'ente",
+            "required": [
+                "nome",
+                "nome_ufficio_fatturazione",
+                "id_fiscale_committente",
+                "codice_ufficio",
+                "email_supporto",
+                "tipo_canale",
+                "ciclo_attivo",
+                "ciclo_passivo",
+                "campi_opzionali",
+                "username_utente",
+                "ambiente_cicloPassivo",
+                "ambiente_cicloAttivo",
+                "id_ente"
+            ],
+            "type": "object",
+            "properties": {
+                "nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_ufficio_fatturazione": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_fiscale_committente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_ufficio": {
+                    "description": "",
+                    "type": "string"
+                },
+                "email_supporto": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_canale": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ciclo_attivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ciclo_passivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "campi_opzionali": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_ente": {
+                    "description": "",
+                    "type": "integer"
+                }
+            }
+        },
+        "entitiesRequestPut": {
+            "description": "Anagrafica Ente: Response configurazione dell'ente",
+            "required": [
+                "nome",
+                "nome_ufficio_fatturazione",
+                "id_fiscale_committente",
+                "codice_ufficio",
+                "email_supporto",
+                "tipo_canale",
+                "ciclo_attivo",
+                "ciclo_passivo",
+                "campi_opzionali",
+                "username_utente",
+                "ambiente_cicloPassivo",
+                "ambiente_cicloAttivo",
+                "id_ente"
+            ],
+            "type": "object",
+            "properties": {
+                "nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_ufficio_fatturazione": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_fiscale_committente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_ufficio": {
+                    "description": "",
+                    "type": "string"
+                },
+                "email_supporto": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_canale": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ciclo_attivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ciclo_passivo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "campi_opzionali": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_ente": {
+                    "description": "",
+                    "type": "integer"
+                }
+            }
+        },
+        "EntitiesIdResponse": {
+            "description": "Anagrafica Ente: Response recupero Identificativo dell'ente",
+            "required": [
+                "id_ente"
+            ],
+            "type": "object",
+            "properties": {
+                "id_ente": {
+                    "description": "",
+                    "type": "integer"
+                }
+            }
+        },
+        "productionRequest": {
+            "description": "Passaggio in Produzione: Request",
+            "required": [
+                "copia_dati",
+                "id_utente"
+            ],
+            "type": "object",
+            "properties": {
+                "copia_dati": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "id_utente": {
+                    "description": "",
+                    "type": "integer"
+                }
+            }
+        },
+        "InvoiceFieldsDetail": {
+            "description": "Fattura PA: Campi file fattura",
+            "required": [
+                "id_campo",
+                "nome_tag_xml"
+            ],
+            "type": "object",
+            "properties": {
+                "id_campo": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "nome_tag_xml": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "PCprotocolResponse": {
+            "description": "Ciclo Passivo: Response configurazione dell'integrazione Sistema di Protocollo",
+            "required": [
+                "tipo_canale_ca",
+                "invio_unico",
+                "ambiente_cicloPassivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_ws": {
+                    "description": "",
+                    "type": "string"
+                },
+                "invio_unico": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_cognome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_uo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_ruolo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_cognome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_uo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_ruolo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_registro": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_amm": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "PCprotocolRequest": {
+            "description": "Ciclo Passivo: Response configurazione dell'integrazione Sistema di Protocollo",
+            "required": [
+                "tipo_canale_ca",
+                "invio_unico",
+                "ambiente_cicloPassivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_ws": {
+                    "description": "",
+                    "type": "string"
+                },
+                "invio_unico": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_cognome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_uo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "protocollista_ruolo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_nome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_cognome": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_uo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "responsabile_procedimento_ruolo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_registro": {
+                    "description": "",
+                    "type": "string"
+                },
+                "codice_amm": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "PCregistrationRequest": {
+            "description": "Ciclo Passivo: Request configurazione dell'integrazione Sistema di Registrazione",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloPassivo",
+                "endpoint",
+                "username_utente",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "PCregistrationResponse": {
+            "description": "Ciclo Passivo: Response configurazione dell'integrazione Sistema di Registrazione",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloPassivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "PCesitoCommittenteRequest": {
+            "description": "Ciclo Passivo: Request configurazione dell'integrazione Sistema di Gestione Notifiche Esito Committente",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloPassivo",
+                "endpoint",
+                "username",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "PCesitoCommittenteResponse": {
+            "description": "Ciclo Passivo: Response configurazione dell'integrazione Sistema di Gestione Notifiche Esito Committente",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloPassivo",
+                "endpoint"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ambiente_cicloPassivo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                }
+            }
+        },
+        "ACinvoicesResponse": {
+            "description": "Ciclo Attivo: Response configurazione dell'integrazione Sistema di Ricezione Fatture",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloAttivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "ACnotificationsRequest": {
+            "description": "Ciclo Attivo: Request configurazione dell'integrazione Sistema di Inoltro delle Notifiche",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloAttivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "ACnotificationsResponse": {
+            "description": "Ciclo Attivo: Response configurazione dell'integrazione Sistema di Inoltro Notifiche",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloAttivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "ACinvoicesRequest": {
+            "description": "Ciclo Attivo: Request configurazione dell'integrazione Sistema di Ricezione Fatture",
+            "required": [
+                "tipo_canale_ca",
+                "ambiente_cicloAttivo",
+                "endpoint",
+                "certificato"
+            ],
+            "type": "object",
+            "properties": {
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "endpoint": {
+                    "description": "",
+                    "type": "string"
+                },
+                "porta": {
+                    "description": "",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username_utente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "certificato": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ambiente_cicloAttivo": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "EntitiesResponseList": {
+            "description": "Lista Enti GET /entities",
+            "required": [
+                "entities_response_list"
+            ],
+            "type": "object",
+            "properties": {
+                "entities_response_list": {
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entitiesResponse"
+                    }
+                }
+            }
+        },
+        "TestPCHistoryDto": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "codice_ufficio": {
+                    "description": "",
+                    "type": "string"
+                },
+                "lista_test": {
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PCTestDto"
+                    }
+                }
+            }
+        },
+        "TestACHistoryDto": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "codice_ufficio": {
+                    "description": "",
+                    "type": "string"
+                },
+                "lista_test": {
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ACTestDto"
+                    }
+                }
+            }
+        },
+        "PCTestDto": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "data_test": {
+                    "format": "date",
+                    "description": "",
+                    "type": "string"
+                },
+                "identificativo_sdi": {
+                    "description": "",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_file": {
+                    "description": "",
+                    "type": "string"
+                },
+                "invio_unico": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "protocollo": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "registrazione": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "esito_committente": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "data_esito_committente": {
+                    "format": "date",
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_file_esito_committente": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "ACTestDto": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "data_test": {
+                    "format": "date",
+                    "description": "",
+                    "type": "string"
+                },
+                "identificativo_sdi": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_file": {
+                    "description": "",
+                    "type": "string"
+                },
+                "ricevuta_comunicazione": {
+                    "description": "",
+                    "type": "string"
+                },
+                "fattura_attiva": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "ricevuta_consegna": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "nome_file_rc": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "testInCorsoDetail": {
+            "description": "Dettaglio dei test in corso del ciclo attivo/ciclo passivo",
+            "type": "object",
+            "properties": {
+                "tipo_test": {
+                    "description": "",
+                    "type": "string"
+                },
+                "identificativo_sdi": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "testACHistoryDetail": {
+            "description": "Test Ciclo Attivo: Dettaglio dello storico dei test",
+            "required": [
+                "id_test_ciclo_attivo",
+                "fase",
+                "tipo_canale_ca",
+                "nome_file",
+                "data_fine_test",
+                "tipo_test",
+                "stato_test"
+            ],
+            "type": "object",
+            "properties": {
+                "fase": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_canale_ca": {
+                    "description": "",
+                    "type": "string"
+                },
+                "nome_file": {
+                    "description": "",
+                    "type": "string"
+                },
+                "data_fine_test": {
+                    "format": "date-time",
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_test": {
+                    "description": "",
+                    "type": "string"
+                },
+                "stato_test": {
+                    "description": "",
+                    "type": "string"
+                },
+                "identificativo_sdi": {
+                    "description": "",
+                    "type": "string"
+                },
+                "id_test_ciclo_attivo": {
+                    "description": "",
+                    "type": "integer"
+                }
+            }
+        },
+        "ConfigPassiveCycleDTO": {
+            "description": "",
+            "required": [
+                "invio_unico"
+            ],
+            "type": "object",
+            "properties": {
+                "invio_unico": {
+                    "description": "",
+                    "type": "boolean"
+                },
+                "tipo_esito_committente": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_protocollo": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_registrazione": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "ConfigActiveCycleDTO": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "tipo_fattura_attiva": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tipo_notifica_attiva": {
+                    "description": "",
+                    "type": "string"
+                }
+            }
+        },
+        "CampiOpzionaliDto": {
+            "description": "",
+            "type": "object",
+            "properties": {
+                "campi": {
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "TipoCanaleCaList": {
+            "description": "Lista dei tipi di canale avanzato ",
+            "type": "object",
+            "properties": {
+                "tipoCanaleCaList": {
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "intermediaMarcheEnti",
+            "description": "Progetto Intermedia Marche"
+        }
+    ]
+}

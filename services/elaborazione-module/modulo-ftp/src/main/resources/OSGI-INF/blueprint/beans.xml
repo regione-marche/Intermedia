@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <!-- manager passiva -->
+    <bean id="fileFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FileFatturaDao"/>
+
+    <bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao"/>
+
+    <bean id="statoFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaDao"/>
+
+    <bean id="codificaStatiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiDao"/>
+
+    <!-- manager metadati -->
+    <bean id="metadatiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.MetadatiFatturaDao"/>
+
+    <!-- manager attiva -->
+    <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao" />
+
+    <bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao" />
+
+    <bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao" />
+
+    <bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao" />
+
+    <bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+
+    <bean id="fatturazionePassivaFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="fileFatturaDao" ref="fileFatturaDao"/>
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+    </bean>
+
+    <bean id="metadatiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.MetadatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="metadatiFatturaDao" ref="metadatiFatturaDao"/>
+    </bean>
+
+    <bean id="fatturaAttivaManagerImpl" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="fatturaAttivaDao" ref="fatturaAttivaDao" />
+        <property name="statoFatturaAttivaDao" ref="statoFatturaAttivaDao" />
+        <property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao" />
+        <property name="enteDao" ref="enteDao" />
+        <property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+    </bean>
+
+    <bean id="prelevaFatturaPassivaDaDatabase" class="it.extrasys.marche.regione.fatturapa.elaborazione.module.moduloftp.PrelevaFatturaPassivaDaDatabase">
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+        <property name="metadatiFatturaManager" ref="metadatiFatturaManager"/>
+    </bean>
+
+    <bean id="prelevaFatturaAttivaDaDatabaseProcessor" class="it.extrasys.marche.regione.fatturapa.elaborazione.module.moduloftp.PrelevaFatturaAttivaDaDatabaseProcessor">
+        <property name="fatturaAttivaManagerImpl" ref="fatturaAttivaManagerImpl"/>
+    </bean>
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5" />
+    </bean>
+</blueprint>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ctx.elaborazione.module.modulo.ftp">
+
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <!-- scrivo il messaggio d'errore in una coda apposita che serve solo come contenitore di questi errori -->
+            <setHeader headerName="tipoErroreFtp">
+                <constant>Errore Generico</constant>
+            </setHeader>
+            <inOnly uri="{{elaborazione.module.modulo.ftp.download.fattura.coda.default.errori}}"/>
+
+        </onException>
+
+        <!-- in questo caso semplicemente la fattura non è stata trovata, quindi gestisco l'eccezione senza scrivere un log d'errore, ma solo
+         di warning -->
+        <onException>
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAException</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="MODULO FTP DOWNLOAD FATTURA: FATTURA NON TROVATA PER IDENTIFICATIVO SDI [${header.identificativoSdI}]"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=WARN&amp;showAll=true&amp;multiline=true"/>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <!-- scrivo il messaggio d'errore in una coda apposita che serve solo come contenitore di questi errori -->
+            <setHeader headerName="tipoErroreFtp">
+                <constant>Fattura non trovata sul database</constant>
+            </setHeader>
+
+            <inOnly uri="{{elaborazione.module.modulo.ftp.download.fattura.coda.default.errori}}"/>
+        </onException>
+
+        <route id="modulo-ftp-download-fattura-web">
+            <from uri="{{elaborazione.module.modulo.ftp.download.fattura.endpoint.esposto}}"/>
+
+            <!-- l'header "identificativoSdI" deve essere definito da chi chiama questa rotta -->
+            <log message="MODULO FTP DOWNLOAD FATTURA STARTED"/>
+
+            <choice>
+                <when>
+                    <simple>${header.identificativoSdI} != null</simple>
+
+                    <choice>
+                        <when>
+                            <simple>${header.tipoFattura} != null</simple>
+
+
+                            <log message="MODULO FTP DOWNLOAD FATTURA identificativoSdI : [${header.identificativoSdI}]"/>
+                            <inOnly uri="seda:downloadFtpRoute"/>
+
+                            <setBody>
+                                <constant>fattura inviata a download ftp</constant>
+                            </setBody>
+
+                        </when>
+                        <otherwise>
+                            <log message="MODULO FTP DOWNLOAD FATTURA tipoFattura NON specificato"/>
+                            <setBody>
+                                <constant>ERRORE l'header 'fipoFattura' deve essere specificato</constant>
+                            </setBody>
+                        </otherwise>
+                    </choice>
+                </when>
+                <otherwise>
+                    <log message="MODULO FTP DOWNLOAD FATTURA identificativoSdI NON specificato"/>
+                    <setBody>
+                        <constant>ERRORE l'header 'identificativoSdI' deve essere specificato</constant>
+                    </setBody>
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <route id="modulo-ftp-download-fattura-core">
+            <from uri="seda:downloadFtpRoute"/>
+            <choice>
+                <when>
+                    <simple>${header.tipoFattura} == 'passiva'</simple>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA --- PASSIVA ---, identificativo SdI: [${header.identificativoSdI}], prelevo fattura"/>
+
+                    <bean ref="prelevaFatturaPassivaDaDatabase" method="prelevaFatturaPassiva"/>
+
+                    <to uri="direct:scritturaSuFtp"/>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA --- PASSIVA ---, identificativo SdI: [${header.identificativoSdI}] fattura scritta su ftp, prelevo metadati"/>
+
+                    <bean ref="prelevaFatturaPassivaDaDatabase" method="prelevaMetaDati"/>
+
+                    <to uri="direct:scritturaSuFtp"/>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA --- PASSIVA ---, identificativo SdI: [${header.identificativoSdI}] metadati scritti su ftp, END"/>
+                </when>
+                <when>
+                    <simple>${header.tipoFattura} == 'attiva'</simple>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA --- ATTIVA ---, identificativo SdI: [${header.identificativoSdI}] prelevo fattura"/>
+
+                    <process ref="prelevaFatturaAttivaDaDatabaseProcessor"/>
+
+                    <to uri="direct:scritturaSuFtp"/>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA --- ATTIVA ---, identificativo SdI: [${header.identificativoSdI}] fattura scritta su ftp, END"/>
+                </when>
+                <otherwise>
+
+                    <log message="MODULO FTP DOWNLOAD FATTURA NON riconosciuto header tipoFattura (deve valere una tra attiva o passiva)"/>
+
+                    <!-- scrivo il messaggio d'errore in una coda apposita che serve solo come contenitore di questi errori -->
+                    <setHeader headerName="tipoErroreFtp">
+                        <constant>Tipo fattura (attiva o passiva) non specificato</constant>
+                    </setHeader>
+                    <inOnly uri="{{elaborazione.module.modulo.ftp.download.fattura.coda.default.errori}}"/>
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <route id="modulo-ftp-download-fattura-scrittura-ftp">
+            <from uri="direct:scritturaSuFtp"/>
+
+            <log message="MODULO FTP DOWNLOAD FATTURA invio a FTP"/>
+
+            <setHeader headerName="urlFtp">
+                <simple>{{elaborazione.module.modulo.ftp.download.fattura.endopoint.destinatario.host}}/${header.identificativoSdI}/${header.tipoFattura}?{{elaborazione.module.modulo.ftp.download.fattura.endopoint.destinatario.opzioni}}</simple>
+            </setHeader>
+
+            <recipientList>
+                <simple>${header.urlFtp}</simple>
+            </recipientList>
+
+            <log message="MODULO FTP DOWNLOAD FATTURA invio a FTP effettuato"/>
+        </route>
+    </camelContext>
+</blueprint>

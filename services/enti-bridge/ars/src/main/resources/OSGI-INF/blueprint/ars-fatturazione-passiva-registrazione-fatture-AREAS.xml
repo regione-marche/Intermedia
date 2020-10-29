@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ctx.enti.bridge.ars.fatture"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <!-- #############   MAIN ROUTE ############### -->
+
+        <route id="enti.bridge.ars.registrazione.fatture">
+
+            <from uri="{{enti.bridge.ars.registrazione.fatture.in.queue}}"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <to uri="log:it.extrasys.marche.regione.fatturapa.ars.registrazione.areas.RegistrazioneMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <convertBodyTo type="java.lang.String"/>
+            <process ref="arsXmlStringSanitizerProcessor" />
+
+            <log message="ARS FATTURE STARTED" loggingLevel="INFO"/>
+
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+
+            <enrich strategyRef="areasSessionTokenAggregationStrategy">
+                <simple>{{enti.bridge.ars.registrazione.areas.openSession.enricher}}</simple>
+            </enrich>
+
+            <!-- controllo la risposta di AREAS -->
+            <choice>
+                <when>
+                    <simple>${in.header.error-description} != null &amp;&amp; ${in.header.error-description.trim} != ''</simple>
+                    <process ref="lanciaEccezioneErroreAreasProcessor"/>
+                </when>
+            </choice>
+
+            <!-- eseguo la registrazione su AREAS -->
+            <enrich strategyRef="areasRegistrazioneAggregationStrategy">
+                <simple>{{enti.bridge.ars.registrazione.areas.registrazione.fatture.enricher}}</simple>
+            </enrich>
+
+            <choice>
+                <when>
+                    <simple>${in.header.error-description} != null &amp;&amp; ${in.header.error-description.trim} != ''</simple>
+                    <process ref="lanciaEccezioneErroreAreasProcessor"/>
+                </when>
+            </choice>
+
+            <to uri="{{enti.bridge.ars.aggiorna.fatture.stato.registrata.in.queue}}"/>
+
+            <log message="ARS: REGISTRAZIONE SU AREAS TERMINATA CON SUCCESSO - IDENTIFICATIVO SDI : ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+        </route>
+
+        <!-- ##############   FINE MAIN ROUTE  ############## -->
+
+        <!-- ##############   AGGIORNA STATO A REGISTRATA  ############## -->
+        <route id="enti.bridge.ars.registrazione.fatture.aggiorna.stato">
+
+            <from uri="{{enti.bridge.ars.aggiorna.fatture.stato.registrata.in.queue}}"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <to uri="log:it.extrasys.marche.regione.fatturapa.ars.registrazione.areas.RegistrazioneMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log message="ARS: START  AGGIORNAMENTO FATTURE A REGISTRATE - IDENTIFICATIVO SDI : ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+            <process ref="aggiornaStatoFattureARegistrataProcessor"/>
+
+            <log message="ARS: AGGIORNAMENTO FATTURE A REGISTRATE TERMINATO CON SUCCESSO - IDENTIFICATIVO SDI : ${headers.identificativoSdI}" loggingLevel="INFO"/>
+        </route>
+        <!-- ##############  FINE  AGGIORNA STATO A REGISTRATA  ############## -->
+
+        <!-- ##############   REGISTRAZIONE ENRICHER  ############## -->
+
+        <route id="enti.bridge.ars.gestionale.areas.registrazione.fatture.enricher">
+            <from uri="{{enti.bridge.ars.registrazione.areas.registrazione.fatture.enricher}}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="arsRegistrazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+                <to uri="log:it.extrasys.marche.regione.fatturapa.ars.registrazione.areas.RegistrazioneEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <log message="ARS: ****** REGISTRAZIONE ENRICHER - IDENTIFICATIVO SDI : ${headers.identificativoSdI} ******"/>
+
+
+            <process ref="creaRichiestaRegistraFatturaProcessor"/>
+
+            <to uri="velocity:it/extrasys/marche/regione/fatturapa/enti/bridge/areas/velocity/areasSOAPMessage.vm"/>
+
+            <setHeader headerName="Cookie">
+                <simple>${header.areas-cookie}</simple>
+            </setHeader>
+
+            <setHeader headerName="SOAPAction">
+                <simple></simple>
+            </setHeader>
+
+            <setHeader headerName="Content-Type">
+                <simple>text/xml;charset=UTF-8</simple>
+            </setHeader>
+
+            <log message="ARS: OUTBOUND MESSAGE REQUEST TO AREAS REGISTRAZIONE FATTURE :\n\nHEADERS:\n\n${headers} \n\n***********\n\nBODY:\n\n${body}:\n\n" loggingLevel="DEBUG"/>
+            <log message="ARS: OUTBOUND MESSAGE REQUEST TO AREAS REGISTRAZIONE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}" loggingLevel="INFO"/>
+
+            <to uri="{{ars.areas.indirizzo.ws}}?bridgeEndpoint=true&amp;httpClient.socketTimeout={{ars.areas.request.timeout}}&amp;headerFilterStrategy=#areasFilterStrategy&amp;httpClient.cookieSpec=ignoreCookies" id="callarsAreas"/>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log message="ARS: INBOUND MESSAGE RESPONSE FROM AREAS REGISTRAZIONE FATTURE :\n\nHEADERS:\n\n${headers} \n\n***********\n\nBODY:${body}\n\n" loggingLevel="DEBUG"/>
+            <log message="ARS: INBOUND MESSAGE RESPONSE FROM AREAS REGISTRAZIONE FATTURE :- IDENTIFICATIVO SDI  ${in.header.identificativoSdI}" loggingLevel="INFO"/>
+
+            <!-- Estraggo l'xml encodato dalla risposta -->
+            <process ref="arsEstraiRispostaRegistraFatturaProcessor"/>
+
+            <process ref="decodificaRispostaAREASProcessor"/>
+
+            <log message="ARS: POST CALL REGISTRAZIONE FATTURE :\n\nHEADERS:\n\n${headers} \n\n***********\n\n${body}:\n\n" loggingLevel="DEBUG"/>
+
+            <choice>
+                <when>
+                    <xpath>count(//*[local-name()='Exception']) > 0</xpath>
+                    <setHeader headerName="error-description">
+                        <xpath resultType="java.lang.String">//*[local-name()='Output']/Exception/Description/text()
+                        </xpath>
+                    </setHeader>
+
+                    <log message="ARS POST CALL REGISTRAZIONE FATTURE, ERROR :\n\nHEADERS:\n\n${headers} \n\n***********\n\n${body}:\n\n" loggingLevel="DEBUG"/>
+                    <log message="ARS POST CALL REGISTRAZIONE FATTURE IDENTIFICATIVO SDI : ${headers.identificativoSdI} , ERROR ${headers.error-description}" loggingLevel="ERROR"/>
+
+                </when>
+
+            </choice>
+
+            <log message="ARS: END REGISTRAZIONE FATTURE ROUTE" id="endRegistrazioneRoute" loggingLevel="INFO"/>
+        </route>
+
+        <!-- ############## FINE REGISTRAZIONE ENRICHER  ############## -->
+
+    </camelContext>
+</blueprint>

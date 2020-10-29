@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.enti.bridge.asur" update-strategy="reload" persistent-id="it.extrasys.marche.regione.fatturapa.enti.bridge.asur">
+
+        <cm:default-properties>
+
+            <cm:property name="enable.trace" value="true"/>
+
+            <cm:property name="error.notification.endpoint" value="activemq:notification.queue"/>
+
+            <!-- ########## ACTIVEMQ ########## -->
+            <cm:property name="esb.activemq.brokerURL" value="discovery:(fabric:fatturapa-broker)" />
+            <cm:property name="esb.activemq.username" value="admin" />
+            <cm:property name="esb.activemq.password" value="admin" />
+            <cm:property name="esb.activemq.max.connections" value="10" />
+            <cm:property name="esb.activemq.cacheLevelName" value="CACHE_CONSUMER"/>
+            <cm:property name="esb.activemq.concurrent.consumers" value="5" />
+            <!-- ########## END ACTIVEMQ ########## -->
+
+            <cm:property name="enti.bridge.asur.dlq" value="activemq:enti.bridge.asur.dlq.queue"/>
+            <cm:property name="enti.bridge.asur.persistence.dlq" value="activemq:enti.bridge.asur.dlq.queue"/>
+
+            <cm:property name="sdi.outbound.invio.notifica.queue" value="activemq:sdi.outbound.invio.notifica.queue"/>
+
+            <cm:property name="enti.bridge.asur.in.queue" value="activemq:enti.bridge.asur.in.queue"/>
+
+            <cm:property name="enti.bridge.asur.registrazione.fatture.in.queue" value="activemq:enti.bridge.asur.registrazione.fatture.in.queue"/>
+            <cm:property name="enti.bridge.asur.notifiche.in.queue" value="{{enti.bridge.asur.in.queue}}?selector=tipoMessaggio='NotificaDecorrenzaTermini' OR tipoMessaggio='NotificaScartoEsito'"/>
+            <cm:property name="enti.bridge.asur.aggiorna.fatture.stato.registrata.in.queue" value="activemq:enti.bridge.asur.aggiorna.fatture.stato.registrata.in.queue"/>
+
+            <cm:property name="enti.bridge.asur.aggiorna.stato.notifica" value="activemq:enti.bridge.asur.aggiorna.stato.notifica"/>
+
+            <!-- REDELIVERY POLICY ASUR -->
+            <cm:property name="areasRegistrazioneRedeliveryPolicyConfig.retry.attempts" value="3"/>
+            <cm:property name="areasRegistrazioneRedeliveryPolicyConfig.retry.delay" value="1000"/>
+            <cm:property name="areasRegistrazioneRedeliveryPolicyConfig.backOffMultiplier" value="2"/>
+            <cm:property name="areasRegistrazioneRedeliveryPolicyConfig.retryAttemptedLogLevel" value="WARN"/>
+
+            <cm:property name="paleoProtocollazioneRedeliveryPolicyConfig.retry.attempts" value="3"/>
+            <cm:property name="paleoProtocollazioneRedeliveryPolicyConfig.retry.delay" value="1000"/>
+            <cm:property name="paleoProtocollazioneRedeliveryPolicyConfig.backOffMultiplier" value="2"/>
+            <cm:property name="paleoProtocollazioneRedeliveryPolicyConfig.retryAttemptedLogLevel" value="WARN" />
+
+
+            <!-- PROPERTIES PER AREAS -->
+            <cm:property name="asur.areas.indirizzo.ws" value=""/>
+            <!-- 60 secondi -->
+            <cm:property name="asur.areas.request.timeout" value="60000"/>
+
+            <!-- ENRICHER OPEN SESSION DI AREAS -->
+            <cm:property name="enti.bridge.asur.registrazione.areas.openSession.enricher" value="direct-vm:asur.registrazione.areas.openSession.enricher"/>
+            <cm:property name="enti.bridge.asur.registrazione.areas.openSession.notifiche.enricher" value="direct-vm:asur.registrazione.areas.openSession.enricher"/>
+            <cm:property name="asur.areas.opensession.user" value="user"/>
+            <cm:property name="asur.areas.opensession.password" value="password"/>
+            <cm:property name="asur.areas.opensession.entita" value="entita"/>
+
+            <!-- ENRICHER REGISTRAZIONE DI AREAS -->
+            <cm:property name="enti.bridge.asur.registrazione.areas.registrazione.fatture.enricher" value="direct:asur.registrazione.areas.registrazione.fatture.enricher"/>
+            <cm:property name="enti.bridge.asur.registrazione.areas.registrazione.notifiche.enricher" value="direct:asur.registrazione.areas.registrazione.notifiche.enricher"/>
+
+
+
+            <!-- PALEO PROTOCOLLAZIONE  MAIN ROUTE   -->
+            <cm:property name="enti.brige.asur.protocollazione.paleo.in.queue" value="{{enti.bridge.asur.in.queue}}?selector=tipoMessaggio='FatturaElettronica'"/>
+            <cm:property name="enti.bridge.asur.enrich.fattura.elettronica.cedente.in" value="direct:asur.enrich.fattura.elettronica.cedente.in"/>
+            <cm:property name="enti.bridge.asur.enrich.fattura.elettronica.rup.in" value="direct:asur.enrich.fattura.elettronica.rup.in" />
+            <cm:property name="enti.bridge.asur.enrich.fattura.elettronica.uo.in" value="direct:asur.enrich.fattura.elettronica.uo.in"/>
+            <cm:property name="enti.bridge.asur.enrich.fattura.elettronica.protocollazione.in" value="direct:asur.enrich.fattura.elettronica.protocollazione.in"/>
+            <cm:property name="enti.bridge.asur.enrich.fattura.elettronica.dataRicezione.in" value="direct:asur.enrich.fattura.elettronica.dataRicezione.in"/>
+
+
+            <cm:property name="asur.paleo.codiceRegistro" value=""/>
+            <cm:property name="asur.operatorePaleo.nome" value=""/>
+            <cm:property name="asur.operatorePaleo.cognome" value=""/>
+            <cm:property name="asur.operatorePaleo.ruolo" value=""/>
+            <cm:property name="asur.operatorePaleo.uo" value=""/>
+            <cm:property name="asur.operatorePaleo.codiceUO" value=""/>
+            <cm:property name="asur.paleo.codAmministrazione" value=""/>
+
+
+            <!-- paleo cxf GATEWAY -->
+
+            <cm:property name="asur.paleo-gateway.cxf.address" value=""/>
+            <cm:property name="asur.paleo-gateway.cxf.port" value=""/>
+            <cm:property name="asur.paleo-gateway.cxf.context" value="PaleoWebServicesASUR/PaleoWebService.svc"/>
+            <cm:property name="asur.paleo.login.username" value="{{asur.paleo.codAmministrazione}}\bildga.fatture"/>
+            <cm:property name="asur.paleo.login.password" value=""/>
+
+
+            <cm:property name="asur.paleo-gateway.cxf.endpoint" value="asur.paleo-gateway.cxf.endpoint"/>
+            <cm:property name="asur.paleo.cxf.cedente.endpoint"                  value="cxf:bean:{{asur.paleo-gateway.cxf.endpoint}}?defaultOperationName=FindRubricaExt"/>
+            <cm:property name="asur.paleo.cxf.cercaDocumentoProtocollo.endpoint" value="cxf:bean:{{asur.paleo-gateway.cxf.endpoint}}?defaultOperationName=CercaDocumentoProtocollo"/>
+            <cm:property name="asur.paleo.cxf.protocollazione.endpoint"          value="cxf:bean:{{asur.paleo-gateway.cxf.endpoint}}?defaultOperationName=ProtocollazioneEntrata"/>
+
+            <!-- fatturazione attiva -->
+            <cm:property name="enti.bridge.asur.fatturazione.attiva.registrazione.notifiche.in.queue" value="activemq:enti.bridge.asur.fatturazione.attiva.registrazione.notifiche.in.queue"/>
+            <cm:property name="enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.dlq" value="activemq:enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.dlq"/>
+            <cm:property name="enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.enricher" value="direct:enti.bridge.asur.fatturazione.attiva.areas.registrazione.notifiche.enricher"/>
+
+            <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+        </cm:default-properties>
+
+    </cm:property-placeholder>
+
+</blueprint>

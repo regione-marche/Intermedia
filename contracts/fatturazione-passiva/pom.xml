@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>contracts</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.contracts</groupId>
+    <artifactId>fatturazione-passiva</artifactId>
+
+
+    <packaging>pom</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: CONTRACTS :: FATTURAZIONE PASSIVA</name>
+
+    <modules>
+        <module>areas-contract</module>
+        <module>sdi-ricevi-notifica-contract</module>
+        <module>sdi-ricevi-fatture-contract</module>
+        <module>paleo-contract</module>
+        <module>messaggi-types-contract</module>
+        <module>fatturazione-elettronica-contract</module>
+        <module>esito-fattura-from-enti-contract</module>
+        <module>esito-fattura-from-enti-contract-ca</module>
+        <module>registrazione-fattura-contract-ca</module>
+        <module>agid-contract</module>
+
+        <!-- disabilitati poiché l'ente INRCA è passato a PEC -->
+       <!-- <module>iride-contract</module>
+        <module>navision-contract</module>-->
+    </modules>
+
+</project>

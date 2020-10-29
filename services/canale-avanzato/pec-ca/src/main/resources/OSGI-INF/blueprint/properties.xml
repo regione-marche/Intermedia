@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca" persistent-id="it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca">
+
+        <cm:default-properties>
+
+            <cm:property name="enable.trace" value="false"/>
+
+            <!-- ########## ACTIVEMQ ########## -->
+            <cm:property name="fatturapa.activemq.brokerURL" value="discovery:(fabric:fatturapa-broker)" />
+            <cm:property name="fatturapa.activemq.username" value="admin" />
+            <cm:property name="fatturapa.activemq.password" value="admin" />
+            <cm:property name="fatturapa.activemq.max.connections" value="10" />
+            <cm:property name="fatturapa.activemq.cacheLevelName" value="CACHE_CONSUMER"/>
+            <cm:property name="fatturapa.activemq.concurrent.consumers" value="5" />
+
+            <!-- ########## ACTIVEMQ XA ########## -->
+            <cm:property name="fatturapa.activemq.max.XAconnections" value="2" />
+            <cm:property name="fatturapa.activemq.jtaCacheLevelName" value="CACHE_CONNECTION"/>
+
+
+            <!-- CA -->
+            <cm:property name="enti.bridge.ente.pec.ca.protocollo.invio.queue" value="activemq:enti.bridge.ente.pec.ca.protocollo.invio.queue"/>
+            <cm:property name="enti.bridge.ente.pec.ca.registrazione.invio.queue" value="activemq:enti.bridge.ente.pec.ca.registrazione.invio.queue"/>
+
+            <cm:property name="id.fiscale.committente.header" value="idFiscaleCommittente"/>
+            <cm:property name="enti.bridge.pec.ca.dlq" value="activemq:enti.bridge.pec.ca.dlq.queue"/>
+            <cm:property name="enti.bridge.pec.ca.persistence.dlq" value="activemq:enti.bridge.pec.ca.dlq.queue"/>
+            <cm:property name="error.notification.queue" value="activemq:error.notification.queue"/>
+
+            <cm:property name="aggiorna.stato.fattura.ca.queue" value="activemq:aggiorna.stato.fattura.ca.queue"/>
+            <cm:property name="aggiorna.stato.notifica.decorrenza.ca.queue" value="activemq:aggiorna.stato.notifica.decorrenza.ca.queue"/>
+            <cm:property name="aggiorna.stato.notifica.ca.queue" value="activemq:aggiorna.stato.notifica.ca.queue"/>
+
+
+            <!-- properties relative all'invio della email -->
+            <cm:property name="ente.pec.ca.indirizzo.email.username" value="Intermediatest"/>
+            <cm:property name="ente.pec.ca.indirizzo.email.username.intero" value=""/>
+            <cm:property name="ente.pec.ca.indirizzo.email.password" value=""/>
+            <cm:property name="ente.pec.ca.indirizzo.email.port.smtps" value=""/>
+            <cm:property name="ente.pec.ca.indirizzo.email.port.imaps" value=""/>
+            <cm:property name="ente.pec.ca.indirizzo.email.host" value="localhost"/>
+            <cm:property name="ente.pec.ca.indirizzo.email.host.imaps" value="localhost"/>
+
+            <cm:property name="ente.pec.ca.indirizzo.email.protocollo" value="smtps://"/>
+            <cm:property name="ente.pec.ca.subject.fattura" value="Fattura"/>
+            <cm:property name="ente.pec.ca.subject.decorrenza.termini" value="Decorrenza Termini"/>
+            <cm:property name="ente.pec.ca.subject.ricevuta.consegna" value="Ricevuta Consegna"/>
+            <cm:property name="ente.pec.ca.subject.mancata.consegna" value="Mancata Consegna"/>
+            <cm:property name="ente.pec.ca.subject.scarto" value="Notifica Scarto"/>
+            <cm:property name="ente.pec.ca.subject.esito" value="Notifica Esito"/>
+            <cm:property name="ente.pec.ca.subject.attestazione.trasmissione.fattura" value="Attestazione Trasmissione Fattura"/>
+            <cm:property name="ente.pec.ca.subject.scarto.esito.committente" value="Notifica Scarto Esito Committente"/>
+
+
+            <cm:property name="ente.bridge.pec.ca.template.fattura.versione.1.2" value="fatturapa_v1.2.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.fattura.versione.1.1" value="fatturapa_v1.1.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.fattura.versione.default" value="fatturapa_v1.2.xsl"/>
+
+            <cm:property name="ente.bridge.pec.ca.template.decorrenza.termini" value="DT_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.ricevuta.consegna" value="RC_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.mancata.consegna" value="MC_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.notifica.scarto" value="NS_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.notifica.esito" value="NE_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.notifica.esito.committente" value="EC_v1.0.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.attestazione.trasmissione.fattura" value="AT_v1.1.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.notifica.scarto.esito.committente" value="SE_v1.0.xsl"/>
+
+            <!-- REVO-15 -->
+            <cm:property name="ente.bridge.pec.ca.template.ricevuta.consegna.privati" value="RC_v1.1.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.mancata.consegna.privati" value="MC_v1.1.xsl"/>
+            <cm:property name="ente.bridge.pec.ca.template.notifica.scarto.privati" value="NS_v1.1.xsl"/>
+
+            <!-- REDELIVERY POLICY -->
+            <cm:property name="pec.ca.invio.retry.delay" value="10000"/>
+            <cm:property name="pec.ca.invio.retry.attempts" value="6"/>
+
+            <!-- PROPERTIES PER ATTIVA -->
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.username" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.username.intero" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.password" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.port" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.port.imaps" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.port.smtps" value=""/>
+            <!-- il server mail di seguito accetta sia pop3s che imaps (pop3s.emarche.it)-->
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.host" value="localhost"/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.smtp.host" value=""/>
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.protocollo" value="imaps"/>
+
+            <cm:property name="ente.pec.ca.attiva.indirizzo.email.provider.regione.marche" value=""/>
+
+            <cm:property name="ente.pec.ca.attiva.subject.pec.ca.error.allegato.non.trovato" value="Intermediamarche Fattura Attiva Notification ERROR"/>
+            <cm:property name="ente.pec.ca.attiva.subject.pec.ca.error.ente.non.trovato" value="Intermediamarche Fattura Attiva Notification ERROR"/>
+            <cm:property name="ente.pec.ca.attiva.subject.pec.ca.error.ente.generic.error" value="Intermediamarche Fattura Attiva Notification ERROR"/>
+            <cm:property name="ente.pec.ca.attiva.subject.pec.ca.error.ente.persistence.error" value="Intermediamarche Fattura Attiva Notification ERROR"/>
+
+
+            <cm:property name="enti.bridge.pec.ca.attiva.dlq" value="activemq:enti.bridge.pec.ca.attiva.dlq.queue"/>
+            <cm:property name="enti.bridge.pec.ca.attiva.persistence.dlq" value="activemq:enti.bridge.pec.ca.attiva.dlq.queue"/>
+
+            <cm:property name="pec.ca.attiva.invio.retry.delay" value="10000"/>
+            <cm:property name="pec.ca.attiva.invio.retry.attempts" value="6"/>
+
+            <cm:property name="enti.bridge.fattura.attiva.inoltro" value="activemq:enti.bridge.fattura.attiva.inoltro"/>
+
+
+            <cm:property name="enti.bridge.pec.ca.attiva.notifiche.dlq" value="activemq:enti.bridge.pec.ca.attiva.notifiche.dlq"/>
+            <cm:property name="enti.bridge.pec.ca.attiva.notifiche.persistence.dlq" value="activemq:enti.bridge.pec.ca.attiva.notifiche.persistence.dlq"/>
+
+            <cm:property name="enti.bridge.ente.pec.ca.inoltro.notifiche.queue" value="activemq:enti.bridge.ente.pec.ca.inoltro.notifiche.queue"/>
+
+            <cm:property name="pec.ca.truststore.password" value="password"/>
+
+            <!-- ######## PROPERTIES PER NOTIFICA ESITO COMMITTENTE ######### -->
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.committente.inoltro" value="activemq:enti.bridge.pec.notifica.esito.committente.inoltro"/>
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.inoltro" value="activemq:enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.inoltro"/>
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.enricher" value="direct:enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.enricher"/>
+
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.inoltro.errore" value="activemq:enti.bridge.pec.ca.notifica.esito.inoltro.errore"/>
+
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.inoltro.errore.subject.nome.file" value="Intermediamarche Notifica Esito Committente Notification ERROR"/>
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.inoltro.errore.subject.scarto" value="Intermediamarche Notifica Esito Committente Notification ERROR"/>
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.inoltro.errore.subject.servizio.non.disponibile" value="Intermediamarche Notifica Esito Committente Notification ERROR"/>
+
+            <!-- ##### PROPERTIES AGGIUNTE DOPO IL CONTROLLO SULLE EMAIL GENERATE DAL PROTOCOLLO PEC ##### -->
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.committente" value="direct-vm:enti.bridge.pec.ca.notifica.esito.committente"/>
+            <cm:property name="pec.ca.notifica.non.accettazione.mancata.consegna.queue" value="activemq:pec.ca.notifica.non.accettazione.mancata.consegna.queue"/>
+            <cm:property name="enti.bridge.pec.ca.notifica.accettazione.consegna" value="direct-vm:enti.bridge.pec.ca.notifica.accettazione.consegna"/>
+
+            <cm:property name="enti.bridge.pec.ca.attiva.esito.operazione.enricher" value="direct:enti.bridge.pec.ca.attiva.esito.operazione.enricher"/>
+            <cm:property name="enti.bridge.pec.ca.attiva.esito.operazione.inoltro" value="activemq:enti.bridge.pec.ca.attiva.esito.operazione.inoltro"/>
+
+            <cm:property name="enti.bridge.ente.pec.ca.protocollo.registrazione.invio.enricher" value="direct:enti.bridge.ente.pec.ca.protocollo.registrazione.invio.enricher"/>
+
+            <cm:property name="enti.bridge.ente.pec.ca.preparazione.invio.enricher" value="direct:preparazioneInvioMessaggioPecCA"/>
+
+            <cm:property name="enti.bridge.pec.ca.notifica.esito.committente.validation.enricher" value="direct:enti.bridge.pec.ca.notifica.esito.committente.validation.enricher"/>
+
+            <cm:property name="enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher" value="direct:enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher"/>
+
+            <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+        </cm:default-properties>
+
+    </cm:property-placeholder>
+
+</blueprint>

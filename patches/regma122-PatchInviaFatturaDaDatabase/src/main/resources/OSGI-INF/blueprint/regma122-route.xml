@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://camel.apache.org/schema/blueprint
+                               http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+    <camelContext trace="{{enable.trace}}" managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="regma.122.invia.fattura.da.database"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <onException useOriginalMessage="true">
+            <exception>java.lang.Exception</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.regma122-PatchInviaFatturaDaDatabase?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <route id="regma.122.jetty">
+            <from uri="{{regma.122.invia.fattura.da.database.jetty.endpoint}}"/>
+
+            <log message="REGMA 122 INVIA FATTURA DA DATABASE Jetty IN"/>
+
+            <to uri="direct:{{regma.122.invia.fattura.in}}"/>
+        </route>
+
+        <route id="regma.122.invia.fattura.in">
+            <from uri="direct:{{regma.122.invia.fattura.in}}"/>
+
+            <bean ref="utils" method="controllaListaSDI"/>
+
+            <setBody>
+                <header>listaIdentificativiSdI</header>
+            </setBody>
+
+            <log message="REGMA 122 listaIdentificativiSdI: [${headers.listaIdentificativiSdI}]"/>
+
+            <split>
+                <tokenize token=","  includeTokens="false" trim="true"/>
+
+                <log message="REGMA 122 INVIA FATTURA DA DATABASE IdentificaitivoSdI [${body}]"/>
+
+                <to uri="direct:regma.122.invia.fattura.singolo.invio"/>
+
+            </split>
+
+            <log message="REGMA 122 END"/>
+
+        </route>
+
+        <route id="regma.122.invia.fattura.singolo.invio">
+
+            <from uri="direct:regma.122.invia.fattura.singolo.invio"/>
+
+            <doTry>
+                <bean ref="regma122InviaFatturaDaDatabase" method="prelevaFatturaDalDatabase"/>
+
+                <removeHeaders pattern="CamelHttp*" />
+
+                <!-- fix 13/05/2020 l'header invioOnlyFatto può assumere 3 valori: no/giunta/consiglio -->
+                <choice>
+                    <when>
+                        <simple>${in.header.invioOnlyFatto} == "giunta"</simple>
+                        <log message="REGMA 122 INVIA FATTURA DA DATABASE - INVIO DIRETTO A GIUNTA IdentificaitivoSdI [${in.headers.identificativoSdI}] "/>
+                        <inOnly uri="{{giuntaRegistrazioneInQueue}}"/>
+                    </when>
+                    <when>
+                        <simple>${in.header.invioOnlyFatto} == "consiglio"</simple>
+                        <log message="REGMA 122 INVIA FATTURA DA DATABASE - INVIO DIRETTO A CONSIGLIO IdentificaitivoSdI [${in.headers.identificativoSdI}] "/>
+                        <inOnly uri="{{consiglioRegistrazioneInQueue}}"/>
+                    </when>
+                    <otherwise>
+                        <inOnly uri="{{validationServiceInQueue}}"/>
+                    </otherwise>
+                </choice>
+
+
+                <doCatch>
+                    <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAEnteNonTrovatoException</exception>
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.regma122-PatchInviaFatturaDaDatabase?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+                    <inOnly uri="{{DLQ.regma122.fattura.senza.metadati}}" />
+                </doCatch>
+                <doCatch>
+                    <exception>java.lang.Exception</exception>
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.regma122-PatchInviaFatturaDaDatabase?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+                    <inOnly uri="{{DLQ.regma122.errore.generico}}" />
+                </doCatch>
+            </doTry>
+
+        </route>
+
+    </camelContext>
+
+</blueprint>

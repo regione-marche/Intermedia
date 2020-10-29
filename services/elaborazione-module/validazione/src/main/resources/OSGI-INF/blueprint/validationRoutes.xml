@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+	<camelContext managementNamePattern="#symbolicName#-#counter#" trace="{{enable.trace}}" xmlns="http://camel.apache.org/schema/blueprint" id="validationCamelContext">
+
+		<route id="validationRoute">
+			<from uri="{{validationServiceInQueue}}" />
+
+			<convertBodyTo type="java.lang.String"/>
+
+			<log loggingLevel="INFO" message="VALIDAZIONE: FATTURA - IDENTIFICATIVO SDI: ${headers.identificativoSdI}" id="last" />
+			<setHeader headerName="preSplittingBody">
+				<simple>${body}</simple>
+			</setHeader>
+
+			<setHeader headerName="isAsurValidationActive">
+				<constant>{{isAsurValidationActive}}</constant>
+			</setHeader>
+
+			<setHeader headerName="notaCreditoValidate">
+				<constant>{{notaCreditoValidate}}</constant>
+			</setHeader>
+
+			<choice>
+				<when>
+					<simple>${header.isAsurValidationActive} == 'true'</simple>
+
+					<setHeader headerName="tipoDocumento">
+						<xpath resultType="java.lang.String">//*[local-name() = 'DatiGeneraliDocumento']/*[local-name() = 'TipoDocumento']
+						</xpath>
+					</setHeader>
+
+					<!-- controllo se l'ente mittente e' in whitelist -->
+					<process ref="entiOspedalieriValidationWhitelistCheckProcessor" />
+
+					<choice>
+						<when>
+							<simple>${header.isEnteMittenteWhitelist} == 'true'</simple>
+
+							<log message="VALIDAZIONE: ASUR VALIDAZIONE ATTIVA, ENTE mittente ${headers.cedenteCodiceIva} in WHITELIST: validazione NON effettuata - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+						</when>
+						<otherwise>
+
+							<log message="VALIDAZIONE: ASUR VALIDAZIONE ATTIVA START, ENTE mittente ${headers.cedenteCodiceIva} NON in WHITELIST - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+							<process ref="performValidationCheck"/>
+
+							<choice>
+								<when>
+									<simple>${headers.performValidation} == true</simple>
+
+									<log message="VALIDAZIONE: !!! PERFORM VALIDATION !!! - IDENTIFICATIVO SDI ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+									<split streaming="true" strategyRef="validationAggregationStrategy">
+										<tokenize token="FatturaElettronicaBody" xml="true" />
+
+										<process ref="verificaValidazioneProcessor"/>
+
+										<choice>
+											<when>
+												<simple>${header.validaFatturaCheck} == 'true'</simple>
+												<to uri="direct:checkValues" />
+											</when>
+											<otherwise>
+												<log message="VALIDAZIONE: !!! PERFORM VALIDATION !!! - IDENTIFICATIVO SDI ${headers.identificativoSdI} TIPO DOCUMENTO ${header.tipoDocumento} NON SOGGETTO A VALIDAZIONE" loggingLevel="INFO"/>
+											</otherwise>
+										</choice>
+									</split>
+								</when>
+								<otherwise>
+									<setHeader headerName="validationResult">
+										<simple resultType="java.lang.Boolean">true</simple>
+									</setHeader>
+								</otherwise>
+							</choice>
+
+						</otherwise>
+					</choice>
+				</when>
+
+				<otherwise>
+					<log message="VALIDAZIONE: ASUR VALIDAZIONE NON ATTIVA - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+					<setHeader headerName="validationResult">
+						<simple resultType="java.lang.Boolean">true</simple>
+					</setHeader>
+
+				</otherwise>
+			</choice>
+
+			<!-- MODIFICA PER VALIDAZIONE DI ASUR -->
+
+			<choice>
+				<when>
+					<simple>${headers.validationResult} == false</simple>
+					<process ref="aggiornaStatoFattureARifiutataPerValidazioneFallitaProcessor"/>
+					<log message="VALIDAZIONE: VALIDAZIONE FALLITA PER LA FATTURA/LOTTO FATTURE - IDENTIFICATIVO SDI ${headers.identificativoSdI}" loggingLevel="INFO"/>
+				</when>
+                <otherwise>
+                    <log message="VALIDAZIONE: VALIDAZIONE OK PER LA FATTURA/LOTTO FATTURE - IDENTIFICATIVO SDI ${headers.identificativoSdI}" loggingLevel="INFO"/>
+                </otherwise>
+			</choice>
+
+
+			<to uri="{{validationServiceOutQueue}}" id="validationOutgoing" />
+
+			<log message="VALIDAZIONE: ASUR VALIDAZIONE ATTIVA END - IDENTIFICATIVO SDI ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+		</route>
+
+		<route id="checkValuesRoute">
+			<from uri="direct:checkValues" />
+			<log loggingLevel="INFO" message="VALIDAZIONE:CONTROLLO VALORI PER DATIORDINEACQUISTO/IDDOCUMENTO  - IDENTIFICATIVO SDI ${headers.identificativoSdI}" />
+
+			<choice>
+				<when>
+					<simple>${header.tipoDocumento} == 'TD01'</simple>
+
+					<!-- TD01 Fattura -->
+					<setHeader headerName="idDocumento">
+						<xpath resultType="java.lang.String">//*[local-name() = 'DatiOrdineAcquisto']/*[local-name() = 'IdDocumento']
+						</xpath>
+					</setHeader>
+
+				</when>
+
+				<!--<when>
+					<simple>${header.tipoDocumento} == 'TD04' and ${header.notaCreditoValidate} == 'true'</simple>
+
+					&lt;!&ndash; TD04 Nota di Credito&ndash;&gt;
+					<setHeader headerName="idDocumento">
+						<xpath resultType="java.lang.String">//*[local-name() = 'DatiFattureCollegate']/*[local-name() = 'IdDocumento']
+						</xpath>
+					</setHeader>
+
+				</when>-->
+
+			</choice>
+
+            <log loggingLevel="INFO" message="VALIDAZIONE: IDDOCUMENTO: ${headers.idDocumento}  - IDENTIFICATIVO SDI ${headers.identificativoSdI}" />
+
+		</route>
+
+	</camelContext>
+
+</blueprint>

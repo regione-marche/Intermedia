@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="sdi.bridge.inbound.ricevi.notifiche"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <dataFormats>
+            <jaxb id="riceviFattureFormat" prettyPrint="true"
+                  contextPath="it.extrasys.marche.regione.fatturapa.contracts.sdi.ricevifatture.beans"/>
+        </dataFormats>
+
+        <onException redeliveryPolicyRef="sdiInboundAttivaRedeliveryPolicyConfig">
+            <exception>java.lang.Exception</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <log message="SDI INBOUND: EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}"
+                 loggingLevel="ERROR"/>
+            <throwException ref="servizioNonDisponibileException"/>
+        </onException>
+
+        <route id="sdi.ricevi.notifiche.inbound">
+
+            <from uri="{{sdi.outbound.trasmissione.fatture.cxf.endpoint}}"/>
+
+            <log message="SDI INBOUND: SDI RICEVI NOTIFICHE INBOUND STARTED - IDENTIFICATIVO SDI ${in.header.identificativoSdi}"/>
+
+            <process ref="estraiMessaggioAttivaProcessor"/>
+            <convertBodyTo type="java.lang.String"/>
+
+            <log message="SDI INBOUND: **** RICEVUTO MESSAGGIO DALLO SDI: ${in.header.tipoMessaggio} - IDENTIFICATIVO SDI ${in.header.identificativoSdi}"
+                 loggingLevel="INFO"/>
+            <inOnly uri="{{sdi.inbound.ricevi.notifiche.in.queue}}" id="riceviNotifiche"/>
+
+        </route>
+
+        <route id="sdi.ricevi.notifiche.salva.db">
+            <from uri="{{sdi.inbound.ricevi.notifiche.in.queue}}"/>
+
+            <log message="SDI INBOUND: SDI RICEVI NOTIFICHE SALVA DB STARTED - TIPO  ${in.header.tipoMessaggio} - IDENTIFICATIVO SDI ${in.header.identificativoSdi}"/>
+
+            <process ref="salvaMessaggioAttivaProcessor"/>
+
+            <log message="SDI INBOUND: SDI RICEVI NOTIFICHE SALVA DB SALVATA - TIPO  ${in.header.tipoMessaggio} - IDENTIFICATIVO SDI ${in.header.identificativoSdi}"/>
+
+            <process ref="aggiornaStatoMessaggioFatturaAttivaProcessor"/>
+
+            <log message="SDI INBOUND: SDI RICEVI NOTIFICHE SALVA DB AGGIORNATO STATO - TIPO  ${in.header.tipoMessaggio} - IDENTIFICATIVO SDI ${in.header.identificativoSdi}"/>
+
+            <!-- Prima di inviarlo al multiente devo verificare se si tratta di una fattura che rientra nel caso del flusso semplificato: in questo caso infatti la fattura
+             deve anche essere inviata alla coda di gestione della passiva, ma solo se si tratta di una ricevuta consegna o decorrenza termini, se invece e' una notifica esito non c'e' bisogno -->
+
+            <!--Solo nel caso in cui l'ente NON è FTP-->
+            <choice>
+                <when>
+                    <simple>${headers.tipoCanaleEnte} != 'FTP'</simple>
+
+                    <choice>
+                        <when>
+                            <simple>${header.checkFlussoSemplificato} == 'checkFlussoSemplificato' and ${header.tipoMessaggio} != '004'</simple>
+
+                            <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO FLUSSO SEMPLICATO - IDENTIFICATIVO SDI ${in.header.identificativoSdi}" loggingLevel="INFO"/>
+
+                            <!-- REGMA 21 -->
+                            <!--
+                            <process ref="checkFlussoSemplificatoProcessor"/>
+                            <choice>
+                                <when>
+                                    <simple>${header.isEnteAderente} == 'aderente' and ${header.tipoMessaggio} == '001'</simple>
+
+                                    <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO FLUSSO SEMPLICATO - IDENTIFICATIVO SDI ${in.header.identificativoSdi}, Ricevuta Consegna"
+                                         loggingLevel="INFO"/>
+
+                                    <inOnly uri="{{sdi.inbound.ricevi.notifiche.ricevuta.consegna.flusso.semplificato}}"
+                                            id="riceviNotificheRicevutaConsegnaCheckFlussoSemplificato"/>
+                                </when>
+                                <when>
+                                    <simple>${header.isEnteAderente} == 'aderente' and ${header.tipoMessaggio} == '005'</simple>
+
+                                    <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO FLUSSO SEMPLICATO - IDENTIFICATIVO SDI ${in.header.identificativoSdi}, Notifica Decorrenza Termini"
+                                         loggingLevel="INFO"/>
+
+                                    <inOnly uri="{{sdi.inbound.ricevi.notifiche.decorrenza.termini.flusso.semplificato}}"
+                                            id="riceviNotificheDecorrenzaTerminiCheckFlussoSemplificato"/>
+                                </when>
+                            </choice>
+                            -->
+
+                            <!-- Verifico se la fattura al quale si riferisce la notifica è flusso semplificato o meno -->
+                            <process ref="isFlussoSemplificatoProcessor"/>
+                            <choice>
+                                <when>
+                                    <simple>${header.isFlussoSemplificato} == true and ${header.tipoMessaggio} == '001'</simple>
+
+                                    <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO FLUSSO SEMPLICATO - IDENTIFICATIVO SDI ${in.header.identificativoSdi}, Ricevuta Consegna" loggingLevel="INFO"/>
+
+                                    <inOnly uri="{{sdi.inbound.ricevi.notifiche.ricevuta.consegna.flusso.semplificato}}" id="riceviNotificheRicevutaConsegnaCheckFlussoSemplificato"/>
+                                </when>
+                                <when>
+                                    <simple>${header.isFlussoSemplificato} == true and ${header.tipoMessaggio} == '005'</simple>
+
+                                    <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO FLUSSO SEMPLICATO - IDENTIFICATIVO SDI ${in.header.identificativoSdi}, Notifica Decorrenza Termini" loggingLevel="INFO"/>
+
+                                    <inOnly uri="{{sdi.inbound.ricevi.notifiche.decorrenza.termini.flusso.semplificato}}" id="riceviNotificheDecorrenzaTerminiCheckFlussoSemplificato"/>
+                                </when>
+                            </choice>
+
+                        </when>
+                    </choice>
+
+                    <inOnly uri="{{sdi.inbound.ricevi.notifiche.inoltro.multiente}}" id="riceviNotificheInoltroMultiente"/>
+
+                </when>
+                <otherwise>
+                    <log message="SDI_BRIDGE_INBOUND RICEZIONE NOTIFICHE CASO ENTE FTP - IDENTIFICATIVO SDI ${in.header.identificativoSdi}" loggingLevel="INFO"/>
+                </otherwise>
+            </choice>
+        </route>
+
+    </camelContext>
+
+</blueprint>

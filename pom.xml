@@ -1,0 +1,1106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+    <artifactId>fatturazione-elettronica-regione-marche</artifactId>
+    <version>2.0.3-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA</name>
+
+    <properties>
+        <!-- the version of the JBoss Fuse BOM, defining all the dependency versions -->
+        <jboss.fuse.bom.version>6.3.0.redhat-416</jboss.fuse.bom.version>
+        <cxf.version>3.1.5.redhat-630377</cxf.version>
+        <cxf-api.version>2.7.18.redhat-1</cxf-api.version>
+        <java.version>1.8</java.version>
+        <!-- Java 8 with its additional syntax is not compatible with OpenJPA 2.3.0 class enhancement. Usiamo la 1.7 per compilare  -->
+        <java.openjpa.version>1.7</java.openjpa.version>
+        <build.helper.maven.plugin>1.8</build.helper.maven.plugin>
+        <camel.version>2.17.0.redhat-630416</camel.version>
+        <!-- per il camel test bluprint non è ancora presente la 630377 -->
+        <camel-test-blueprint.version>2.17.0.redhat-630371</camel-test-blueprint.version>
+        <test.harness-version>1.0.2</test.harness-version>
+        <h2.version>1.3.160</h2.version>
+        <openjpa.version>2.3.0</openjpa.version>
+        <geronimo.version>1.1</geronimo.version>
+        <geronimo-transaction.version>3.1.1</geronimo-transaction.version>
+        <camel-test.version>2.17.0.redhat-630416</camel-test.version>
+        <activemq.version>5.11.0.redhat-630416</activemq.version>
+        <jboss.fuse.version>6.3.0.redhat-416</jboss.fuse.version>
+        <fabric.version>1.2.0.redhat-630416</fabric.version>
+        <commons-io.version>2.4.0.redhat-1</commons-io.version>
+        <commons.pool2.version>2.4.2</commons.pool2.version>
+        <commons.collections.version>3.2.2.redhat-2</commons.collections.version>
+        <commons-lang.version>2.6.0.redhat-5</commons-lang.version>
+        <commons-codec-version>1.10.0.redhat-5</commons-codec-version>
+        <org.slf4j.version>1.7.22.redhat-2</org.slf4j.version>
+        <log4j.version>1.2.17.redhat-1</log4j.version>
+        <aries.version>1.0.1</aries.version>
+        <joda.version>2.9.2</joda.version>
+        <junit.version>4.11</junit.version>
+        <spring.version>3.2.18.RELEASE</spring.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <jline.version>3.0.0.M1</jline.version>
+        <!--<wsdl2java.version>2.6.0.redhat-610379</wsdl2java.version>-->
+        <derby.version>10.11.1.1</derby.version>
+        <asm.version>5.0.4</asm.version>
+        <asm.bundle.version>3.3.1_1</asm.bundle.version>
+        <tranql-connector-postgresql-common.version>1.5</tranql-connector-postgresql-common.version>
+        <tranql-connector.version>1.8</tranql-connector.version>
+        <geronimo-connector.version>3.1.1</geronimo-connector.version>
+        <geronimo-j2ee-connector.version>2.0.0</geronimo-j2ee-connector.version>
+        <validation-api.version>1.1.0.Final-redhat-1</validation-api.version>
+        <!--<validation-api.version>1.1.0.Final-redhat-1</validation-api.version>-->
+        <xbean-blueprint.version>3.18</xbean-blueprint.version>
+        <serp.version>1.14.1_1</serp.version>
+        <aries-transaction-manager.version>1.0.1</aries-transaction-manager.version>
+        <!-- driver per la versione vecchia del database
+        <postgresql-jdbc-driver.version>9.3-1102-jdbc41</postgresql-jdbc-driver.version>-->
+        <postgresql-jdbc-driver.version>42.2.2</postgresql-jdbc-driver.version>
+        <bouncycastle.version>1.56</bouncycastle.version>
+        <juniversalchardet.version>1.0.3</juniversalchardet.version>
+        <xmlunit.version>1.5</xmlunit.version>
+        <cucumber.version>1.1.7</cucumber.version>
+        <mybatis.version>3.2.8</mybatis.version>
+        <icu4j.version>63.1</icu4j.version>
+        <cxf.xjc.version>2.7.0</cxf.xjc.version>
+        <jackson.version>2.9.9</jackson.version>
+    </properties>
+
+
+    <dependencyManagement>
+
+        <dependencies>
+
+            <dependency>
+                <groupId>org.jboss.fuse.bom</groupId>
+                <artifactId>jboss-fuse-parent</artifactId>
+                <version>${jboss.fuse.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- contracts -->
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>fatturazione-elettronica-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>${asm.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-attiva</groupId>
+                <artifactId>inoltro-fatturazione-attiva</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-attiva</groupId>
+                <artifactId>sdiRiceviFile-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>sdi-ricevi-fatture-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>paleo-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>agid-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva.areas</groupId>
+                <artifactId>areas-documento-sdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva.areas</groupId>
+                <artifactId>areas-notifica-sdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-attiva</groupId>
+                <artifactId>areas-notifiche-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Contract CA -->
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>esito-fattura-from-enti-contract-ca</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>registrazione-fattura-contract-ca</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-attiva</groupId>
+                <artifactId>inoltro-fatturazione-attiva-ca</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- commento da cancellare -->
+            <dependency>
+                <groupId>org.subethamail</groupId>
+                <artifactId>subethasmtp</artifactId>
+                <version>3.1.7</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>messaggi-types-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.ftp.contract</groupId>
+                <artifactId>ftp-contract-ca</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.test</groupId>
+                <artifactId>sdi-mock</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>sdi-ricevi-notifica-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+                <artifactId>esito-fattura-from-enti-contract</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-attiva</groupId>
+                <artifactId>trasmissione-fatture-sdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- fine contracts -->
+
+            <!-- Regione Marche Core Services -->
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+                <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!--  Regione Marche Services Bundles -->
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.api.rest-main</groupId>
+                <artifactId>api-rest-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.api.rest-model</groupId>
+                <artifactId>api-rest-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.enti-bridge</groupId>
+                <artifactId>paleo-lib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.enti-bridge</groupId>
+                <artifactId>areas-lib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.sdi-bridge</groupId>
+                <artifactId>sdi-bridge-inbound</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+                <artifactId>persistence-datasource</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+                <artifactId>persistence-unit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+                <artifactId>persistence-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+                <artifactId>utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+                <artifactId>exceptions</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+                <artifactId>api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- FINE   Regione Marche Services Bundles -->
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jaxb</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-mail</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jpa</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-http4</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-saxon</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-velocity</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-quartz2</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-bindy</artifactId>
+                <version>${camel.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jms</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-csv</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jackson</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jackson-annotations</artifactId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jackson-core</artifactId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jackson-databind</artifactId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-zipfile</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-pdf</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                <version>${geronimo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.components</groupId>
+                <artifactId>geronimo-transaction</artifactId>
+                <version>${geronimo-transaction.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa</artifactId>
+                <version>${openjpa.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-core</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-blueprint</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>org.apache.aries.blueprint</artifactId>
+                        <groupId>org.apache.aries.blueprint</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-test</artifactId>
+                <version>${camel-test.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-test-blueprint</artifactId>
+                <version>${camel-test-blueprint.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jetty</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-ftp2</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-camel</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-bindings-soap</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-api</artifactId>
+                <!-- di questa non esiste la versione presente nel bom nei repository di RH,
+                quindi ne metto una meno recente -->
+                <version>${cxf-api.version}</version>
+                <!--<version>${cxf.version}</version>-->
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-soap</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-cxf</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-asm</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>asm</groupId>
+                        <artifactId>asm</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>org.apache.aries.blueprint</artifactId>
+                        <groupId>org.apache.aries.blueprint</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.amq</groupId>
+                <artifactId>mq-fabric</artifactId>
+                <version>${jboss.fuse.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric-zookeeper</artifactId>
+                <version>${fabric.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric-camel</artifactId>
+                <version>${fabric.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.aries.proxy</groupId>
+                <artifactId>org.apache.aries.proxy.impl</artifactId>
+                <version>${aries.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.googlecode.juniversalchardet</groupId>
+                <artifactId>juniversalchardet</artifactId>
+                <version>${juniversalchardet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xmlunit</groupId>
+                <artifactId>xmlunit</artifactId>
+                <version>${xmlunit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-jetty</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpg-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-security</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-policy</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-ws-addr</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-core</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <scope>test</scope>
+                <version>${derby.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.tranql</groupId>
+                <artifactId>tranql-connector-postgresql-common</artifactId>
+                <version>${tranql-connector-postgresql-common.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.tranql</groupId>
+                <artifactId>tranql-connector</artifactId>
+                <version>${tranql-connector.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.components</groupId>
+                <artifactId>geronimo-connector</artifactId>
+                <version>${geronimo-connector.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>xbean-blueprint</artifactId>
+                <version>${xbean-blueprint.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+                <version>${geronimo-j2ee-connector.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.serp</artifactId>
+                <version>${serp.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.manager</artifactId>
+                <version>${aries-transaction-manager.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql-jdbc-driver.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ibm.icu</groupId>
+                <artifactId>icu4j</artifactId>
+                <version>${icu4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-jvm</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>info.cukes</groupId>
+                <artifactId>cucumber-junit</artifactId>
+                <version>${cucumber.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!--Jackson-->
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-json-provider</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                <artifactId>jackson-jaxrs-base</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+    <distributionManagement>
+        <repository>
+            <id>artifactory-release</id>
+            <uniqueVersion>false</uniqueVersion>
+            <name>artifactory.extrasys.it-releases</name>
+            <url>http://artifactory.extrasys.it/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>artifactory-snapshot</id>
+            <uniqueVersion>true</uniqueVersion>
+            <name>artifactory.extrasys.it-snapshots</name>
+            <url>http://artifactory.extrasys.it/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <developerConnection>scm:git:ssh://git@git.extrasys.it/extra/regione-marche.git</developerConnection>
+        <tag>fatturazione-elettronica-regione-marche-1.2.14-SNAPSHOT</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>redhat-ga-repository</id>
+            <url>https://maven.repository.redhat.com/ga</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>redhat-ea-repository</id>
+            <url>https://maven.repository.redhat.com/earlyaccess/all</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss-public</id>
+            <name>JBoss Public Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+        <!--Perchè dal 15 gennaio 2020 maven usa conneessione https e non http. Bisognerebbe aggiornare maven-->
+        <repository>
+            <id>central maven repo</id>
+            <name>central maven repo https</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>redhat-ga-repository</id>
+            <url>https://maven.repository.redhat.com/ga</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>redhat-ea-repository</id>
+            <url>https://maven.repository.redhat.com/earlyaccess/all</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-public</id>
+            <name>JBoss Public Repository Group</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+    <developers>
+        <developer>
+            <id>adegori</id>
+            <name>Angelica Degori</name>
+            <email>angelica.degori@extrasys.it</email>
+            <organization>Extra Red srl</organization>
+            <roles>
+                <role>business analist</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>aleoni</id>
+            <name>Agostino Leoni</name>
+            <email>agostino.leoni@extrasys.it</email>
+            <organization>Extra Red srl</organization>
+            <roles>
+                <role>project manager</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>gamatore</id>
+            <name>Gianfranco Amatore</name>
+            <email>gianfranco.amatore@extrasys.it</email>
+            <organization>Extra Red srl</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>apapa</id>
+            <name>Antonio Papa</name>
+            <email>antonio.papa@extrasys.it</email>
+            <organization>Extra Red srl</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <mailingLists>
+        <mailingList>
+            <name>Supporto IntermediaMarche</name>
+            <post>supporto.intermediamarche@extrasys.it</post>
+        </mailingList>
+    </mailingLists>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.14.1</version>
+                    <!--<configuration>
+                        <argLine>-Xms512m -Xmx1024m -XX:PermSize=1536m -XX:MaxPermSize=1536m -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC</argLine>
+                    </configuration>-->
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build.helper.maven.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>pmd</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Added for m2e -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.cxf</groupId>
+                                        <artifactId>cxf-codegen-plugin</artifactId>
+                                        <versionRange>${cxf.version}</versionRange>
+                                        <goals>
+                                            <goal>wsdl2java</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-codegen-plugin</artifactId>
+                    <version>${cxf.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>features-maven-plugin</artifactId>
+                    <version>2.2.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-xjc-plugin</artifactId>
+                    <version>${cxf.xjc.version}</version>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.openjpa</groupId>
+                    <artifactId>openjpa-maven-plugin</artifactId>
+                    <version>2.3.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.openjpa</groupId>
+                            <artifactId>openjpa</artifactId>
+                            <version>${openjpa.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-api</artifactId>
+                            <version>${org.slf4j.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <modules>
+        <module>contracts</module>
+        <module>services</module>
+        <module>release</module>
+        <module>core</module>
+        <module>external-services-mocks</module>
+        <module>patches</module>
+    </modules>
+
+</project>

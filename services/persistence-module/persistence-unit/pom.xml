@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>persistence-module</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa.services</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+    <artifactId>persistence-unit</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICES :: PERSISTENCE :: UNIT</name>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+            <artifactId>sdi-ricevi-notifica-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.openjpa</groupId>
+                    <artifactId>openjpa-maven-plugin</artifactId>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.openjpa.version}</source>
+                    <target>${java.openjpa.version}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <forkCount>5</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <argLine>-Xmx512m -XX:MaxPermSize=128m</argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <configuration>
+                    <includes>**/*.class</includes>
+                    <addDefaultConstructor>true</addDefaultConstructor>
+                    <!--                <enforcePropertyRestriction>true</enforcePropertyRestriction>  -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>enhancer</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <!-- a differenza degli altri (3.5.0) uso una versione diversa causa bug, vedi https://issues.jboss.org/browse/ENTESB-8212 -->
+                <!--version>3.5.1</version-->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            javax.persistence,
+                            org.apache.openjpa.enhance,
+                            org.apache.openjpa.util,
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            it.extrasys.marche.regione.fatturapa.contracts.sdi.ricevinotifica.beans;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.enti;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.metadata;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.util;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.sdi;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.storico;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.persistence.unit.entities.monitoraggio;version="${project.version}",
+                        </Export-Package>
+                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

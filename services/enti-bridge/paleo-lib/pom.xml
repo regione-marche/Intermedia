@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>enti-bridge</artifactId>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.services.enti-bridge</groupId>
+    <artifactId>paleo-lib</artifactId>
+
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: SERVICES :: ENTI BRIDGE :: PALEO LIB</name>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+            <artifactId>api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.core</groupId>
+            <artifactId>utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+            <artifactId>paleo-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+            <artifactId>fatturazione-elettronica-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+            <artifactId>sdi-ricevi-fatture-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+            <artifactId>sdi-ricevi-notifica-contract</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.extrasys.marche.regione.fatturapa.services.persistence</groupId>
+            <artifactId>persistence-unit</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-blueprint</artifactId>
+        </dependency>
+
+        <!-- cxf dependencies -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-soap</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-ws-policy</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-bindings-soap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-cxf</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>org.apache.aries.blueprint</artifactId>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-http4</artifactId>
+        </dependency>
+
+
+        <!-- for testing -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-blueprint</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            org.osgi.service.blueprint,
+                            javax.persistence,
+                            org.slf4j,
+                            io.fabric8.zookeeper,
+                            javax.transaction,
+                            org.apache.camel.processor.interceptor,
+                            org.springframework.jms.connection,
+                            org.apache.camel.processor.validation,
+                            org.apache.camel.component.jms,
+                            org.apache.commons.collections.map,
+                            org.apache.camel.converter.jaxb,
+                            org.apache.camel.component.jpa,
+                            org.springframework.orm.jpa,
+                            org.springframework.transaction,
+                            org.apache.camel.processor,
+                            it.marche.regione.paleo.services;version="${project.version}",
+                            org.datacontract.schemas._2004._07.regionemarche_protocollo_common;version="${project.version}",
+                            com.microsoft.schemas._2003._10.serialization;version="${project.version}",
+                            com.microsoft.schemas._2003._10.serialization.arrays;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.paleo;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.paleo.xsd;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.core.utils.file;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.core.utils.signature;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.fatturazione.elettronica.xslt;version="${project.version}",
+                            *</Import-Package>
+                        <Export-Package>
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.fattura;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.esito.committente;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.scarto.esito.committente;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.fattura;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.decorrenza.termini;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.esito.committente;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.scarto.esito.committente;version="${project.version}"
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

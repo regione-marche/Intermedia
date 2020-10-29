@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/blueprint" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+	xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+	xsi:schemaLocation="
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+	<!-- FATTURAZIONE ATTIVA -->
+
+	<bean id="invioFatturazioneAttivaProcessor" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.InvioFatturazioneAttivaProcessor" />
+
+	<bean id="invioRicevutaConsegnaProcessor" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.InvioRicevutaConsegnaProcessor" />
+
+	<bean id="esitoInvioFatturazioneAttivaProcessor" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.EsitoInvioFatturazioneAttivaProcessor">
+		<property name="fatturaAttivaManager" ref="fatturaAttivaManager" />
+	</bean>
+
+	<bean id="esitoInvioFatturazioneAttivaTestProcessor" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.EsitoInvioFatturazioneAttivaTestProcessor">
+		<property name="fatturaAttivaManager" ref="fatturaAttivaManager" />
+		<property name="testManager" ref="testManager"/>
+	</bean>
+
+	<bean id="aggiornaStatoFatturazioneAttiva" class="it.extrasys.marche.regione.fatturapa.services.invioFatturazioneAttiva.AggiornaStatoFatturazioneAttiva">
+		<property name="fatturaAttivaManager" ref="fatturaAttivaManager" />
+	</bean>
+
+	<bean id="testManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.TestManager">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+		<property name="testCicloPassivoDao" ref="testCicloPassivoDao"/>
+		<property name="testCicloAttivoDao" ref="testCicloAttivoDao"/>
+		<property name="enteDao" ref="enteDao"/>
+		<property name="utentiDao" ref="utentiDao"/>
+	</bean>
+
+	<bean id="fatturaAttivaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="fatturaAttivaDao" ref="fatturaAttivaDao" />
+		<property name="statoFatturaAttivaDao" ref="statoFatturaAttivaDao" />
+		<property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao" />
+		<property name="enteDao" ref="enteDao" />
+		<property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+	</bean>
+
+
+	<bean id="testCicloPassivoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TestCicloPassivoDao"/>
+
+	<bean id="testCicloAttivoDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TestCicloAttivoDao"/>
+
+	<bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao" />
+
+	<bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao" />
+
+	<bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao" />
+
+	<bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao" />
+
+	<bean id="utentiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.UtentiDao"/>
+
+	<bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+
+	<bean id="riceviFattureFilterStrategy" class="org.apache.camel.impl.DefaultHeaderFilterStrategy">
+		<property name="outFilterPattern">
+			<!--  Regex custom filter: sending to cxf endpoint only the SOAPAction header -->
+			<value>^((?!(SOAPAction)).)*$</value>
+		</property>
+		<!-- The 'relayHeaders' property is 'true' by default -->
+	</bean>
+
+</blueprint>

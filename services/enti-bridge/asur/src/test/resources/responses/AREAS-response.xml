@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><callResponse soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><callReturn xsi:type="xsd:string">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+    &lt;Output&gt;
+    &lt;Exception&gt;
+    &lt;Description&gt;java.lang.Exception: Error on line 1 of document  : Content is not allowed in prolog. Nested exception: Content is not allowed in prolog.&lt;/Description&gt;
+    &lt;/Exception&gt;
+    &lt;/Output&gt;
+</callReturn></callResponse></soapenv:Body></soapenv:Envelope>

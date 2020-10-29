@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<bean id="utils" class="it.extrasys.marche.regione.fatturapa.patch.Utils"/>
+
+	<bean id="flussoSemplificatoProcessor" class="it.extrasys.marche.regione.fatturapa.patch.processor.FlussoSemplificatoProcessor">
+		<property name="fatturaAttivaManager" ref="fatturaAttivaManager"/>
+		<property name="notificheAttivaFromSdiManager" ref="notificheAttivaFromSdiManager"/>
+	</bean>
+
+	<bean id="flussoSemplificatoMetadatiAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.patch.strategy.FlussoSemplificatoMetadatiAggregationStrategy"/>
+
+	<!-- Manager -->
+	<bean id="fatturaAttivaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="fatturaAttivaDao" ref="fatturaAttivaDao"/>
+	</bean>
+
+	<bean id="notificheAttivaFromSdiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificheAttivaFromSdiManager">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="notificheAttivaFromSdiDao" ref="notificheAttivaFromSdiDao"/>
+		<property name="tipoNotificaAttivaFromSdiDao" ref="tipoNotificaAttivaFromSdiDao"/>
+	</bean>
+
+	<bean id="datiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.DatiFatturaManager">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="datiFatturaDao" ref="datiFatturaDao"/>
+	</bean>
+
+	<!-- DAO -->
+	<bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao"/>
+	<bean id="notificheAttivaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificheAttivaFromSdiDao"/>
+	<bean id="tipoNotificaAttivaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TipoNotificaAttivaFromSdiDao"/>
+	<bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao"/>
+
+	<bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="5"/>
+	</bean>
+
+</blueprint>

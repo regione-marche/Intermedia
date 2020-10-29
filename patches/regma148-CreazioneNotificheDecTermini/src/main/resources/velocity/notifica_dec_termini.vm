@@ -1,0 +1,7 @@
+<ns3:NotificaDecorrenzaTermini xmlns:ns3="http://www.fatturapa.gov.it/sdi/messaggi/v1.0" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" versione="1.0">
+    <IdentificativoSdI>${headers.identificativoSdi}</IdentificativoSdI>
+    <NomeFile>${headers.nomeFile}</NomeFile>
+    <Descrizione>Il processo di gestione della fattura/e in oggetto si ritiene concluso per decorrenza dei termini previsti per la notifica dell'esito da parte dell'amministrazione destinataria</Descrizione>
+    <MessageId>${headers.messageId}</MessageId>
+    <Note>Se l'identificativo SdI si riferisce ad un lotto, la decorrenza termini riguarda tutte le fatture del lotto ad eccezione di quelle per le quali si e' gia' trasmesso esito (di accettazione o rifiuto).</Note>
+</ns3:NotificaDecorrenzaTermini>

@@ -1,0 +1,20 @@
+##########################################
+### Create fabric profiles			   ###
+##########################################
+
+PATCHED_VERSION=$1
+
+## m2 repository
+
+
+## base profile that we want to use for properties and shared configuration (no business services inside it)
+fabric:profile-create --parents feature-camel --version $PATCHED_VERSION fatturapa-base
+
+
+
+## fatturapa
+fabric:profile-create --parents fatturapa-base --version $PATCHED_VERSION fatturapa
+
+## fatturapa 
+fabric:profile-create --parents mq-client-base --version $PATCHED_VERSION mq-client-fatturapa-broker
+fabric:profile-edit   --features activemq-camel mq-client-fatturapa-broker $PATCHED_VERSION

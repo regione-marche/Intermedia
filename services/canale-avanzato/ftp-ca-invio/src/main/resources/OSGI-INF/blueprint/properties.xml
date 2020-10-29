@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca"
+                             persistent-id="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca">
+
+        <cm:default-properties>
+
+            <cm:property name="enable.trace" value="false"/>
+            <cm:property name="fatturapa.component.ftp" value="ftp://"/>
+            <cm:property name="fatturapa.ftp.start.timer" value="OFF"/>
+
+            <cm:property name="fatturapa.ftp.timer.fattura.passiva.invio.singolo"
+                         value="timer://ftpFattPassivaInvioSingolo?fixedRate=true&amp;period=60000&amp;delay=1000"/>
+            <cm:property name="fatturapa.ftp.timer.fattura.passiva.protocollo"
+                         value="timer://ftpFattPassivaProtocollo?fixedRate=true&amp;period=60000&amp;delay=2000"/>
+            <cm:property name="fatturapa.ftp.timer.fattura.passiva.registrazione"
+                         value="timer://ftpFattPassivaGestionale?fixedRate=true&amp;period=60000&amp;delay=3000"/>
+
+            <cm:property name="fatturapa.ftp.timer.decorrenza.termini.invio.singolo"
+                         value="timer://ftpDecTerminiInvioSingolo?fixedRate=true&amp;period=300000&amp;delay=120000"/>
+            <cm:property name="fatturapa.ftp.timer.decorrenza.termini.protocollo"
+                         value="timer://ftpDecTerminiProtocollo?fixedRate=true&amp;period=300000&amp;delay=180000"/>
+            <cm:property name="fatturapa.ftp.timer.decorrenza.termini.registrazione"
+                         value="timer://ftpDecTerminiRegistrazione?fixedRate=true&amp;period=300000&amp;delay=240000"/>
+
+            <cm:property name="fatturapa.ftp.jetty.fattura.passiva.invio.singolo"
+                         value="jetty:http://0.0.0.0:8080/"/>
+            <cm:property name="fatturapa.ftp.jetty.fattura.passiva.protocollo"
+                         value="jetty:http://0.0.0.0:8080/"/>
+            <cm:property name="fatturapa.ftp.jetty.fattura.passiva.registrazione"
+                         value="jetty:http://0.0.0.0:8080/"/>
+
+            <cm:property name="fatturapa.ftp.jetty.decorrenza.termini.invio.singolo"
+                         value="jetty:http://0.0.0.0:8080/"/>
+            <cm:property name="fatturapa.ftp.jetty.decorrenza.termini.protocollo"
+                         value="jetty:http://0.0.0.0:8080/"/>
+            <cm:property name="fatturapa.ftp.jetty.decorrenza.termini.registrazione"
+                         value="jetty:http://0.0.0.0:8080/"/>
+            
+            <cm:property name="fatturapa.ftp.jetty.scarto.esito.invio.singolo" value="jetty:http://0.0.0.0:8080/"/>
+            <cm:property name="fatturapa.ftp.timer.scarto.esito.invio.singolo" value="timer://ftpScartoEsitoInvioSingolo?fixedRate=true&amp;period=300000&amp;delay=120000"/>
+
+            <cm:property name="fatturapa.ftp.url" value=""/>
+            <cm:property name="fatturapa.ftp.port" value=""/>
+            <cm:property name="fatturapa.ftp.dir.in" value=""/>
+            <cm:property name="fatturapa.ftp.dir.out" value=""/>
+            <cm:property name="fatturapa.ftp.max.size.zip" value="150"/>
+            <cm:property name="fatturapa.dir.zip.invio" value=""/>
+
+            <cm:property name="fatturapa.ca.tipo.canale.ftp" value="005"/>
+
+            <cm:property name="fatturapa.ftp.ca.stato.fattura.attiva.invio" value="002"/>
+            <cm:property name="fatturapa.ftp.ca.stato.fattura.invio.unico" value="060"/>
+            <cm:property name="fatturapa.ftp.ca.stato.fattura.invio.protocollo" value="061"/>
+            <cm:property name="fatturapa.ftp.ca.stato.fattura.invio.registrazione" value="062"/>
+
+            <cm:property name="fatturapa.ftp.ca.stato.dec.termini.invio.unico" value="063"/>
+            <cm:property name="fatturapa.ftp.ca.stato.dec.termini.invio.protocollo" value="064"/>
+            <cm:property name="fatturapa.ftp.ca.stato.dec.termini.invio.registrazione" value="065"/>
+
+            <cm:property name="fatturapa.ftp.ca.stato.scarto.ec.invio.unico" value="066"/>
+            <cm:property name="fatturapa.ftp.ca.stato.scarto.ec.invio.protocollo" value="067"/>
+            <cm:property name="fatturapa.ftp.ca.stato.scarto.ec.invio.registrazione" value="068"/>
+
+            <cm:property name="fatturapa.ftp.ca.stato.notifica.esito.committente.invio.protocollo" value="069"/>
+
+        </cm:default-properties>
+    </cm:property-placeholder>
+</blueprint>

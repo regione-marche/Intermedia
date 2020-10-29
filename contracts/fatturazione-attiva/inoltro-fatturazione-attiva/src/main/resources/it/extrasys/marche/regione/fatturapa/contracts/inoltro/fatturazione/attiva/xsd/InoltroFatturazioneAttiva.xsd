@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:types="http://www.extrasys.it/regma/fatturazione/cicloattivo"
+            targetNamespace="http://www.extrasys.it/regma/fatturazione/cicloattivo">
+
+    <!-- ELEMENT -->
+    <xsd:element name="RiceviFile_Element" type="types:file_Type"/>
+    <xsd:element name="RispostaRiceviFile_Element" type="types:rispostaRiceviFile_Type"/>
+
+    <!-- COMPLEX TYPES -->
+    <xsd:complexType name="file_Type">
+        <xsd:sequence>
+            <xsd:element name="dataOraInvio" type="xsd:dateTime"/>
+            <xsd:element name="idFiscaleMittente" type="types:idMittente_Type"/>
+            <xsd:element name="codiceUfficio" type="types:codiceUfficio_Type"/>
+            <xsd:element name="idComunicazione" type="types:idComunicazione_Type"/>
+            <xsd:element name="NomeFile" type="types:nomeFile_Type"/>
+            <xsd:element xmlns:xmime="http://www.w3.org/2005/05/xmlmime" name="File" type="xsd:base64Binary"
+                         xmime:expectedContentTypes="*/*"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="rispostaRiceviFile_Type">
+        <xsd:sequence>
+            <xsd:element name="DataOraRicezione" type="xsd:dateTime"/>
+            <xsd:element name="codErrore" type="types:codErroreInvio_Type" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:simpleType name="codiceUfficio_Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z0-9]{6}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="idComunicazione_Type">
+        <xsd:restriction base="xsd:integer">
+            <xsd:totalDigits value="12"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="nomeFile_Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z0-9_\.]{9,50}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="idMittente_Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z0-9]{13}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:simpleType name="codErroreInvio_Type">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="FA01">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        FA01 = RICEZIONE AVVENUTA CON SUCCESSO
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+
+            <xsd:enumeration value="FA02">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        FA02 = ERRORE DI VALIDAZIONE FATTURAPA
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+
+            <xsd:enumeration value="FA03">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        FA03 = SERVIZIO NON DISPONIBILE
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>

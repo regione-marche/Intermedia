@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<!-- Processors che creano il messaggio di Risposta per gli enti -->
+
+	<bean id="creaMessaggioRispostaFallimentoProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.CreaMessaggioRispostaFallimentoProcessor" />
+
+	<bean id="creaMessaggioRispostaSuccessoProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.CreaMessaggioRispostaSuccessoProcessor" />
+
+
+	<!-- END Processors che creano il messaggio di Risposta per gli enti -->
+
+	<bean id="fatturaAttivaFromEntiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="fatturaAttivaDao" ref="fatturaAttivaDao" />
+		<property name="statoFatturaAttivaDao" ref="statoFatturaAttivaDao" />
+		<property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao" />
+		<property name="enteDao" ref="enteDao" />
+		<property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+	</bean>
+
+	<bean id="enteManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.EnteManager">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+		<property name="enteDao" ref="enteDao"/>
+		<property name="utentiDao" ref="utentiDao"/>
+		<property name="tipoCanaleDao" ref="tipoCanaleDao"/>
+		<property name="endpointAttivaCaDao" ref="endpointAttivaCaDao"/>
+		<property name="endpointCaDao" ref="endpointCaDao"/>
+		<property name="canaleCaDao" ref="canaleCaDao"/>
+		<property name="chiaveDao" ref="chiaveDao"/>
+		<property name="entePaleoCaDao" ref="entePaleoCaDao"/>
+	</bean>
+
+	<bean id="creaIdComunicazioneProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.CreaIdComunicazioneProcessor" />
+
+	<bean id="creaRispostaRicezioneFatturaAttivaProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.CreaRispostaRicezioneFatturaAttivaProcessor"/>
+
+	<bean id="salvaNotificheProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.SalvaNotifichePersistenceProcessor">
+		<property name="fatturazionePassivaNotificheManagerXA" ref="notifichePersistenceManagerXA" />
+	</bean>
+
+	<bean id="fatturazioneAttivaRiceviManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.processors.FatturazioneAttivaRiceviManager">
+		<property name="fatturaAttivaFromEntiManager" ref="fatturaAttivaFromEntiManager" />
+		<property name="enteManager" ref="enteManager" />
+	</bean>
+
+	<bean id="XA_TX_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+		<property name="transactionManager" ref="platformTxManager" />
+	</bean>
+
+	<bean id="camelTracer" class="org.apache.camel.processor.interceptor.Tracer">
+		<property name="traceExceptions" value="false" />
+		<!--true -->
+		<property name="traceInterceptors" value="true" />
+		<!--false -->
+		<property name="logLevel" value="TRACE" />
+		<!--INFO -->
+		<property name="logName" value="camel.trace" />
+		<!--org.apache.camel.processor.interceptor.TraceInterceptor -->
+	</bean>
+
+	<bean id="traceFormatter" class="org.apache.camel.processor.interceptor.DefaultTraceFormatter">
+		<!--<property name="showBody" value="true" /> -->
+		<property name="showBodyType" value="true" />
+		<property name="showOutBody" value="true" />
+		<!--<property name="showBreadCrumb" value="true" /> -->
+		<property name="breadCrumbLength" value="200" />
+		<!--default is 0 i.e. no fixed length -->
+		<property name="maxChars" value="2000" />
+		<!--default is 10000 -->
+	</bean>
+
+	<bean id="utentiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.UtentiDao"/>
+	<bean id="tipoCanaleDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TipoCanaleDao"/>
+	<bean id="endpointAttivaCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointAttivaCaDao"/>
+	<bean id="endpointCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointCaDao"/>
+	<bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
+	<bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
+	<bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+
+	<!-- STATEFUL BEAN CONFIGURATION -->
+
+	<bean id="notificaFromEntiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromEntiDao" />
+
+	<bean id="statoFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaDao" />
+
+	<bean id="codificaStatiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiDao" />
+
+	<bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao" />
+
+	<bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao" />
+
+	<bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao" />
+
+	<bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao" />
+
+	<bean id="notificaFromEntiToEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.NotificaFromEntiToEntityConverter" />
+
+	<bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
+
+	<bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao" />
+
+	<bean id="notifichePersistenceManagerXA" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificheManagerXAImpl">
+		<jpa:unit property="entityManagerFactory" unitname="persistence-unit-xa" />
+		<property name="notificaDao" ref="notificaFromEntiDao" />
+		<property name="statoFatturaDao" ref="statoFatturaDao" />
+		<property name="codificaStatiDao" ref="codificaStatiDao" />
+		<property name="datiFatturaDao" ref="datiFatturaDao" />
+		<property name="notificaFromEntiToEntityConverter" ref="notificaFromEntiToEntityConverter" />
+	</bean>
+
+	<!-- END STATEFUL BEAN CONFIGURATION -->
+
+	<!-- ECCEZIONI SERVICE FATTURA PASSIVA -->
+	<bean id="servizioNonDisponibileException" class="java.lang.Exception">
+		<argument index="0" value="Servizio Non Disponibile" />
+	</bean>
+
+	<bean id="enteNonTrovatoException" class="java.lang.Exception">
+		<argument index="0" value="Ente non accreditato" />
+	</bean>
+
+	<bean id="fatturaAttivaValidationAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.inbound.strategy.FatturaAttivaValidationAggregationStrategy"/>
+
+
+	<bean id="wsAttivaInvioFatturaRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+		<property name="maximumRedeliveries" value="${fattura.attiva.ricevi.retry.attempts}" />
+		<property name="redeliveryDelay" value="${fattura.attiva.ricevi.retry.delay}" />
+		<property name="useExponentialBackOff" value="true" />
+	</bean>
+
+	<bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="5" />
+	</bean>
+</blueprint>

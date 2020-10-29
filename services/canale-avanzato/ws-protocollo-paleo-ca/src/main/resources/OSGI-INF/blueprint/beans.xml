@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5" />
+    </bean>
+
+    <bean id="paleoCAProtocollazioneRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${paleoCAProtocollazioneRedeliveryPolicyConfig.retry.attempts}"/>
+        <property name="redeliveryDelay" value="${paleoCAProtocollazioneRedeliveryPolicyConfig.retry.delay}"/>
+        <property name="useExponentialBackOff" value="true"/>
+        <property name="backOffMultiplier" value="${paleoCAProtocollazioneRedeliveryPolicyConfig.backOffMultiplier}"/>
+        <property name="retryAttemptedLogLevel" value="${paleoCAProtocollazioneRedeliveryPolicyConfig.retryAttemptedLogLevel}"/>
+    </bean>
+
+    <bean id="usernamePasswordCallbackHandler" class="it.extrasys.marche.regione.fatturapa.core.utils.cxf.interceptors.UsernamePasswordCallbackHandler">
+        <property name="username" value="username"/>
+        <property name="password" value="password"/>
+    </bean>
+
+    <bean id="chiaveManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.ChiaveManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="chiaveDao" ref="chiaveDao"/>
+    </bean>
+
+
+    <!-- DAO -->
+    <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao"/>
+    <bean id="codificaStatiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiDao"/>
+    <bean id="datiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.DatiFatturaDao"/>
+    <bean id="statoFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaDao"/>
+    <bean id="fileFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FileFatturaDao"/>
+    <bean id="metadatiFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.MetadatiFatturaDao"/>
+    <bean id="notificaDecorrenzaTerminiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaDecorrenzaTerminiDao"/>
+    <bean id="notificaFromEntiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromEntiDao"/>
+    <bean id="notificaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromSdiDao"/>
+    <bean id="utentiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.UtentiDao"/>
+    <bean id="tipoCanaleDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TipoCanaleDao"/>
+    <bean id="endpointAttivaCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointAttivaCaDao"/>
+    <bean id="endpointCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointCaDao"/>
+    <bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
+    <bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
+    <bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+
+
+    <!-- Manager -->
+    <bean id="enteManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.EnteManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="enteDao" ref="enteDao"/>
+        <property name="utentiDao" ref="utentiDao"/>
+        <property name="tipoCanaleDao" ref="tipoCanaleDao"/>
+        <property name="endpointAttivaCaDao" ref="endpointAttivaCaDao"/>
+        <property name="endpointCaDao" ref="endpointCaDao"/>
+        <property name="canaleCaDao" ref="canaleCaDao"/>
+        <property name="chiaveDao" ref="chiaveDao"/>
+        <property name="entePaleoCaDao" ref="entePaleoCaDao"/>
+    </bean>
+    <bean id="datiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.DatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+    </bean>
+    <bean id="fatturazionePassivaFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="fileFatturaDao" ref="fileFatturaDao"/>
+    </bean>
+    <bean id="metadatiFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.MetadatiFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="metadatiFatturaDao" ref="metadatiFatturaDao"/>
+    </bean>
+    <bean id="fatturazionePassivaNotificaDecorrenzaTerminiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificaDecorrenzaTerminiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="notificaDecorrenzaTerminiDao" ref="notificaDecorrenzaTerminiDao"/>
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+    </bean>
+    <bean id="notificaFromEntiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromEntiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="notificaFromEntiDao" ref="notificaFromEntiDao"/>
+    </bean>
+    <bean id="notificaFromSdiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromSdiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit"/>
+        <property name="notificaFromEntiDao" ref="notificaFromEntiDao"/>
+        <property name="notificaFromSdiDao" ref="notificaFromSdiDao"/>
+    </bean>
+
+    <bean id="paleoCAManager" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.PaleoCAManager">
+        <!-- Ref Manager -->
+        <property name="enteManager" ref="enteManager"/>
+        <property name="datiFatturaManager" ref="datiFatturaManager"/>
+        <property name="fatturazionePassivaNotificaDecorrenzaTerminiManager" ref="fatturazionePassivaNotificaDecorrenzaTerminiManager"/>
+        <property name="notificaFromEntiManager" ref="notificaFromEntiManager"/>
+        <property name="notificaFromSdiManager" ref="notificaFromSdiManager"/>
+
+        <!-- Ref Processor -->
+        <property name="creaRichiestaGetDocumentiProtocolliInFascicoloProcessor" ref="creaRichiestaGetDocumentiProtocolliInFascicoloProcessor"/>
+        <property name="creaRichiestaProtocollazioneEntrataProcessor" ref="creaRichiestaProtocollazioneEntrataProcessor"/>
+        <property name="creaRichiestaCercaDocumentoProtocolloProcessor" ref="creaRichiestaCercaDocumentoProtocolloProcessor"/>
+        <property name="creaRichiestaProtocollazioneNotificaDecorrenzaTerminiProcessor" ref="creaRichiestaProtocollazioneNotificaDecorrenzaTerminiProcessor"/>
+        <property name="creaRichiestaProtocollazioneEsitoCommittenteProcessor" ref="creaRichiestaProtocollazioneEsitoCommittenteProcessor"/>
+        <property name="creaRichiestaProtocollazioneScartoEsitoCommittenteProcessor" ref="creaRichiestaProtocollazioneScartoEsitoCommittenteProcessor"/>
+    </bean>
+
+
+    <!-- Processor -->
+    <bean id="xmlStringSanitizerProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.fattura.FatturaXmlSanitizerProcessor"/>
+    <bean id="wrapFatturaProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.fattura.WrapFatturaProcessor"/>
+    <bean id="wrapNotificaDecorrenzaTerminiProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.WrapNotificaDecorrenzaTerminiProcessor"/>
+    <bean id="creaRichiestaGetDocumentiProtocolliInFascicoloProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.fattura.CreaRichiestaGetDocumentiProtocolliInFascicoloProcessor"/>
+    <bean id="creaRichiestaProtocollazioneEntrataProcessor" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.processor.CreaRichiestaProtocollazioneEntrataCAProcessor">
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+        <property name="metadatiFatturaManager" ref="metadatiFatturaManager"/>
+    </bean>
+    <bean id="rispostaGetDocumentiProtocolliInFascicoloProcessor" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.processor.RispostaGetDocumentiProtocolliInFascicoloProcessor"/>
+    <bean id="rispostaProtocollazioneEntrataCAProcessor" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.processor.RispostaProtocollazioneEntrataCAProcessor"/>
+    <bean id="aggiornaStatoFattureAProtocollataProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.fattura.AggiornaStatoFattureAProtocollataProcessor">
+        <property name="fatturaManager" ref="datiFatturaManager"/>
+    </bean>
+    <bean id="recuperaSegnaturaProtocolloFatturaProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.RecuperaSegnaturaProtocolloFatturaProcessor">
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+    </bean>
+    <bean id="creaRichiestaCercaDocumentoProtocolloProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.CreaRichiestaCercaDocumentoProtocolloProcessor">
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+    </bean>
+    <bean id="rispostaCercaDocumentoProtocolloProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.RispostaCercaDocumentoProtocolloProcessor"/>
+    <bean id="creaRichiestaProtocollazioneNotificaDecorrenzaTerminiProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.CreaRichiestaProtocollazioneNotificaDecorrenzaTerminiProcessor"/>
+    <bean id="aggiornaStatoFattureANotificaProtocollataProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.decorrenza.termini.AggiornaStatoFattureANotificaProtocollataProcessor">
+        <property name="fatturaManager" ref="datiFatturaManager"/>
+    </bean>
+    <bean id="wrapNotificaEsitoCommitteteProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.esito.committente.WrapNotificaEsitoCommittenteProcessor"/>
+    <bean id="creaRichiestaProtocollazioneEsitoCommittenteProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.esito.committente.CreaRichiestaProtocollazioneEsitoCommittenteProcessor"/>
+    <bean id="wrapNotificaScartoEsitoCommitteteProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.scarto.esito.committente.WrapNotificaScartoEsitoCommittenteProcessor"/>
+    <bean id="rispostaProtocollazionePartenzaCAProcessor" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.processor.RispostaProtocollazionePartenzaCAProcessor"/>
+    <bean id="creaRichiestaProtocollazioneScartoEsitoCommittenteProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.scarto.esito.committente.CreaRichiestaProtocollazioneScartoEsitoCommittenteProcessor"/>
+    <bean id="aggiornaStatoFattureANotificaECProtocollataProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.esito.committente.AggiornaStatoFattureANotificaECProtocollataProcessor">
+        <property name="fatturaManager" ref="datiFatturaManager"/>
+    </bean>
+    <bean id="aggiornaStatoFattureANotificaScartoECProtocollataProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.processors.notifica.scarto.esito.committente.AggiornaStatoFattureANotificaScartoECProtocollataProcessor">
+        <property name="fatturaManager" ref="datiFatturaManager"/>
+    </bean>
+
+    <!-- Strategy -->
+    <bean id="infoEntePaleoCAAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.strategy.InfoEntePaleoCAAggregationStrategy"/>
+    <bean id="rupAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.fattura.RUPAggregationStrategy"/>
+    <bean id="rupSplitterAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.fattura.RupSplitterAggregationStrategy"/>
+    <bean id="fascicoloAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.strategy.FascicoloAggregationStrategy"/>
+    <bean id="protocollazioneAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.fattura.ProtocollazioneAggregationStrategy"/>
+    <bean id="infoMittenteAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.strategy.InfoMittenteAggregationStrategy"/>
+    <bean id="segnaturaProtocolloFatturaAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.decorrenza.termini.SegnaturaProtocolloFatturaAggregationStrategy"/>
+    <bean id="classificazioniAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.decorrenza.termini.ClassificazioniAggregationStrategy"/>
+    <bean id="protocollazioneNotificaDecorrenzaTerminiAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.decorrenza.termini.ProtocollazioneAggregationStrategy"/>
+    <bean id="protocollazioneNotificaEsitoCommittenteAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.esito.committente.ProtocollazioneAggregationStrategy"/>
+    <bean id="segnaturaProtocolloFatturaAggregationStrategyEC" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.esito.committente.SegnaturaProtocolloFatturaAggregationStrategy"/>
+    <bean id="segnaturaProtocolloFatturaAggregationStrategyScartoEC" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.scarto.esito.committente.SegnaturaProtocolloFatturaAggregationStrategy"/>
+    <bean id="classificazioniAggregationStrategyEC" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.esito.committente.ClassificazioniAggregationStrategy"/>
+    <bean id="classificazioniAggregationStrategyScartoEC" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.scarto.esito.committente.ClassificazioniAggregationStrategy"/>
+    <bean id="protocollazioneNotificaScartoEsitoCommittenteAggregationStrategy" class="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.strategies.notifica.scarto.esito.committente.ProtocollazioneAggregationStrategy"/>
+
+    <!-- Exception -->
+    <bean id="fatturaPAFatalException" class="it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatalException"/>
+
+</blueprint>

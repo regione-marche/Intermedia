@@ -1,0 +1,296 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "IntermediaMarcheStatistics_Service",
+    "version": "2.1.0",
+    "description": "IntermediaMarcheStatistics API Documentation",
+    "contact": {
+
+    }
+  },
+  "paths": {
+    "/stats/fatturePassive/month": {
+      "get": {
+        "tags": [
+          "intermediaMarcheStatistics"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/StatsFatture"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "",
+        "description": ""
+      }
+    },
+    "/stats/fattureAttive/month": {
+      "get": {
+        "tags": [
+          "intermediaMarcheStatistics"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/StatsFatture"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "",
+        "description": ""
+      }
+    },
+    "/stats/fatturePassive/year": {
+      "get": {
+        "tags": [
+          "intermediaMarcheStatistics"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/StatsFatture"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Get Token",
+        "description": "Servizio utilizzato per la creazione di un token"
+      }
+    },
+    "/stats/fattureAttive/year": {
+      "get": {
+        "tags": [
+          "intermediaMarcheStatistics"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/StatsFatture"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Get Token",
+        "description": "Servizio utilizzato per la creazione di un token"
+      }
+    },
+    "/stats/enti": {
+      "get": {
+        "tags": [
+          "intermediaMarcheStatistics"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "description": "",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/StatsFatture"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "summary": "Servizio Get Token",
+        "description": "Servizio utilizzato per la creazione di un token"
+      }
+    }
+  },
+  "definitions": {
+    "StatsFatture": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "ws_base": {
+          "description": "",
+          "type": "integer"
+        },
+        "pec_base": {
+          "description": "",
+          "type": "integer"
+        },
+        "ws_ca": {
+          "description": "",
+          "type": "integer"
+        },
+        "pec_ca": {
+          "description": "",
+          "type": "integer"
+        },
+        "ftp_ca": {
+          "description": "",
+          "type": "integer"
+        },
+        "ca_non_invio_unico": {
+          "description": "",
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "intermediaMarcheStatistics",
+      "description": "Progetto Intermedia Marche"
+    }
+  ]
+}

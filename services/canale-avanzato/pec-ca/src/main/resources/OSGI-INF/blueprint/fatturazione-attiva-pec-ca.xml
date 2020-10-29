@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" managementNamePattern="#symbolicName#-#counter#"
+                  useMDCLogging="true" xmlns="http://camel.apache.org/schema/blueprint"
+                  id="ctx.enti.bridge.pec.ca.fatturazione.attiva"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAValidazioneFallitaException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>validazioneFatturaFallita</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA02</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>file fattura rifiutato: errore validazione fattura</simple>
+            </setHeader>
+
+            <log message="FatturaPAValidazioneFallitaException"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAValidazioneOggettoFallitaException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>validazioneOggettoFallita</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA04</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>oggetto: nome file fattura non valido</simple>
+            </setHeader>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <log message="FatturaPAValidazioneOggettoFallitaException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <removeHeader headerName="exception"/>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAEnteNonTrovatoException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>enteNonTrovato</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA03</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>ente non abiliato a IntermediaMarche</simple>
+            </setHeader>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <log message="FatturaPAEnteNonTrovatoException o AddressException"/>
+
+            <removeHeader headerName="exception"/>
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAAllegatoAttivaNonTrovatoException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>allegatoNonTrovato</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA05</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>allegato non trovato</simple>
+            </setHeader>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <log message="FatturaPAAllegatoAttivaNonTrovatoException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <removeHeader headerName="exception"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPANomeFileErratoException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>nomeFileErrato</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA04</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>nome file non valido</simple>
+            </setHeader>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <removeHeader headerName="exception"/>
+
+            <log message="FatturaPAAllegatoAttivaNonTrovatoException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="pecCAAttivaInvioFatturaRedeliveryPolicyConfig">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>persistenceError</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA99</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>Errore generico</simple>
+            </setHeader>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <removeHeader headerName="exception"/>
+
+            <log message="FatturaPaPersistenceException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAException</exception>
+            <exception>java.lang.Exception</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>erroreGenerico</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA99</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>Errore generico</simple>
+            </setHeader>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <removeHeader headerName="exception"/>
+
+            <log message="FatturaPAException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
+        <route id="enti.bridge.pec.ca.attiva.inbound">
+            <!--from uri="imaps://{{ente.pec.ca.attiva.indirizzo.email.username.intero}}@{{ente.pec.ca.attiva.indirizzo.email.host}}?password={{ente.pec.ca.attiva.indirizzo.email.password}}&amp;username={{ente.pec.ca.attiva.indirizzo.email.username.intero}}&amp;port={{ente.pec.ca.attiva.indirizzo.email.port.imaps}}&amp;consumer.initialDelay=10000&amp;sslContextParameters=#sslContextParameters"/-->
+            <from uri="imaps://{{ente.pec.ca.attiva.indirizzo.email.username.intero}}@{{ente.pec.ca.attiva.indirizzo.email.host}}?password={{ente.pec.ca.attiva.indirizzo.email.password}}&amp;username={{ente.pec.ca.attiva.indirizzo.email.username.intero}}&amp;port={{ente.pec.ca.attiva.indirizzo.email.port.imaps}}&amp;consumer.initialDelay=10000"/>
+
+            <log message="ENTI BRIDGE PEC CA ATTIVA INBOUND STARTED"/>
+
+            <bean ref="pecCAAttivaManager" method="salvaFatturaDb"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.emailDaIgnorare} == true</simple>
+
+                    <log message="ENTI BRIDGE PEC ATTIVA INBOUND MAIL DA IGNORARE: mittente: ${headers.Return-Path};"/>
+
+                </when>
+                <otherwise>
+
+                    <enrich strategyRef="fatturaAttivaPecValidationAggregationStrategy">
+                        <simple>{{enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher}}</simple>
+                    </enrich>
+
+                    <choice>
+                        <when>
+                            <simple>${headers.validation} == 'OK'</simple>
+
+                            <log message="ENTI BRIDGE PEC CA ATTIVA - VALIDAZIONE OK"/>
+
+                            <!-- Coda per Inoltrare fattura al SDI -->
+                            <inOnly uri="{{enti.bridge.fattura.attiva.inoltro}}"/>
+
+                            <!-- Esito Ricezione Fattura -->
+                            <inOnly uri="{{enti.bridge.pec.ca.attiva.esito.operazione.inoltro}}"/>
+                        </when>
+                        <otherwise>
+                            <!-- validazione errata -->
+                            <log message="ENTI BRIDGE PEC CA ATTIVA - VALIDAZIONE KO"/>
+
+                            <throwException ref="fatturaPAValidazioneFallitaException"/>
+
+                        </otherwise>
+                    </choice>
+
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <route id="enti.bridge.pec.ca.attiva.esito.operazione.inoltro">
+            <from uri="{{enti.bridge.pec.ca.attiva.esito.operazione.inoltro}}"/>
+
+            <!-- costruire il file esito operazione -->
+            <enrich strategyRef="pecCAEsitoOperazioneFatturaAggregationStrategy">
+                <simple>{{enti.bridge.pec.ca.attiva.esito.operazione.enricher}}</simple>
+            </enrich>
+
+            <to uri="velocity:velocity/creaBodyEsitoOperazioneFatturaTemplate.vm"/>
+
+            <bean ref="pecCAAttivaManager" method="preparaMailEsitoOperazione"/>
+
+            <setHeader headerName="to">
+                <simple>${in.headers.Return-Path}</simple>
+            </setHeader>
+
+            <setHeader headerName="from">
+                <simple>{{ente.pec.ca.attiva.indirizzo.email.username.intero}}</simple>
+            </setHeader>
+
+            <setHeader headerName="content-type">
+                <constant>text/html</constant>
+            </setHeader>
+
+            <log message="ENTI BRIDGE PEC CA ATTIVA INBOUND: INVIO EMAIL ESITO OPERAZIONE"/>
+
+            <removeHeader headerName="SOAP-ACTION"/>
+
+            <to uri="smtps://{{ente.pec.ca.attiva.indirizzo.email.username.intero}}@{{ente.pec.ca.attiva.indirizzo.email.host}}?password={{ente.pec.ca.attiva.indirizzo.email.password}}&amp;username={{ente.pec.ca.attiva.indirizzo.email.username.intero}}&amp;port={{ente.pec.ca.attiva.indirizzo.email.port.smtps}}&amp;headerFilterStrategy=#FatturaHeadersMailFilterStrategy"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.tipoErrore} == null</simple>
+                    <log message="ENTI BRIDGE PEC CA ATTIVA INBOUND: INVIO EMAIL ESITO OPERAZIONE - OK"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoErrore} == ''</simple>
+                    <log message="ENTI BRIDGE PEC CA ATTIVA INBOUND: INVIO EMAIL ESITO OPERAZIONE - OK"/>
+                </when>
+                <otherwise>
+                    <log message="ENTI BRIDGE PEC CA ATTIVA INBOUND: INVIO EMAIL ESITO OPERAZIONE - TIPO ERRORE: ${headers.tipoErrore}"/>
+                </otherwise>
+            </choice>
+
+        </route>
+
+        <route id="enti.bridge.pec.ca.attiva.esito.operazione.enricher">
+            <from uri="{{enti.bridge.pec.ca.attiva.esito.operazione.enricher}}"/>
+
+            <bean ref="pecCAAttivaManager" method="setHeadersEsitoOperazione"/>
+
+            <log message="ENTI BRIDGE PEC CA ATTIVA ESITO OPERAZIONE ENRICHER - RICEVUTA COMUNICAZIONE ${headers.ricevutaComunicazione}"/>
+
+            <to uri="velocity:velocity/creaFileEsitoOperazioneFatturaTemplate.vm"/>
+
+        </route>
+
+        <route id="enti.bridge.pec.ca.attiva.inoltro.errori">
+            <from uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+            <log message="ENTI BRIDGE PEC CA ATTIVA INOLTRO ERRORI STARTED"/>
+
+            <bean ref="pecCAAttivaManager" method="setHeadersEsitoOperazioneErrore"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <inOnly uri="{{enti.bridge.pec.ca.attiva.esito.operazione.inoltro}}"/>
+
+        </route>
+
+        <!-- ENRICHER -->
+        <route id="enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher">
+            <from uri="{{enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher}}"/>
+
+            <!-- nel body ho la fattura che devo validare. Devo estrarre l'eventuale firma e dunque validare il contenuto -->
+
+            <doTry>
+
+                <bean ref="pecCAAttivaManager" method="preparaFatturaPerValidazione"/>
+
+                <to uri="validator:xsd/FatturazioneElettronica.xsd"/>
+
+                <setHeader headerName="validation">
+                    <constant>OK</constant>
+                </setHeader>
+
+                <doCatch>
+                    <exception>org.apache.camel.ValidationException</exception>
+                    <exception>org.xml.sax.SAXParseException</exception>
+
+                    <handled>
+                        <constant>true</constant>
+                    </handled>
+
+                    <setHeader headerName="validation">
+                        <constant>KO</constant>
+                    </setHeader>
+
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                </doCatch>
+            </doTry>
+        </route>
+
+    </camelContext>
+
+</blueprint>

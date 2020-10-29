@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="it.extrasys.marche.regione.fatturapa.karaf.scripts">
+
+    <feature name="karaf-scripts" resolver="(obr)" version="${project.version}">
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/create-profiles</bundle>
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/profile-fatturapa-base</bundle>
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/profile-fatturapa</bundle>
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/create-containers</bundle>
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/create-version</bundle>
+        <bundle>mvn:it.extrasys.marche.regione.fatturapa/karaf-scripts/${project.version}/karaf/broker-child</bundle>
+    </feature>
+    
+</features>    
+   

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+<cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.persistence.datasource" persistent-id="it.extrasys.marche.regione.fatturapa.persistence.datasource">
+
+    <cm:default-properties>
+
+        <cm:property name="db.driver.class.name" value="org.h2.Driver" />
+        <cm:property name="db.url" value="jdbc:h2:mem:cdr;DB_CLOSE_DELAY=-1" />
+        <cm:property name="db.username" value="" />
+        <cm:property name="db.password" value="" />
+        <cm:property name="db.initial.size" value="10" />
+        <cm:property name="db.max.active" value="50" />
+        <cm:property name="db.validation.query" value="SELECT 0" />
+        <cm:property name="db.test.on.borrow" value="true" />
+
+        <cm:property name="db.xa.name" value="fatturapa" />
+        <cm:property name="db.xa.host" value="localhost" />
+        <cm:property name="db.xa.port" value="" />
+        <cm:property name="db.xa.username" value="" />
+        <cm:property name="db.xa.password" value="" />
+        <cm:property name="db.xa.initial.size" value="10" />
+        <cm:property name="db.xa.maxSize" value="50" />
+        <cm:property name="db.xa.minSize" value="5" />
+        <cm:property name="db.xa.blockingTimeoutMilliseconds" value="5000" />
+        <cm:property name="db.xa.idleTimeoutMinutes" value="2" />
+
+    </cm:default-properties>
+
+</cm:property-placeholder>
+
+</blueprint>

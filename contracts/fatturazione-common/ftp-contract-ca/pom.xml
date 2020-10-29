@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.extrasys.marche.regione.fatturapa</groupId>
+        <artifactId>fatturazione-common</artifactId>
+        <version>2.0.3-SNAPSHOT</version>
+    </parent>
+
+    <groupId>it.extrasys.marche.regione.fatturapa.ftp.contract</groupId>
+    <artifactId>ftp-contract-ca</artifactId>
+
+    <packaging>bundle</packaging>
+
+    <name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: CONTRACTS :: FATTURAZIONE COMMON :: FTP CONTRACT CA</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/generated-sources/jaxb</outputDirectory>
+                            <packageName>it.extrasys.marche.regione.fatturapa.contracts.ca.ftp.beans</packageName>
+                            <!-- The name of your generated source package -->
+                            <sources>
+                                <source>src/main/resources/it/extrasys/marche/regione/fatturapa/contracts/ca/ftp/xsd/view-source_https___www.fatturapa.gov.it_export_fatturazione_sdi_ftp_v1.3_FtpTypes_v1.2.xsd</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>compile-jaxb</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <includes>
+                                <include>target/generated-sources/jaxb/</include>
+                            </includes>
+                        </configuration>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>
+                            it.extrasys.marche.regione.fatturapa.contracts.ca.ftp.beans;version="${project.version}",
+                            it.extrasys.marche.regione.fatturapa.contracts.ca.ftp.xsd;version="${project.version}"
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

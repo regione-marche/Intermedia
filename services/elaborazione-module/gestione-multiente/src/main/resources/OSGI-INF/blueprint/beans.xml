@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao"/>
+
+    <bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao"/>
+
+    <bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao"/>
+
+    <bean id="fatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FatturaAttivaDao"/>
+
+    <bean id="utentiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.UtentiDao"/>
+    <bean id="tipoCanaleDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.TipoCanaleDao"/>
+    <bean id="endpointAttivaCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointAttivaCaDao"/>
+    <bean id="endpointCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointCaDao"/>
+    <bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
+    <bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
+    <bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+
+    <bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter"/>
+
+    <bean id="gestioneMultienteRedeliveryPolicyConfig" class="org.apache.camel.processor.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${gestione.multiente.retry.attempts}" />
+        <property name="redeliveryDelay" value="${gestione.multiente.retry.delay}" />
+    </bean>
+
+    <bean id="enteManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.EnteManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="enteDao" ref="enteDao"/>
+        <property name="utentiDao" ref="utentiDao"/>
+        <property name="tipoCanaleDao" ref="tipoCanaleDao"/>
+        <property name="endpointAttivaCaDao" ref="endpointAttivaCaDao"/>
+        <property name="endpointCaDao" ref="endpointCaDao"/>
+        <property name="canaleCaDao" ref="canaleCaDao"/>
+        <property name="chiaveDao" ref="chiaveDao"/>
+        <property name="entePaleoCaDao" ref="entePaleoCaDao"/>
+    </bean>
+
+    <bean id="fatturaAttivaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturaAttivaManagerImpl">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter"/>
+        <property name="fatturaAttivaDao" ref="fatturaAttivaDao"/>
+        <property name="codificaStatiAttivaDao" ref="codificaStatiAttivaDao"/>
+        <property name="statoFatturaAttivaDao" ref="statoFatturaAttivaDao"/>
+        <property name="enteDao" ref="enteDao"/>
+    </bean>
+
+    <bean id="gestioneMultienteManager" class="it.extrasys.marche.regione.fatturapa.elaborazione.module.gestione.multiente.GestioneMultienteManager">
+        <property name="enteManager" ref="enteManager"/>
+        <property name="fatturaAttivaManager" ref="fatturaAttivaManager"/>
+    </bean>
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5" />
+    </bean>
+</blueprint>

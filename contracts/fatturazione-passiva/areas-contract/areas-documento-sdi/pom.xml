@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<parent>
+		<groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva</groupId>
+		<artifactId>areas-contract</artifactId>
+		<version>2.0.3-SNAPSHOT</version>
+	</parent>
+
+
+	<groupId>it.extrasys.marche.regione.fatturapa.contracts.fatturazione-passiva.areas</groupId>
+	<artifactId>areas-documento-sdi</artifactId>
+
+	<packaging>bundle</packaging>
+
+	<name>EXTRA :: REGIONE MARCHE :: FATTURAPA :: CONTRACTS :: FATTURAZIONE PASSIVA :: AREAS :: DOCUMENTO SDI</name>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>xjc</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/jaxb</outputDirectory>
+							<packageName>it.extrasys.marche.regione.fatturapa.contracts.areas.documento.beans</packageName>
+							<!-- The name of your generated source package -->
+							<sources>
+								<source>src/main/resources/it/extrasys/marche/regione/fatturapa/contracts/areas/documento/xsd/DocumentoSDI.xsd</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+				<executions>
+					<execution>
+						<id>compile-jaxb</id>
+						<phase>compile</phase>
+						<configuration>
+							<includes>
+								<include>target/generated-sources/jaxb/</include>
+							</includes>
+						</configuration>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>target/classes/it/extrasys/marche/regione/fatturapa/contracts/areas/documento/xsd/DocumentoSDI.xsd</file>
+									<type>xsd</type>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>4.2.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Export-Package>
+							it.extrasys.marche.regione.fatturapa.contracts.areas.documento.beans;version="${project.version}",
+							it.extrasys.marche.regione.fatturapa.contracts.areas.documento.xsd;version="${project.version}"
+						</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+    
+    

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:tns="http://fatturapa.marche.regione.it/esitoFatturaFromEnte/types"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified" elementFormDefault="unqualified"
+           targetNamespace="http://fatturapa.marche.regione.it/esitoFatturaFromEnte/types">
+
+    <xs:element name="esitoFatturaMessageRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="esitoFatturaMessage" minOccurs="1" maxOccurs="30"
+                            type="tns:esitoFatturaMessage_Type"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="esitoFatturaMessage_Type">
+        <xs:sequence>
+            <xs:element minOccurs="1" name="numeroProtocollo" type="tns:NumeroProtocollo_Type"/>
+            <xs:element minOccurs="1" name="idFiscaleCommittente" type="tns:idFiscale_Type"/>
+            <xs:element minOccurs="1" name="codUfficio" type="tns:codiceUfficioType"/>
+            <xs:element minOccurs="1" name="dataFattura" type="tns:DataFattura_Type"/>
+            <xs:element minOccurs="1" name="numeroFattura" type="tns:NumeroFattura_Type"/>
+            <xs:element minOccurs="1" name="esito" type="tns:Esiti_Type"/>
+            <xs:element minOccurs="1" name="descrizione" type="tns:Descrizione_Type"/>
+            <xs:element minOccurs="1" name="messageIdCommittente" type="tns:MessageIdCommittente_Type"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="codiceUfficioType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z0-9]{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="esitoFatturaMessageResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="1" name="idComunicazione" type="tns:idComunicazione_Type"/>
+                <xs:element minOccurs="1" maxOccurs="1" name="errorCode"
+                            type="tns:esitoNotificaToEntiResponseErrorCode_Type"/>
+                <xs:element minOccurs="1" maxOccurs="1" name="errorDescription" type="tns:DescrizioneErrore_Type"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="esitoNotificaToEntiResponseErrorCode_Type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EN00">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN00 = NOTIFICHE PRESA IN CARICO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="EN01">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN01 = NOTIFICA RIFIUTATA - FATTURA INESISTENTE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="EN02">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN02 = NOTIFICA RIFIUTATA - FATTURA ELABORATA PRECEDENTEMENTE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="EN03">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN03 = SERVIZIO NON DISPONIBILE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="Esiti_Type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EC01">
+                <xs:annotation>
+                    <xs:documentation>
+                        EC01 = FATTURA ACCETTATA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="EC02">
+                <xs:annotation>
+                    <xs:documentation>
+                        EC02 = FATTURA NON ACCETTATA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="idComunicazione_Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="14"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="AnnoFattura_Type">
+        <xs:restriction base="xs:nonNegativeInteger">
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="NumeroFattura_Type">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="(\p{IsBasicLatin}{1,20})"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Descrizione_Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DescrizioneErrore_Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="idFiscale_Type">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="MessageIdCommittente_Type">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="14"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="NumeroProtocollo_Type">
+        <xs:restriction base="xs:normalizedString">
+            <xs:pattern value="(\p{IsBasicLatin}{1,100})"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DataFattura_Type">
+        <xs:restriction base="xs:date">
+            <xs:minInclusive value="1970-01-01"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

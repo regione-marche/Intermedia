@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                      xmlns="http://camel.apache.org/schema/blueprint" id="ctx.enti.bridge.pec.notifica.esito.committente">
+
+    <!-- *********** EXCEPTION CATCHER DECLARATION *********** -->
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatalException</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            <!--<to uri="{{enti.bridge.pec.dlq}}"/>
+            <to uri="{{error.notification.queue}}"/>-->
+        </onException>
+
+        <onException useOriginalMessage="true" >
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            <!--<to uri="{{enti.bridge.pec.dlq}}"/>
+            <to uri="{{error.notification.queue}}"/>-->
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAEnteNonTrovatoException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>enteNonTrovato</constant>
+            </setHeader>
+
+            <to uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatturaNonTrovataException
+            </exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>fatturaNonTrovata</constant>
+            </setHeader>
+
+            <to uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
+        </onException>
+
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="pecAccettazioneRifiutoRedeliveryPolicyConfig">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+
+        <route id="enti.bridge.pec.notifica.esito.committente">
+
+            <from uri="{{enti.bridge.pec.notifica.esito.committente}}"/>
+
+            <log message="PEC: ENTI BRIDGE PEC ACCETTAZIONE/RIFIUTO STARTED"/>
+
+            <setHeader headerName="oldSubject">
+                <simple>${in.header.subject}</simple>
+            </setHeader>
+
+            <!-- nell'allegato deve esserci la notifica id accettazione/rifiuto -->
+            <bean ref="pecNotificaEsitoCommittente" method="estraiMessaggioAccettazioneRifiuto"/>
+
+            <log message="PEC: ENTI BRIDGE PEC ACCETTAZIONE/RIFIUTO STARTED - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"/>
+
+
+            <choice>
+                <when>
+                    <simple>${in.header.emailDaIgnorare} == true</simple>
+                    <log message="ENTI BRIDGE PEC ACCETTAZIONE/RIFIUTO MAIL DA IGNORARE: mittente: ${in.header.Return-Path}"/>
+                    
+                </when>
+                <otherwise>
+
+                    <choice>
+                        <when>
+                            <simple>${in.header.erroreNomeAllegato} == 'erroreNomeAllegato'</simple>
+
+                            <log message="ENTI BRIDGE PEC ACCETTAZIONE/RIFIUTO ERRORE ALLEGATO "/>
+
+                            <setHeader headerName="esitoRisposta">
+                                <constant>erroreNomeAllegato</constant>
+                            </setHeader>
+
+                            <to uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
+                        </when>
+                        <otherwise>
+                            <inOnly uri="{{enti.bridge.pec.notifica.esito.committente.inoltro}}"/>
+
+                            <to uri="direct:aggiornaFatturaRicevutaNotificaEsito"/>
+                        </otherwise>
+                    </choice>
+
+
+                </otherwise>
+                
+            </choice>
+            <log message="PEC: END  ACCETTAZIONE/RIFIUTO - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"/>
+
+        </route>
+
+        <route id="enti.bridge.pec.notifica.esito.committente.inoltro.errore">
+            <from uri="{{enti.bridge.pec.notifica.esito.inoltro.errore}}"/>
+            <to uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
+        </route>
+
+        <route id="enti.bridge.pec.notifica.esito.committente.inoltro.errore.direct">
+            <from uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
+
+            <log message="ENTI BRIDGE PEC NOTIFICA ESITO INOLTRO ERRORE STARTED - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"/>
+
+            <bean ref="pecNotificaEsitoCommittente" method="prepareMailError"/>
+
+            <setHeader headerName="to">
+                <simple>${in.headers.Return-Path}</simple>
+            </setHeader>
+
+            <setHeader headerName="from">
+                <constant>{{ente.pec.indirizzo.email.username.intero}}</constant>
+            </setHeader>
+
+            <choice>
+                <when>
+                    <simple>${in.header.esitoRisposta} == 'enteNonTrovato'</simple>
+
+                    <setHeader headerName="subject">
+                        <simple>{{ente.pec.subject.scarto.esito.committente}} - ${in.header.oldSubject}</simple>
+                    </setHeader>
+
+                    <to uri="velocity:velocity/mailEnteNonTrovatoErrorTemplate.vm"/>
+
+                </when>
+                <when>
+                    <simple>${in.header.esitoRisposta} == 'fatturaNonTrovata'</simple>
+
+                    <setHeader headerName="subject">
+                        <simple>{{ente.pec.subject.scarto.esito.committente}} - ${in.header.oldSubject}</simple>
+                    </setHeader>
+
+                    <to uri="velocity:velocity/mailFatturaNonTrovataErrorTemplate.vm"/>
+
+                </when>
+                <when>
+                    <simple>${in.header.esitoRisposta} == 'ES00'</simple>
+
+                    <!-- Scarto dallo sdi: settare oggetto e nel body il messaggio corretto con l'xsl  -->
+                    
+                    <setHeader headerName="subject">
+                        <simple>{{ente.pec.subject.scarto.esito.committente}} - ${in.header.oldSubject} - Identificativo SDI: ${in.headers.identificativoSdI} </simple>
+                    </setHeader>
+
+                    <bean ref="pecNotificaEsitoCommittente" method="preparaMessaggioErrore"/>
+
+                    <to uri="xslt:xsl/{{ente.bridge.pec.template.notifica.scarto.esito.committente}}"/>
+
+                </when>
+                <when>
+                    <simple>${in.header.esitoRisposta} == 'erroreNomeAllegato'</simple>
+
+                    <!-- Nome file errato: settare body e oggetto corretti-->
+
+                    <setHeader headerName="subject">
+                        <simple>{{enti.bridge.pec.notifica.esito.inoltro.errore.subject.nome.file}} - ${in.header.oldSubject} - Identificativo SDI: ${in.headers.identificativoSdI}</simple>
+                    </setHeader>
+
+                    <to uri="velocity:velocity/mailNotificaEsitoCommittenteNomeFileErratoErrorTemplate.vm"/>
+                </when>
+               <!-- il caso servizio non disponibile NON invia una notifica al mittente-->
+               <otherwise>
+                <!--  SERVIZIO NON DISPONIBILE: settare body e oggetto corretti -->
+
+                <setHeader headerName="Subject">
+                    <simple>{{enti.bridge.pec.notifica.esito.inoltro.errore.subject.servizio.non.disponibile}} - ${in.header.oldSubject}</simple>
+                </setHeader>
+
+                <to uri="velocity:velocity/mailServizioNonDisponibileErrorTemplate.vm"/>
+            </otherwise>
+            </choice>
+
+            <setHeader headerName="content-type">
+                <constant>text/html</constant>
+            </setHeader>
+
+            <removeHeader headerName="SOAP-ACTION"/>
+
+            <log message="PEC: FATTURA PEC INVIO NOTIFICA ESITO COMMITTENTE ERRORE: INVIO EMAIL - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+            <to uri="smtps://{{ente.pec.indirizzo.email.username.intero}}@{{ente.pec.indirizzo.email.host}}?password={{ente.pec.indirizzo.email.password}}&amp;username={{ente.pec.indirizzo.email.username}}&amp;port={{ente.pec.indirizzo.email.port}}&amp;headerFilterStrategy=#FatturaHeadersMailFilterStrategy"/>
+
+            <to uri="log:it.extrasys.marche.regione.fatturapa.pec.invio errore?level=INFO&amp;showAll=true&amp;multiline=true"/>
+
+            <log message="PEC: FATTURA PEC INVIATA NOTIFICA ESITO COMMITTENTE ERRORE: INVIO EMAIL - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+        </route>
+
+        <route id="aggiornaFatturaRicevutaNotificaEsito">
+            <from uri="direct:aggiornaFatturaRicevutaNotificaEsito"/>
+
+            <log message="PEC: ENTI BRIDGE PEC RICEVUTA NOTIFICA ESITO AGGIORNAMENTO FATTURA - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+            <bean ref="pecNotificaEsitoCommittente" method="aggiornaFattura"/>
+
+            <log message="PEC: ENTI BRIDGE PEC RICEVUTA NOTIFICA ESITO: FATTURA AGGIORNATA" loggingLevel="INFO"/>
+        </route>
+
+       <!-- <route id="testEnteRoute">
+            <from uri="jetty:http://0.0.0.0:8888/pecTestEnte"/>
+
+            <bean ref="pecNotificaEsitoCommittente" method="testEnteManagerPecAddress"/>
+
+        </route>-->
+    </camelContext>
+</blueprint>

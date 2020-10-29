@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:tns="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services/types"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           attributeFormDefault="unqualified" elementFormDefault="unqualified"
+           targetNamespace="http://www.regione.marche.it/intermediamarche/fatturazione/esitocommittente/services/types">
+
+    <xs:element name="esitoFatturaMessageRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="esitoFatturaMessage" type="tns:esitoFatturaMessage_Type" minOccurs="1" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="esitoFatturaMessageResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="1" name="code" type="tns:esitoNotificaToEntiResponseCode_Type"/>
+                <xs:element minOccurs="1" maxOccurs="1" name="description" type="tns:esitoNotificaToEntiResponseDescription_Type"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="FaultDetail" type="tns:FaultDetailType"/>
+
+    <xs:complexType name="esitoFatturaMessage_Type">
+        <xs:sequence>
+            <xs:element minOccurs="1" name="idFiscaleCommittente" type="tns:idFiscale_Type"/>
+            <xs:element minOccurs="1" name="codUfficio" type="tns:codiceUfficioType"/>
+            <xs:element minOccurs="1" name="nomeFile" type="tns:nomeFile_Type"/>
+            <xs:element xmlns:xmime="http://www.w3.org/2005/05/xmlmime" name="File" type="xs:base64Binary" xmime:expectedContentTypes="*/*"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="nomeFile_Type">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9_\.]{9,50}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="codiceUfficioType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z0-9]{6}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="esitoNotificaToEntiResponseCode_Type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EN00">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN00 = NOTIFICA PRESA IN CARICO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN01">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN01 = CREDENZIALI NON VALIDE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN02">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN02 = NOTIFICA RIFIUTATA: FATTURA INESISTENTE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN04">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN04 = MESSAGGIO RIFIUTATO: CAMPI OBBLIGATORI NON VALORIZZATI
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN05">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN05 = NOTIFICA RIFIUTATA: NOME FILE NON VALIDO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN06">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN06 = NOTIFICA RIFIUTATA: ENTE NON ABILITATO A INTERMEDIAMARCHE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN07">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN07 = NOTIFICA RIFIUTATA: ALLEGATO NON TROVATO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="EN08">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN08 = FILE NOTIFICA RIFIUTATO: ERRORE VALIDAZIONE NOTIFICA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+       <xs:simpleType name="esitoNotificaToEntiResponseDescription_Type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NOTIFICA PRESA IN CARICO">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN00 = NOTIFICA PRESA IN CARICO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CREDENZIALI NON VALIDE">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN01 = CREDENZIALI NON VALIDE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NOTIFICA RIFIUTATA: FATTURA INESISTENTE">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN02 = NOTIFICA RIFIUTATA: FATTURA INESISTENTE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="MESSAGGIO RIFIUTATO: CAMPI OBBLIGATORI NON VALORIZZATI">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN04 = MESSAGGIO RIFIUTATO: CAMPI OBBLIGATORI NON VALORIZZATI
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NOTIFICA RIFIUTATA: NOME FILE NON VALIDO">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN05 = NOTIFICA RIFIUTATA: NOME FILE NON VALIDO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NOTIFICA RIFIUTATA: ENTE NON ABILITATO A INTERMEDIAMARCHE">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN06 = NOTIFICA RIFIUTATA: ENTE NON ABILITATO A INTERMEDIAMARCHE
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="NOTIFICA RIFIUTATA: ALLEGATO NON TROVATO">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN07 = NOTIFICA RIFIUTATA: ALLEGATO NON TROVATO
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="FILE NOTIFICA RIFIUTATO: ERRORE VALIDAZIONE NOTIFICA">
+                <xs:annotation>
+                    <xs:documentation>
+                        EN08 = FILE NOTIFICA RIFIUTATO: ERRORE VALIDAZIONE NOTIFICA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Esiti_Type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="EC01">
+                <xs:annotation>
+                    <xs:documentation>
+                        EC01 = FATTURA ACCETTATA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+
+            <xs:enumeration value="EC02">
+                <xs:annotation>
+                    <xs:documentation>
+                        EC02 = FATTURA NON ACCETTATA
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="idFiscale_Type">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="3"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="FaultDetailType">
+        <xs:sequence>
+            <xs:element name="Codice">
+                <xs:simpleType>
+                    <xs:annotation>
+                        <xs:documentation>
+                            EN99 = ERRORE GENERICO
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="EN99"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Descrizione" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

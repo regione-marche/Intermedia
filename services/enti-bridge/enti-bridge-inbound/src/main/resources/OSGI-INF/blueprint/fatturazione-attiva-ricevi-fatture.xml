@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" managementNamePattern="#symbolicName#-#counter#"
+                  useMDCLogging="true" xmlns="http://camel.apache.org/schema/blueprint"
+                  id="enti.bridge.inbound.fatturazione.attiva.ricevi.fatture"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAEnteNonTrovatoException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="FatturaPAEnteNonTrovatoException EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setBody>
+                <simple>Ente Non Trovato</simple>
+            </setBody>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA02</constant>
+            </setHeader>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAValidazioneFallitaException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="FatturaPAValidazioneFallitaException EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setBody>
+                <simple>Validazione fattura fallita</simple>
+            </setBody>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA02</constant>
+            </setHeader>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="wsAttivaInvioFatturaRedeliveryPolicyConfig">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="FatturaPaPersistenceException EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA03</constant>
+            </setHeader>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="FatturaPaException EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA03</constant>
+            </setHeader>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="wsAttivaInvioFatturaRedeliveryPolicyConfig">
+            <exception>java.lang.Exception</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="Generic Exception EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA03</constant>
+            </setHeader>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <route id="enti.bridge.inbound.fatturazione.attiva.ricevi.fatture">
+            <from uri="{{enti.inbound.cxf.endpoint.fatturazione.attiva.inoltra.fatture}}"/>
+            <log message="ENTI BRIDGE INBOUND: RICEVUTA FATTURA ATTIVA" loggingLevel="INFO"/>
+            <log message="${body}" loggingLevel="DEBUG"/>
+
+            <bean ref="fatturazioneAttivaRiceviManager" method="salvaFattura"/>
+
+            <enrich  strategyRef="fatturaAttivaValidationAggregationStrategy">
+                    <simple>{{enti.bridge.inbound.fatturazione.attiva.ricevi.fatture.validation.enricher}}</simple>
+            </enrich>
+
+            <choice>
+                <when>
+                    <simple>${in.header.validation} == 'OK'</simple>
+                    <log message="FATTURA ATTIVA VALIDAZIONE OK"/>
+                    <setHeader headerName="esitoRisposta">
+                        <constant>FA01</constant>
+                    </setHeader>
+
+                    <inOnly uri="{{enti.bridge.fattura.attiva.inoltro}}"/>
+
+                    <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+
+                </when>
+                
+                <otherwise>
+                    <!-- validazione errata -->
+
+                    <log message="FATTURA ATTIVA VALIDAZIONE KO"/>
+                    <setHeader headerName="esitoRisposta">
+                        <constant>FA02</constant>
+                    </setHeader>
+
+                    <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+                </otherwise>
+            </choice>
+            
+           
+
+        </route>
+
+        <!-- ENRICHER -->
+        <route id="enti.bridge.inbound.fatturazione.attiva.ricevi.fatture.validation.enricher">
+            <from uri="{{enti.bridge.inbound.fatturazione.attiva.ricevi.fatture.validation.enricher}}"/>
+
+            <!-- nel body ho la fattura che devo validare. Devo estrarre l'eventuale firma e dunque validare il contenuto -->
+
+            <doTry>
+
+                <bean ref="fatturazioneAttivaRiceviManager" method="preparaFatturaPerValidazione"/>
+
+                <to uri="validator:it/extrasys/marche/regione/fatturapa/contracts/fatturazione/elettronica/xsd/FatturazioneElettronica.xsd"/>
+
+                <setHeader headerName="validation">
+                    <constant>OK</constant>
+                </setHeader>
+
+                <doCatch>
+                    <exception>org.apache.camel.ValidationException</exception>
+                    <exception>org.xml.sax.SAXParseException</exception>
+
+                    <handled>
+                        <constant>true</constant>
+                    </handled>
+
+                    <setHeader headerName="validation">
+                        <constant>KO</constant>
+                    </setHeader>
+
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                    <!--<inOnly uri="{{fattura.attiva.ricevi.fatture.dlq}}"/>-->
+
+                </doCatch>
+            </doTry>
+        </route>
+
+    </camelContext>
+
+</blueprint>

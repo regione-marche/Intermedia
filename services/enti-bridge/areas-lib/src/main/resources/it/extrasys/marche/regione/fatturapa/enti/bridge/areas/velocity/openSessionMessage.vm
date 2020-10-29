@@ -1,0 +1,10 @@
+<Input>
+    <OpenSession>
+        <user>${headers.areasOpenSessionUser}</user>
+        <password>${headers.areasOpenSessionPassword}</password>
+        <azienda></azienda>
+        <ufficio></ufficio>
+        <ruolo></ruolo>
+        <entita>${headers.areasOpenSessionEntita}</entita>
+    </OpenSession>
+</Input>

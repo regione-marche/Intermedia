@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" managementNamePattern="#symbolicName#-#counter#"
+                  useMDCLogging="true" xmlns="http://camel.apache.org/schema/blueprint"
+                  id="ws.protocollo.paleo.ca.notifica.esito.committente.ctx"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <route id="ws.protocollo.paleo.ca.notifica.esito.committente.in">
+            <from uri="{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.queue}}?selector=tipoMessaggio='NotificaEsitoCommittente'"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.ProtocollazioneEsitoCommittenteMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <setHeader headerName="canaleAvanzato">
+                <constant>true</constant>
+            </setHeader>
+
+            <log message="************** WS Canale Avanzato PROTOCOLLO PALEO - NOTIFICA ESITO COMMITTENTE - STARTED **************"/>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <setHeader headerName="esitoCommittente">
+                <xpath resultType="java.lang.String">//*[local-name()='Esito']/text()</xpath>
+            </setHeader>
+
+            <setHeader headerName="identificativoSdI">
+                <xpath resultType="java.lang.String">//*[local-name()='IdentificativoSdI']/text()</xpath>
+            </setHeader>
+
+            <process ref="wrapNotificaEsitoCommitteteProcessor"/>
+
+            <!-- Carico le info utili per l'ente -->
+            <enrich strategyRef="infoEntePaleoCAAggregationStrategy" id="idInfoEntePaleoCAEnricher">
+                <simple>{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.infoEntePaleoCA.in}}</simple>
+            </enrich>
+
+            <enrich strategyRef="segnaturaProtocolloFatturaAggregationStrategyEC" id="idSegnaturaProtocolloFatturaCAEnricher">
+                <simple>{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.segnaturaProtocolloFattura.in}}</simple>
+            </enrich>
+
+            <enrich strategyRef="classificazioniAggregationStrategyEC" id="idClassificazioniEnricher">
+                <simple>{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.classificazioni.in}}</simple>
+            </enrich>
+
+            <enrich strategyRef="protocollazioneNotificaEsitoCommittenteAggregationStrategy" id="idProtocollazioneCAEnricher">
+                <simple>{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.protocollazione.in}}</simple>
+            </enrich>
+
+            <choice>
+
+                <when>
+                    <simple>${headers.PALEO_ERROR_MESSAGE} != null and ${headers.PALEO_ERROR_MESSAGE.trim} != ''</simple>
+                    <log message="PALEO CA: ERRORE DURANTE LA PROTOCOLLAZIONE DELLA NOTIFICA ESITO COMMITTENTE AVENTE IDENTIFICATIVO SDI : ${headers.identificativoSdI}\n MESSAGGIO DI ERRORE PALEO CA: ${headers.PALEO_ERROR_MESSAGE}" loggingLevel="ERROR"/>
+                    <log message="PALEO CA: SECONDA CHIAMATA PROTOCOLLAZIONE NOTIFICA ESITO COMMITTENTE AVENTE IDENTIFICATIVO SDI : ${headers.identificativoSdI}}" loggingLevel="INFO"/>
+
+                    <enrich strategyRef="protocollazioneNotificaEsitoCommittenteAggregationStrategy" id="idProtocollazioneCAEnricher">
+                        <simple>{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.protocollazione.in}}</simple>
+                    </enrich>
+
+                    <choice>
+                        <when>
+                            <simple>${headers.PALEO_ERROR_MESSAGE} != null and ${headers.PALEO_ERROR_MESSAGE.trim} != ''</simple>
+                            <log message="PALEO CA: ERRORE DURANTE LA SECONDA CHIAMATA PROTOCOLLAZIONE DELLA NOTIFICA ESITO COMMITTENTE AVENTE IDENTIFICATIVO SDI : ${headers.identificativoSdI}\n MESSAGGIO DI ERRORE PALEO CA: ${headers.PALEO_ERROR_MESSAGE}" loggingLevel="ERROR"/>
+                            <throwException ref="fatturaPAFatalException"/>
+                        </when>
+                    </choice>
+                </when>
+            </choice>
+
+            <bean ref="paleoCAManager" method="protocollaEsitoCommittente"/>
+            <process ref="aggiornaStatoFattureANotificaECProtocollataProcessor" id="idAggiornaStatoFattureANotificaECProtocollata"/>
+
+            <!-- Registrazione -->
+            <!-- La Notifica Esito Committente non va in registrazione in quanto il sistema gestionale già possiede questo tipo di notifica -->
+            <!--toD uri="${headers.codaGestionaleCaIn}"/-->
+
+            <log message="************** WS Canale Avanzato PROTOCOLLO PALEO - NOTIFICA ESITO COMMITTENTE - END **************"/>
+        </route>
+
+        <!-- *********** INFO ENTE PALEO CA ENRICHER *********** -->
+        <route id="enti.bridge.ente.ws.ca.protocollo.paleo.invio.infoEntePaleoCA.in">
+            <from uri="{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.infoEntePaleoCA.in}}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoCAProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.InfoPaleoCAEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <log message="ERROR MESSAGE: ${exception.message}" loggingLevel="ERROR"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <log message="PALEO CA: INFO ENTE PALEO CA ENRICHER NOTIFICA ESITO COMMITTENTE START - IDENTIFICATIVO SDI ${in.header.identificativoSdI}" loggingLevel="INFO"/>
+
+            <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <log message="PALEO CA: **** BODY \n${body.notificaEsitoCommittente}" loggingLevel="DEBUG"/>
+
+            <setBody>
+                <simple>${body.notificaEsitoCommittente}</simple>
+            </setBody>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log message="PALEO CA: **** BODY: \n${body}" loggingLevel="DEBUG"/>
+
+            <setHeader headerName="idSDI">
+                <simple>${headers.identificativoSdI}</simple>
+            </setHeader>
+
+            <bean ref="paleoCAManager" method="setNomeEnteFromIdSDI"/>
+
+            <bean ref="paleoCAManager" method="setCxfConfigHeaders"/>
+            <bean ref="paleoCAManager" method="setEntePaleoCA"/>
+
+            <log message="PALEO CA: FINE INFO ENTE PALEO CA ENRICHER NOTIFICA ESITO COMMITTENTE  -  IDENTIFICATIVO SDI  ${in.header.identificativoSdI}" loggingLevel="INFO"/>
+
+        </route>
+        <!-- ********** INFO ENTE PALEO CA ENRICHER ************** -->
+
+
+        <!-- ***********  SEGNATURA PROTOCOLLO FATTURA ENRICHER  *********** -->
+
+        <route id="enti.bridge.ente.ws.ca.protocollo.paleo.invio.segnaturaProtocolloFattura.in">
+            <from uri="{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.segnaturaProtocolloFattura.in}}"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: START SEGNATURA PROTOCOLLO FATTURA ASSOCIATA ENRICHER NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoCAProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.EsitoCommittenteSegnaturaProtocolloEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <process ref="recuperaSegnaturaProtocolloFatturaProcessor" id="idRecuperaSegnaturaProtocolloFatturaProcessor"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: END SEGNATURA PROTOCOLLO FATTURA ASSOCIATA ENRICHER - NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+        </route>
+
+        <!-- ********** FINE SEGNATURA PROTOCOLLO FATTURA ENRICHER ************** -->
+
+
+        <!-- *********** CercaDocumentoProtocollo - CLASSIFICAZIONI ENRICHER  *********** -->
+
+        <route id="enti.bridge.ente.ws.ca.protocollo.paleo.invio.classificazioni.in">
+            <from uri="{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.classificazioni.in}}"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: START CLASSIFICAZIONI ENRICHER NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoCAProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.EsitoCommittenteClassificazioniEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <bean ref="paleoCAManager" method="setEnteHeaderInfo"/>
+            <bean ref="paleoCAManager" method="setParamCreaRichiestaCercaDocumentoProtocolloProcessor"/>
+
+            <process ref="creaRichiestaCercaDocumentoProtocolloProcessor"/>
+
+            <setHeader headerName="SOAPAction">
+                <constant>http://paleo.regione.marche.it/services/IPaleoService/CercaDocumentoProtocollo
+                </constant>
+            </setHeader>
+            <setHeader headerName="operationName">
+                <constant>CercaDocumentoProtocollo</constant>
+            </setHeader>
+            <setHeader headerName="operationNamespace">
+                <constant>http://paleo.regione.marche.it/services/</constant>
+            </setHeader>
+
+            <removeHeaders pattern="^((?!(nomeEnte|address|wsdlURL|entePaleoCA|operationNamespace|operationName|SOAPAction|Content-Type|Cookie)).)*$"/>
+
+            <toD uri="cxf:bean:IPaleoService?address=${headers.address}&amp;defaultOperationName=CercaDocumentoProtocollo" id="idPaleoCACercaDocumentoProtocollo"/>
+
+            <process ref="rispostaCercaDocumentoProtocolloProcessor"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: END CLASSIFICAZIONI ENRICHER NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+        </route>
+
+        <!-- ********** FINE CercaDocumentoProtocollo - CLASSIFICAZIONI ENRICHER ************** -->
+
+
+        <!-- *********** PROTOCOLLAZIONE ENRICHER  *********** -->
+
+        <route id="enti.bridge.ente.ws.ca.protocollo.paleo.invio.protocollazione.in">
+            <from uri="{{enti.bridge.ente.ws.ca.protocollo.paleo.invio.protocollazione.in}}"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: START PROTOCOLLAZIONE CA ENRICHER NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoCAProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.protocollo.paleo.ca.EsitoCommittenteProtocollazioneEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <bean ref="paleoCAManager" method="setEnteHeaderInfo"/>
+            <bean ref="paleoCAManager" method="setParamCreaRichiestaProtocollazioneNotificaEsitoCommittenteProcessor"/>
+
+            <process ref="creaRichiestaProtocollazioneEsitoCommittenteProcessor"/>
+
+            <setHeader headerName="SOAPAction">
+                <constant>http://paleo.regione.marche.it/services/IPaleoService/ProtocollazionePartenza</constant>
+            </setHeader>
+            <setHeader headerName="operationName">
+                <constant>ProtocollazionePartenza</constant>
+            </setHeader>
+            <setHeader headerName="operationNamespace">
+                <constant>http://paleo.regione.marche.it/services/</constant>
+            </setHeader>
+
+            <removeHeaders pattern="^((?!(nomeEnte|address|wsdlURL|entePaleoCA|operationNamespace|operationName|SOAPAction|Content-Type|Cookie)).)*$"/>
+
+            <toD uri="cxf:bean:IPaleoService?address=${headers.address}&amp;defaultOperationName=ProtocollazionePartenza" id="idPaleoCAProtocollazionePartenza"/>
+
+            <process ref="rispostaProtocollazionePartenzaCAProcessor"/>
+
+            <log loggingLevel="INFO" message="PALEO CA: PROTOCOLLAZIONE: START PROTOCOLLAZIONE CA ENRICHER NOTIFICA ESITO COMMITTENTE - PROTOCOLLO : ${body} - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+        </route>
+
+        <!-- ********** FINE PROTOCOLLAZIONE ENRICHER ************** -->
+
+    </camelContext>
+</blueprint>

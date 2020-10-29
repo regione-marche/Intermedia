@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ctx.elaborazione.module.gestione.multiente.attiva">
+
+    <!-- *********** EXCEPTION CATCHER DECLARATION *********** -->
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatalException</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAEnteNonTrovatoException</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <onException useOriginalMessage="true" >
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="0"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <onException useOriginalMessage="true" redeliveryPolicyRef="gestioneMultienteRedeliveryPolicyConfig">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+        </onException>
+
+        <route id="elaborazione.module.gestione.multiente">
+            <from uri="{{elaborazione.module.gestione.multiente.attiva.inoltro.queue}}"/>
+
+            <log message="ELABORAZIONE MODULE - GESTIONE MULTIENTE ATTIVA STARTED" loggingLevel="INFO"/>
+
+            <bean ref="gestioneMultienteManager" method="selezioneEnteAttiva"/>
+
+            <setHeader headerName="codaInoltroEnteAttiva">
+                <simple>{{componenteInoltroEnte}}${in.header.codaInvioEnteAttiva}</simple>
+            </setHeader>
+
+            <routingSlip>
+                <header>codaInoltroEnteAttiva</header>
+            </routingSlip>
+
+            <log message="ELABORAZIONE MODULE - GESTIONE MULTIENTE ATTIVA END" loggingLevel="INFO"/>
+
+        </route>
+
+    </camelContext>
+</blueprint>

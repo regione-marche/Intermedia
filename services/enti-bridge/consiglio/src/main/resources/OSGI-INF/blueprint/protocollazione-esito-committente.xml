@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true" trace="{{enable.trace}}"
+                  id="enti.bridge.consiglio.protocollazione.notifica.esito.committente"
+                  xmlns="http://camel.apache.org/schema/blueprint" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.0.xsd">
+
+
+    <!-- *********** ROTTA PRINCIPALE CHE PRENDE I MESSAGGI IN INGRESSSO   *********** -->
+
+        <route id="enti.bridge.consiglio.protocollazione.notificaEsitoCommittente.main">
+
+            <from uri="{{enti.bridge.consiglio.notificaEsitoCommittente.in.queue}}"/>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : RICEVUTA NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.consiglio.protocollazione.paleo.ProtocollazioneEsitoCommittenteMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: RICEVUTA NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI} INVIO A FATTO"/>
+
+
+            <inOnly uri="{{consiglio.registrazione.endopoint}}"/>
+
+
+            <!--  <removeHeaders pattern="operationName*"/>
+
+              <log loggingLevel="INFO" message="Ricevuta Notifica Esito Committente con committente: consiglio "/>
+
+              <setHeader headerName="esitoCommittente">
+                  <xpath>//*[local-name()='esito']/text()</xpath>
+              </setHeader>
+
+              <setHeader headerName="numeroProtocollo">
+                  <xpath>//*[local-name()='numeroProtocollo']/text()</xpath>
+              </setHeader>
+
+              <process ref="wrapNotificaEsitoCommitteteProcessor"/>
+
+              <enrich uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.segnaturaProtocolloFattura.in}}"
+                      strategyRef="segnaturaProtocolloFatturaNotificaEsitoCommittenteAggregationStrategy"
+                      id="idSegnaturaProtocolloFatturaNECEnricher"/>
+
+              <enrich uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.classificazioni.in}}"
+                      strategyRef="classificazioniNotificaEsitoCommittenteAggregationStrategy"
+                      id="idClassificazioniNECEnricher"/>
+
+              <enrich uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.protocollazione.in}}"
+                      strategyRef="protocollazioneNotificaEsitoCommittenteAggregationStrategy"
+                      id="idProtocollazioneNECEnricher"/>
+
+              <inOnly uri="{{consiglio.registrazione.endopoint}}"/>
+
+              <log loggingLevel="INFO"
+                   message="CONSIGLIO: PROTOCOLLAZIONE : FINE NOTIFICA ESITO COMMITTENTE - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>-->
+
+
+        </route>
+
+
+        <!-- ***********  SEGNATURA PROTOCOLLO FATTURA ENRICHER  *********** -->
+
+        <route id="enti.bridge.consiglio.enrichNotificaEsitoCommittente.segnaturaProtocolloFattura">
+
+            <from uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.segnaturaProtocolloFattura.in}}"/>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : START SEGNATURA PROTOCOLLO NOTIFICA COMMITTENTE ENRICHER  - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.consiglio.protocollazione.paleo.EsitoCommittenteSegnaturaProtocolloEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <convertBodyTo
+                    type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaDecorrenzaTerminiWrapper"/>
+
+            <process ref="recuperaSegnaturaProtocolloFatturaProcessor"
+                     id="idRecuperaSegnaturaProtocolloFatturaProcessor"/>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : END SEGNATURA PROTOCOLLO NOTIFICA COMMITTENTE ENRICHER - PROTOCOLLO FATTURA: ${body} - IDENTIFICATIVO SDI:  ${in.header.identificativoSdI}"/>
+
+        </route>
+
+        <!-- ********** FINE SEGNATURA PROTOCOLLO FATTURA ENRICHER ************** -->
+
+
+        <!-- **********  CLASSIFICAZIONI ENRICHER ************** -->
+        <route id="enti.bridge.consiglio.enrichNotificaEsitoCommittente.classificazioni">
+            <from uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.classificazioni.in}}"/>
+
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.consiglio.protocollazione.paleo.EsitoCommittenteClassificazioniEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : START CLASSIFICAZIONI  NOTIFICA COMMITTENTE ENRICHER  - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+
+            <convertBodyTo
+                    type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <process ref="creaRichiestaCercaDocumentoProtocolloEsitoCommittenteProcessor"/>
+
+            <setHeader headerName="SOAPAction">
+                <constant>http://paleo.regione.marche.it/services/IPaleoService/CercaDocumentoProtocollo</constant>
+            </setHeader>
+
+            <to uri="{{consiglio.paleo.cxf.cercaDocumentoProtocollo.endpoint}}"
+                id="idPaleoGatewayCercaDocumentoProtocolloProcessor"/>
+
+            <process ref="rispostaCercaDocumentoProtocolloProcessor"/>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : END CLASSIFICAZIONI  NOTIFICA COMMITTENTE ENRICHER  - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+
+        </route>
+
+        <!-- ********** FINE CLASSIFICAZIONI ENRICHER ************** -->
+
+
+        <!-- *********** PROTOCOLLAZIONE ENRICHER  *********** -->
+
+        <route id="enti.bridge.consiglio.enrichNotificaEsitoCommittente.protocollazione">
+
+            <from uri="{{enti.bridge.consiglio.enrich.notifica.esito.committente.protocollazione.in}}"/>
+
+
+            <onException useOriginalMessage="true" redeliveryPolicyRef="paleoProtocollazioneRedeliveryPolicyConfig">
+                <exception>java.lang.Exception</exception>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.consiglio.protocollazione.paleo.EsitoCommittenteProtocollazioneEnricher?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                <setHeader headerName="ErrorMessage">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <throwException ref="fatturaPAFatalException"/>
+            </onException>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : START PROTOCOLLAZIONE  NOTIFICA COMMITTENTE ENRICHER  - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+            <convertBodyTo
+                    type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaEsitoCommittenteWrapper"/>
+
+            <process ref="creaRichiestaProtocollazioneEsitoCommittenteProcessor"/>
+
+            <setHeader headerName="SOAPAction">
+                <constant>http://paleo.regione.marche.it/services/IPaleoService/ProtocollazioneEntrata</constant>
+            </setHeader>
+
+            <to uri="{{consiglio.paleo.cxf.protocollazione.endpoint}}" id="idPaleoGatewayProtocollazioneEntrata"/>
+
+            <process ref="rispostaProtocollazioneNotificaEsitoCommittenteProcessor"/>
+
+            <convertBodyTo type="java.lang.String"/>
+
+            <log loggingLevel="INFO"
+                 message="CONSIGLIO: PROTOCOLLAZIONE : END PROTOCOLLAZIONE NOTIFICA COMMITTENTE ENRICHER  - PROTOCOLLO NOTIFICA: ${body} - IDENTIFICATIVO SDI  ${in.header.identificativoSdI}"/>
+
+        </route>
+
+        <!-- ********** FINE PROTOCOLLAZIONE ENRICHER ************** -->
+
+
+    </camelContext>
+
+</blueprint>

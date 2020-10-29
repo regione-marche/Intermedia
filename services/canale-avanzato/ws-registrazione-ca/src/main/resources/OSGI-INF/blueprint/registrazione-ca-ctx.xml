@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                               http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
+                  xmlns="http://camel.apache.org/schema/blueprint" id="ws.registrazione.ca.ctx"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://camel.apache.org/schema/blueprint ">
+
+        <!-- ############# MAIN ROUTE FATTURA ############### -->
+
+        <route id="ws.registrazione.ca.fattura.in">
+            <from uri="{{enti.bridge.ente.ws.ca.registrazione.invio.queue}}?selector=tipoMessaggio='FatturaElettronica'"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneFatturaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - FATTURA - STARTED **************"/>
+
+            <log message="WS Canale Avanzato REGISTRAZIONE - FATTURA - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+            <setHeader headerName="tipoFatturazione">
+                <constant>FP</constant>
+            </setHeader>
+
+            <bean ref="registrazioneCAManager" method="setInfoEnteConfigHeaders"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.invioUnico} != null and ${headers.invioUnico} == true</simple>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - FATTURA - CASO INVIO UNICO WS - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la fattura in FatturaElettronicaWrapper -->
+                    <process ref="wrapFatturaProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '004'</simple>
+                    <!-- Caso Protocollazione PEC -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - FATTURA - CASO PROTOCOLLAZIONE PEC - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la fattura in FatturaElettronicaWrapper -->
+                    <process ref="wrapFatturaProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '001' || ${headers.tipoCanaleProtocollo} == '002'</simple>
+                    <!-- Caso Protocollazione Paleo o Agid -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - FATTURA - CASO PROTOCOLLAZIONE PALEO O AGID - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.FatturaElettronicaWrapper" />
+                </when>
+                <otherwise>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - FATTURA - CASO NON RICONOSCIUTO - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneFatturaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                    <throwException ref="fatturaPAFatalException" />
+
+                </otherwise>
+            </choice>
+
+            <to uri="direct:callRegistrazioneEndpoint"/>
+
+            <process ref="aggiornaStatoProcessor" id="idAggiornaStatoFattureARegistrata"/>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - FATTURA - END **************"/>
+
+        </route>
+
+        <!-- ############## FINE MAIN ROUTE FATTURA ############## -->
+
+        <!-- ############# MAIN ROUTE NOTIFICA DECORRENZA TERMINI ############### -->
+
+        <route id="ws.registrazione.ca.dectermini.in">
+            <from uri="{{enti.bridge.ente.ws.ca.registrazione.invio.queue}}?selector=tipoMessaggio='NotificaDecorrenzaTermini'"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneDecTerminiMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - STARTED **************"/>
+
+            <log message="WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+            <setHeader headerName="tipoFatturazione">
+                <constant>FP</constant>
+            </setHeader>
+
+            <bean ref="registrazioneCAManager" method="setInfoEnteConfigHeaders"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.invioUnico} != null and ${headers.invioUnico} == true</simple>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - CASO INVIO UNICO WS"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la Decorrenza Termini in NotificaDecorrenzaTerminiWrapper -->
+                    <process ref="wrapNotificaDecorrenzaTerminiProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '004'</simple>
+                    <!-- Caso Protocollazione PEC -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - CASO PROTOCOLLAZIONE PEC - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la fattura in FatturaElettronicaWrapper -->
+                    <process ref="wrapNotificaDecorrenzaTerminiProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '001' || ${headers.tipoCanaleProtocollo} == '002'</simple>
+                    <!-- Caso Protocollazione Paleo o Agid -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - CASO PROTOCOLLAZIONE PALEO O AGID - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaDecorrenzaTerminiWrapper" />
+                </when>
+                <otherwise>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - CASO NON RICONOSCIUTO - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneFatturaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                    <throwException ref="fatturaPAFatalException" />
+
+                </otherwise>
+            </choice>
+
+            <to uri="direct:callRegistrazioneEndpoint"/>
+
+            <process ref="aggiornaStatoProcessor" id="idAggiornaStatoDecTerminiARegistrata"/>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - DEC TERMINI - END **************"/>
+
+        </route>
+
+        <!-- ############## FINE MAIN ROUTE NOTIFICA DECORRENZA TERMINI ############## -->
+
+        <!-- ############# MAIN ROUTE SCARTO NOTIFICA ESITO ############### -->
+
+        <route id="ws.registrazione.ca.notifica.in">
+            <from uri="{{enti.bridge.ente.ws.ca.registrazione.invio.queue}}?selector=tipoMessaggio='NotificaScartoEsito'"/>
+
+            <onException useOriginalMessage="true">
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+                <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneNotificaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - STARTED **************"/>
+
+            <log message="WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+            <setHeader headerName="tipoFatturazione">
+                <constant>FP</constant>
+            </setHeader>
+
+            <bean ref="registrazioneCAManager" method="setInfoEnteConfigHeaders"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.invioUnico} != null and ${headers.invioUnico} == true</simple>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - CASO INVIO UNICO WS - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la Notifica Scarto Esito in NotificaScartoEsitoCommittenteWrapper -->
+                    <process ref="wrapNotificaScartoEsitoCommittenteProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '004'</simple>
+                    <!-- Caso Protocollazione PEC -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - CASO PROTOCOLLAZIONE PEC - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="java.lang.String"/>
+
+                    <!--TODO: portare questi processor in un modulo comune-->
+                    <process ref="xmlStringSanitizerProcessor"/>
+
+                    <!-- Converto la Notifica Scarto Esito in NotificaScartoEsitoCommittenteWrapper -->
+                    <process ref="wrapNotificaScartoEsitoCommittenteProcessor"/>
+                </when>
+                <when>
+                    <simple>${headers.tipoCanaleProtocollo} == '001' || ${headers.tipoCanaleProtocollo} == '002'</simple>
+                    <!-- Caso Protocollazione Paleo o Agid -->
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - CASO PROTOCOLLAZIONE PALEO O AGID - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+
+                    <convertBodyTo type="it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaScartoEsitoCommittenteWrapper" />
+                </when>
+                <otherwise>
+
+                    <log message="WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - CASO NON RICONOSCIUTO - IDENTIFICATIVO SDI ${headers.identificativoSdI}"/>
+                    <to uri="log:it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneFatturaMain?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+                    <throwException ref="fatturaPAFatalException" />
+
+                </otherwise>
+            </choice>
+
+            <to uri="direct:callRegistrazioneEndpoint"/>
+
+            <process ref="aggiornaStatoProcessor" id="idAggiornaStatoNotificaScartoARegistrata"/>
+
+            <log message="************** WS Canale Avanzato REGISTRAZIONE - SCARTO NOTIFICA ESITO - END **************"/>
+
+        </route>
+
+        <!-- ############## FINE MAIN ROUTE SCARTO NOTIFICA ESITO ############## -->
+
+        <!-- ToDo: Notifica Esito Committente non va mai in registrazione in quanto il gestionale possiede già questo tipo di notifica -->
+
+        <route id="ws.registrazione.ca.in.call.endpoint">
+            <from uri="direct:callRegistrazioneEndpoint" />
+
+            <log message="WS Canale Avanzato REGISTRAZIONE - ${headers.tipoMessaggio} - IDENTIFICATIVO SDI ${headers.identificativoSdI} START" loggingLevel="INFO"/>
+
+            <process ref="creaRichiestaRegistrazioneProcessor"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.tipoMessaggio} == 'FatturaElettronica'</simple>
+                        <setHeader headerName="SOAPAction">
+                            <constant>RiceviFattura</constant>
+                        </setHeader>
+                        <setHeader headerName="operationName">
+                            <constant>RiceviFattura</constant>
+                        </setHeader>
+                </when>
+                <otherwise>
+                    <setHeader headerName="SOAPAction">
+                        <constant>RiceviNotifica</constant>
+                    </setHeader>
+                    <setHeader headerName="operationName">
+                        <constant>RiceviNotifica</constant>
+                    </setHeader>
+                </otherwise>
+            </choice>
+
+            <setHeader headerName="operationNamespace">
+                <constant>http://www.regione.marche.it/intermediamarche/fatturazione/registrazione/services</constant>
+            </setHeader>
+
+            <removeHeaders pattern="^((?!(address|wsdlURL|operationNamespace|operationName|SOAPAction|Content-Type|identificativoSdI|tipoMessaggio|invioUnico|Authorization)).)*$"/>
+
+            <choice>
+                <when>
+                    <simple>${headers.tipoMessaggio} == 'FatturaElettronica'</simple>
+                        <toD uri="cxf:bean:RegistrazioneCAService?address=${headers.address}&amp;defaultOperationName=RiceviFattura" id="idRegistrazioneCAService"/>
+                </when>
+                <otherwise>
+                    <toD uri="cxf:bean:RegistrazioneCAService?address=${headers.address}&amp;defaultOperationName=RiceviNotifica" id="idRegistrazioneCAService"/>
+                </otherwise>
+            </choice>
+
+            <log message="WS Canale Avanzato REGISTRAZIONE - ${headers.tipoMessaggio} - IDENTIFICATIVO SDI ${headers.identificativoSdI} END" loggingLevel="INFO"/>
+        </route>
+
+    </camelContext>
+</blueprint>

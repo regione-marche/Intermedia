@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+			http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <cm:property-placeholder id="it.extrasys.marche.regione.fatturapa.regma148" persistent-id="it.extrasys.marche.regione.fatturapa.regma148">
+
+        <cm:default-properties>
+
+            <cm:property name="enable.trace" value="false"/>
+
+            <cm:property name="regma.148.main.route" value="direct:regma.148.main.route"/>
+
+            <!-- csv in -->
+            <cm:property name="regma.148.csv.source" value="file:///home/"/>
+            <!-- csv out -->
+            <cm:property name="regma.148.csv.destination" value="file:///home/"/>
+
+
+            <cm:property name="regma.148.crea.dec.termini.db" value="direct:regma.148.crea.dec.termini.db"/>
+            <cm:property name="regma.148.invia.dec.termini" value="direct:regma.148.invia.dec.termini"/>
+
+            <cm:property name="regma.148.scrivi.csv.risultato" value="direct:regma.148.scrivi.csv.risultato"/>
+
+            <!-- Jetty Regma 122 Dec Termini-->
+            <!--cm:property name="regma.122.invia.decorrenza.termini.da.database.rest.endpoint" value="jetty:http://0.0.0.0:{{regma.122.jetty.endpoint.port}}/{{regma.122.jetty.endpoint.decorrenza.termini.path}}"/>
+            <cm:property name="regma.122.jetty.endpoint.port" value=""/>
+            <cm:property name="regma.122.jetty.endpoint.decorrenza.termini.path" value=""/-->
+
+        </cm:default-properties>
+
+    </cm:property-placeholder>
+
+</blueprint>

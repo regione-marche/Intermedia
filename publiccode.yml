@@ -1,0 +1,117 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+categories:
+  - it-development
+dependsOn:
+  open:
+    - name: Java
+      optional: false
+      version: ''
+      versionMax: ''
+      versionMin: '1.8'
+    - name: Postgresql
+      optional: false
+      version: ''
+      versionMax: ''
+      versionMin: '9.6'
+  proprietary:
+    - name: JBoss Fuse
+      optional: false
+      version: '6.3'
+      versionMax: ''
+      versionMin: ''
+description:
+  it:
+    features:
+      - Gestione inoltro fatture attive e passive
+      - Gestione di canali multipli per attive/passive
+    genericName: Integrazione Applicativa
+    longDescription: |
+      Il sistema IntermediaMarche consente di agevolare e automatizzare la
+      gestione della fattura facilitando l’integrazione sia con i sistemi di
+      protocollo che con i sistemi contabili degli enti, o inserendo dei
+      controlli su specifici campi della fattura secondo logiche proprie di ogni
+      ente, così diminuendo la gestione manuale della fatture
+
+
+      In particolare è possibile configurare le varie fase del ciclo per la
+      gestione delle fatture passive ed attive, come da schema seguente
+
+
+      **Configurazione Ciclo Passivo**
+
+
+      - Ricezione verso Sistema di Protocollo: per la ricezione del file Fattura
+      e delle notifiche, e l'indirizzamento verso il sistema di protocollo
+      dell’ente;
+
+      - Ricezione verso Sistema di Registrazione: per la ricezione del file
+      Fattura e delle notifiche, e l'indirizzamento verso il sistema
+      gestionale/contabile dell’ente;
+
+      - Invio Notifiche Esito Committente: per l'invio delle notifiche di esito
+      committente di accettazione/rifiuto del file fattura;
+
+      - Pre-Validazione Campi Opzionali: per definire specifici criteri di
+      scarto delle fatture, aggiuntivi a quelli già imposti da normativa
+      nazionale;
+
+
+      **Configurazione Ciclo Attivo**
+
+
+      - Invio Fatture: per l'invio delle fatture attive;
+
+      - Ricezione Notifiche: per la ricezione delle Notifiche, e l'eventuale
+      'indirizzamento verso il sistema gestionale/contabile dell’ente.
+
+
+      Per ogni fase invio/ricezione di fatture e notifiche è possibile scegliere
+      tra i seguenti canali:
+
+
+      a) Canale PEC: Sistema di posta elettronica certificata
+
+
+      b) Canale FTP: Sistema di trasmissione dati tra terminali remoti basato su
+      protocollo FTP
+
+
+      c) Canale Web Service (WS): Sistema di integrazione tramite Web Services.
+    shortDescription: Gestione inoltro fatture elettroniche per/da la PA
+developmentStatus: stable
+it:
+  conforme:
+    gdpr: true
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: false
+    modelloInteroperabilita: false
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: false
+    pagopa: true
+    spid: false
+legal:
+  license: GPL-2.0-or-later
+localisation:
+  availableLanguages:
+    - it
+  localisationReady: false
+maintenance:
+  contacts:
+    - name: Agostino Leoni
+  contractors:
+    - name: Extra Red s.r.l.
+      until: '2021-12-31'
+      website: 'https://www.extrasys.it/it/red'
+  type: contract
+name: IntermediaMarche
+platforms:
+  - linux
+releaseDate: '2020-09-30'
+softwareType: standalone/backend
+url: 'https://github.com/regione-marche/Intermedia.git'
