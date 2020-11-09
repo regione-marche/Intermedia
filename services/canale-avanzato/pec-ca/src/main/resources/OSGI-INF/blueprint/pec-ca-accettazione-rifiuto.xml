@@ -324,6 +324,8 @@
                             <setHeader headerName="tipoOperazione">
                                 <constant>ricezioneNotifica</constant>
                             </setHeader>
+
+                            <to uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
                             <to uri="{{aggiorna.stato.notifica.ca.queue}}"/>
 
                             <inOnly uri="{{enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.inoltro}}"/>
@@ -458,6 +460,17 @@
             <log message="PEC CA: ENTI BRIDGE PEC CA RICEVUTA NOTIFICA ESITO: FATTURA AGGIORNATA" loggingLevel="INFO"/>
         </route>
 
+        <route id="salvaNotificaAccettazioneRifiuto">
+            <from uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
+
+            <log message="PEC CA: ENTI BRIDGE PEC CA SALVA NOTIFICA ESITO DB - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"
+                 loggingLevel="INFO"/>
+
+            <bean ref="pecCANotificaEsitoCommittente" method="salvaNotificaAccettazioneRifiuto"/>
+
+            <log message="PEC CA: ENTI BRIDGE PEC CA SALVA NOTIFICA ESITO: NOTIFICA SALVATA" loggingLevel="INFO"/>
+        </route>
+
         <!-- Protocollazione Notifica Esito Committente -->
         <route id="enti.bridge.pec.ca.protocollo.invio.notifica.esito.committente.esito">
             <from uri="{{enti.bridge.ente.pec.ca.protocollo.invio.queue}}?selector=tipoMessaggio='NotificaEsitoCommittente'"/>
@@ -563,6 +576,8 @@
             <setHeader headerName="tipoOperazione">
                 <constant>protocollazioneNotifica</constant>
             </setHeader>
+
+            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
             <inOnly uri="{{aggiorna.stato.notifica.ca.queue}}"/>
 
             <choice>
@@ -601,6 +616,7 @@
                 <constant>registrazioneNotifica</constant>
             </setHeader>
 
+            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
             <inOnly uri="{{aggiorna.stato.notifica.ca.queue}}"/>
 
         </route>

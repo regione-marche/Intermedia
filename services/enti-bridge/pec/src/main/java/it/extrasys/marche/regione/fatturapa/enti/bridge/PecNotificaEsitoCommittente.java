@@ -376,7 +376,7 @@ public class PecNotificaEsitoCommittente {
 
         String identificativoSdI = (String) msg.getHeader(IDENTIFICATIVO_SDI_HEADER);
         String tipoMessaggio = (String) msg.getHeader(TIPO_MESSAGGIO);
-        String nomeFileNotificaEsito = (String) msg.getHeader(NOME_FILE_NOTIFICA_ESITO_HEADER);
+        //String nomeFileNotificaEsito = (String) msg.getHeader(NOME_FILE_NOTIFICA_ESITO_HEADER);
 
         List<DatiFatturaEntity> datiFatturaEntityList = datiFatturaManager.getFatturaByIdentificativoSDI(new BigInteger(identificativoSdI));
 
@@ -393,6 +393,13 @@ public class PecNotificaEsitoCommittente {
         for(DatiFatturaEntity dfe : datiFatturaEntityList){
             datiFatturaManager.aggiornaStatoFatturaEsito(dfe.getIdDatiFattura(), statoFattura);
         }
+    }
+
+    public void salvaNotificaAccettazioneRifiuto(Exchange msgExchange) throws FatturaPAException, FatturaPAFatturaNonTrovataException {
+
+        Message msg = msgExchange.getIn();
+
+        String nomeFileNotificaEsito = (String) msg.getHeader(NOME_FILE_NOTIFICA_ESITO_HEADER);
 
         //Salvo la notifica di accettazione/rifiuto
         notificaFromEntiManager.salvaNotificaECPec(msg.getBody().toString(), nomeFileNotificaEsito);

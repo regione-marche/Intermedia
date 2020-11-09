@@ -6,6 +6,7 @@ import org.apache.camel.ConsumerTemplate;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.ProducerTemplate;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ public class Regma132ReinviaPecNonConsegnate {
 
     private static final String QUEUE_SIZE_HEADER = "queueInSize";
     private static final String SUBJECT_HEADER = "subject";
+    private static final String SUBJECT_2_HEADER = "Subject";
 
     private DatiFatturaManager datiFatturaManager;
 
@@ -39,9 +41,25 @@ public class Regma132ReinviaPecNonConsegnate {
 
             Message messageTmp = exchangeTmp.getIn();
 
+            /*
             String subjectPec = messageTmp.getHeader(SUBJECT_HEADER, String.class);
 
             String[] subjectPecSplitted = subjectPec.split(":");
+            */
+
+            String subjectPec = null;
+            String[] subjectPecSplitted = null;
+
+            if(StringUtils.isNotEmpty(messageTmp.getHeader(SUBJECT_HEADER, String.class))){
+
+                subjectPec = messageTmp.getHeader(SUBJECT_HEADER, String.class);
+                subjectPecSplitted = subjectPec.split(":");
+
+            }else{
+
+                subjectPec = messageTmp.getHeader(SUBJECT_2_HEADER, String.class);
+                subjectPecSplitted = subjectPec.split(":");
+            }
 
             if (subjectPecSplitted.length != 3) {
                 LOG.info("Regma132ReinviaPecNonConsegnate - scodaQueue: messaggio dal formato errato: [" + subjectPec + "]");

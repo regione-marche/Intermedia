@@ -19,14 +19,14 @@
         </CodiceDestinatario>
     </xsl:template>
     <xsl:template match="FatturaElettronicaHeader/DatiTrasmissione/IdTrasmittente/IdCodice">
-        <CodiceDestinatario>
+        <IdCodice>
             <xsl:value-of select="$idCodice"/>
-        </CodiceDestinatario>
+        </IdCodice>
     </xsl:template>
     <xsl:template match="FatturaElettronicaHeader/CedentePrestatore/DatiAnagrafici/IdFiscaleIVA/IdCodice">
-        <CodiceDestinatario>
+        <IdCodice>
             <xsl:value-of select="$idCodice"/>
-        </CodiceDestinatario>
+        </IdCodice>
     </xsl:template>
     <xsl:template match="FatturaElettronicaBody/DatiGenerali/DatiGeneraliDocumento/Data">
         <Data>

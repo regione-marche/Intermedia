@@ -6,7 +6,7 @@
     <parent>
         <groupId>it.extrasys.marche.regione.fatturapa</groupId>
         <artifactId>fatturazione-elettronica-regione-marche</artifactId>
-        <version>2.0.3-SNAPSHOT</version>
+        <version>2.0.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>contracts</artifactId>

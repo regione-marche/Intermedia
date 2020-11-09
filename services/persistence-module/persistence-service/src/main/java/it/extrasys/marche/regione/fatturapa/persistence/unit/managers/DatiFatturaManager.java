@@ -142,10 +142,10 @@ public class DatiFatturaManager {
 
         String codificaStatoEntity = CodificaStatiEntity.CODICI_STATO_FATTURA.ACCETTATA_PER_DECORRENZA_TERMINI.getValue();
 
-        if (CodificaStatiEntity.CODICI_STATO_FATTURA.REGISTRATA.getValue().compareTo(statoFatturaAttuale.getStato().getCodStato().getValue()) == 0) {
+        if ((CodificaStatiEntity.CODICI_STATO_FATTURA.REGISTRATA.getValue().compareTo(statoFatturaAttuale.getStato().getCodStato().getValue()) == 0) ||
+                (CodificaStatiEntity.CODICI_STATO_FATTURA.RICEVUTA_DECORRENZA_TERMINI.getValue().compareTo(statoFatturaAttuale.getStato().getCodStato().getValue()) == 0)) {
             aggiornaStatoFatturaEsito(fattura.getIdDatiFattura(), codificaStatoEntity);
         }
-
     }
 
     public void notificaFatturePerDecorrenzaTermini(String identificativoSdI) throws FatturaPaPersistenceException, FatturaPAException, FatturaPAFatturaNonTrovataException {

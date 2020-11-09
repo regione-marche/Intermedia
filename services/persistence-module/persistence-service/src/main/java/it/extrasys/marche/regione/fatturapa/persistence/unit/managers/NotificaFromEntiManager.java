@@ -48,6 +48,7 @@ public class NotificaFromEntiManager {
         try {
 
             entityManager = entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
 
             notificaEsitoCommittente = JaxBUtils.getNotificaEsitoCommittenteType(notificaEC.getBytes());
             DatiFatturaEntity datiFatturaEntity = null;
@@ -71,6 +72,10 @@ public class NotificaFromEntiManager {
             notificaFromEntiEntity.setDataRicezioneFromEnte(new Date());
             notificaFromEntiEntity.setNomeFile(nomeFile);
 
+            // Salvo la notifica
+            notificaFromEntiEntity = notificaFromEntiDao.create(notificaFromEntiEntity, entityManager);
+            entityManager.getTransaction().commit();
+
         } catch (NoResultException e) {
 
             throw new FatturaPAFatturaNonTrovataException("Fattura Non Trovata: Identificativo SdI: " + notificaEsitoCommittente.getIdentificativoSdI());
@@ -80,28 +85,6 @@ public class NotificaFromEntiManager {
             throw new FatturaPAException("Errore Interno:" + e.getMessage(), e);
 
         }finally {
-            if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-            }
-            if (entityManager != null && entityManager.isOpen()) {
-                entityManager.close();
-            }
-        }
-
-        try {
-
-            entityManager = entityManagerFactory.createEntityManager();
-            entityManager.getTransaction().begin();
-
-            // Salvo la notifica
-            notificaFromEntiEntity = notificaFromEntiDao.create(notificaFromEntiEntity, entityManager);
-            entityManager.getTransaction().commit();
-
-        } catch (Exception e) {
-
-            throw new FatturaPAException(e.getMessage());
-
-        } finally {
             if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }

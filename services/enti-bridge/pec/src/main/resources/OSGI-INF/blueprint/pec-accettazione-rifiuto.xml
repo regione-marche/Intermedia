@@ -12,16 +12,12 @@
             <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAFatalException</exception>
             <redeliveryPolicy maximumRedeliveries="0"/>
             <to uri="log:it.extrasys.marche.regione.fatturapa.salva.fatture.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
-            <!--<to uri="{{enti.bridge.pec.dlq}}"/>
-            <to uri="{{error.notification.queue}}"/>-->
         </onException>
 
         <onException useOriginalMessage="true" >
             <exception>java.lang.Exception</exception>
             <redeliveryPolicy maximumRedeliveries="0"/>
             <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
-            <!--<to uri="{{enti.bridge.pec.dlq}}"/>
-            <to uri="{{error.notification.queue}}"/>-->
         </onException>
 
         <onException useOriginalMessage="true">
@@ -57,12 +53,10 @@
             <to uri="direct:enti.bridge.pec.notifica.esito.inoltro.errore"/>
         </onException>
 
-
         <onException useOriginalMessage="true" redeliveryPolicyRef="pecAccettazioneRifiutoRedeliveryPolicyConfig">
             <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
             <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
         </onException>
-
 
         <route id="enti.bridge.pec.notifica.esito.committente">
 
@@ -78,7 +72,6 @@
             <bean ref="pecNotificaEsitoCommittente" method="estraiMessaggioAccettazioneRifiuto"/>
 
             <log message="PEC: ENTI BRIDGE PEC ACCETTAZIONE/RIFIUTO STARTED - IDENTIFICATIVO SDI: ${headers.identificativoSdI}"/>
-
 
             <choice>
                 <when>
@@ -103,7 +96,12 @@
                         <otherwise>
                             <inOnly uri="{{enti.bridge.pec.notifica.esito.committente.inoltro}}"/>
 
+                            <!-- Aggiorna lo stato -->
                             <to uri="direct:aggiornaFatturaRicevutaNotificaEsito"/>
+
+                            <!-- Salvo la notifica sul DB -->
+                            <to uri="direct:salvaNotificaEsito"/>
+
                         </otherwise>
                     </choice>
 
@@ -221,11 +219,15 @@
             <log message="PEC: ENTI BRIDGE PEC RICEVUTA NOTIFICA ESITO: FATTURA AGGIORNATA" loggingLevel="INFO"/>
         </route>
 
-       <!-- <route id="testEnteRoute">
-            <from uri="jetty:http://0.0.0.0:8888/pecTestEnte"/>
+        <route id="salvaNotificaEsito">
+            <from uri="direct:salvaNotificaEsito"/>
 
-            <bean ref="pecNotificaEsitoCommittente" method="testEnteManagerPecAddress"/>
+            <log message="PEC: ENTI BRIDGE PEC SALVA NOTIFICA ESITO - IDENTIFICATIVO SDI: ${headers.identificativoSdI}" loggingLevel="INFO"/>
 
-        </route>-->
+            <bean ref="pecNotificaEsitoCommittente" method="salvaNotificaAccettazioneRifiuto"/>
+
+            <log message="PEC: ENTI BRIDGE PEC SALVA NOTIFICA ESITO: NOTIFICA SALVATA" loggingLevel="INFO"/>
+        </route>
+
     </camelContext>
 </blueprint>
