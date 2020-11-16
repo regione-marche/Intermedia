@@ -95,6 +95,8 @@ it:
     cie: false
     pagopa: true
     spid: false
+  riuso:
+    codiceIPA: r_marche
 legal:
   license: GPL-2.0-or-later
 localisation:
