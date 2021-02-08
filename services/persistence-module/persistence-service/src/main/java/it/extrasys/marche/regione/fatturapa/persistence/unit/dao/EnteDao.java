@@ -298,8 +298,13 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
 
         try {
 
+            /*
             TypedQuery<EnteEntity> query = entityManager.createQuery("SELECT ente FROM EnteEntity ente WHERE ente.endpointFattureAttivaCa.endpoint = :pecAddress AND ente.endpointFattureAttivaCa.canaleCa.codCanale = :tipoCanale", EnteEntity.class);
             query.setParameter("pecAddress", pecAddress);
+            */
+            //Bisogna fare un like in quanto in caso di più pec non funziona perchè è stringa unica separata da ';'
+            TypedQuery<EnteEntity> query = entityManager.createQuery("SELECT ente FROM EnteEntity ente WHERE ente.endpointFattureAttivaCa.endpoint LIKE :pecAddress AND ente.endpointFattureAttivaCa.canaleCa.codCanale = :tipoCanale", EnteEntity.class);
+            query.setParameter("pecAddress", "%" + pecAddress + "%");
             query.setParameter("tipoCanale", "004");
 
             enteEntity = query.getSingleResult();

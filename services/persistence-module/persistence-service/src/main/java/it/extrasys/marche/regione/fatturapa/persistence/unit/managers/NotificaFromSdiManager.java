@@ -299,20 +299,27 @@ public class NotificaFromSdiManager {
         return notificaFromSdiEntity;
     }
 
-
     public List<NotificaFromSdiEntity> getScartoEsitoFtpByEnte(String codiceUfficio) throws FatturaPAException {
+
         EntityManager entityManager = null;
+
         List<NotificaFromSdiEntity> notificaFromSdiEntityList = null;
 
         try {
+
             entityManager = entityManagerFactory.createEntityManager();
             notificaFromSdiEntityList = notificaFromEntiDao.getScartoEsitoFtpByEnte(codiceUfficio, entityManager);
+
         } catch (Exception e) {
+
             throw new FatturaPAException(e.getMessage(), e);
+
         } finally {
+
             if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
+
             if (entityManager != null && entityManager.isOpen()) {
                 entityManager.close();
             }
@@ -320,6 +327,32 @@ public class NotificaFromSdiManager {
         return notificaFromSdiEntityList;
     }
 
+    public NotificaFromSdiEntity getScartoEsitoFromSdI(BigInteger identificativoSdI) throws FatturaPAException {
+
+        EntityManager entityManager = null;
+
+        NotificaFromSdiEntity notificaFromSdiEntity = null;
+
+        try {
+
+            entityManager = entityManagerFactory.createEntityManager();
+
+            //Ritorna ultima notifica scarto esito
+            notificaFromSdiEntity = notificaFromSdiDao.getNotificaScartoByIdentificativoSdI(identificativoSdI, entityManager);
+
+        } catch (Exception e) {
+
+            throw new FatturaPAException(e.getMessage(), e);
+
+        } finally {
+
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return notificaFromSdiEntity;
+    }
 
     public EntityManagerFactory getEntityManagerFactory() {
         return entityManagerFactory;

@@ -7,6 +7,7 @@ public class SdiOutboundAggregationStrategy implements AggregationStrategy {
 
     private final String TIPO_NOTIFICA_HEADER = "tipoNotifica";
     private final String TIPO_MESSAGGIO_HEADER = "tipoMessaggio";
+    private final String IDENTIFICATIVO_SDI_HEADER = "identificativoSdI";
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
@@ -19,6 +20,7 @@ public class SdiOutboundAggregationStrategy implements AggregationStrategy {
 
                 oldExchange.getIn().setHeader(TIPO_NOTIFICA_HEADER, tipoNotifica);
                 oldExchange.getIn().setHeader(TIPO_MESSAGGIO_HEADER, "NotificaEsitoCommittente");
+                oldExchange.getIn().setHeader(IDENTIFICATIVO_SDI_HEADER, newExchange.getIn().getHeader(IDENTIFICATIVO_SDI_HEADER));
 
                 return oldExchange;
 

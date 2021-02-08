@@ -39,7 +39,13 @@ public class EsitoInvioFatturazioneAttivaTestProcessor implements Processor {
         LOG.info("TEST - EsitoInvioFatturazioneAttivaProcessor - Identificativo SdI " + maxIdentificativoSdiTest + " e idFatturaFattiva " + idFattura + ": fattura salvata");
 
         //cancello il body perché dà fastidio ad activemq
-        String nomeFileRC = ((String) exchange.getIn().getHeader("nomeFile")).replace(".xml", "_RC_001.xml");
+        String nomeFileFatt = exchange.getIn().getHeader("nomeFile", String.class);
+        if(nomeFileFatt.contains(".p7m")){
+            nomeFileFatt = nomeFileFatt.replaceAll(".p7m", "");
+        }
+
+        String nomeFileRC = nomeFileFatt.replace(".xml", "_RC_001.xml");
+
         exchange.getIn().setHeader("identificativoSdI", maxIdentificativoSdiTest);
         exchange.getIn().setHeader("nomeFileRC", nomeFileRC);
 

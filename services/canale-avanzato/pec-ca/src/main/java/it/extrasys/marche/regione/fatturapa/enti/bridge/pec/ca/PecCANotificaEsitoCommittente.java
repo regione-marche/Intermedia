@@ -138,8 +138,8 @@ public class PecCANotificaEsitoCommittente {
         }
         String subjectPec = (String) msg.getHeader(SUBJECT_HEADER);
 
-        //subjectPec = subjectPec.trim().toLowerCase();
         subjectPec = subjectPec.trim();
+        subjectPec = subjectPec.replaceAll("(\r\n|\r|\n|\n\r)", "");
 
 //FIXME questo controllo non ha più senso, visto che viene fatto all'inizio nel processor "PecCAScansioneCasellaCheckSubjectProcessor.java"
         if (subjectPec.toLowerCase().contains(SUBJECT_ACCETTAZIONE) || subjectPec.toLowerCase().contains(SUBJECT_CONSEGNA)) {
@@ -166,9 +166,16 @@ public class PecCANotificaEsitoCommittente {
             throw new FatturaPANomeFileErratoException();
         }
 
+        LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto trovati " + attachmentsMap.entrySet().size() + " allegati");
+
         for (Map.Entry<String, DataHandler> entry : attachmentsMap.entrySet()) {
 
+            LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto allegato [" + entry.getKey() + "]");
+
             if (entry.getKey().contains(".eml")) {
+
+                LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto trovato allegato ***[.eml]***");
+
                 Properties props = System.getProperties();
                 props.put("mail.host", mailHost);
                 props.put("mail.transport.protocol", mailTransportProtocol);
@@ -179,6 +186,9 @@ public class PecCANotificaEsitoCommittente {
                 Object content = message.getContent();
 
                 if (content instanceof Multipart) {
+
+                    LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto message.getContent() è ***[Multipart]***");
+
                     Multipart multipart = (Multipart) content;
 
                     int count = multipart.getCount();
@@ -188,6 +198,7 @@ public class PecCANotificaEsitoCommittente {
                         BodyPart bodyPart = multipart.getBodyPart(i);
 
                         String fileName = bodyPart.getFileName();
+                        LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto fileName: [" + fileName + "]");
                         DataHandler fileAllegato = bodyPart.getDataHandler();
 
                         if (fileName == null || "".equals(fileName)) {
@@ -195,6 +206,8 @@ public class PecCANotificaEsitoCommittente {
                         } else {
 
                             fileNameDecoded = MimeUtility.decodeText(fileName);
+
+                            LOG.info("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto fileNameDecoded: [" + fileNameDecoded + "]");
 
                             if (!ValidatoreNomeNotificaEsitoCommittente.validate(fileNameDecoded)) {
                                 if (fileNameDecoded.contains(".xml")) {
@@ -207,7 +220,12 @@ public class PecCANotificaEsitoCommittente {
                             }
                         }
                     }
+                }else{
+                    Class contentClass = content.getClass();
+                    LOG.warn("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto message.getContent() non è ***[Multipart]*** ma è [" + contentClass.getName() + "]");
                 }
+            }else{
+                LOG.warn("PEC CA: ENTI BRIDGE PEC CA ACCETTAZIONE/RIFIUTO - estraiMessaggioAccettazioneRifiuto allegato .eml non trovato");
             }
         }
 
@@ -318,7 +336,8 @@ public class PecCANotificaEsitoCommittente {
             return false;
         }
 
-        List<String> emails = new ArrayList<String>(Arrays.asList(listaEmailPec.split(",")));
+        //List<String> emails = new ArrayList<String>(Arrays.asList(listaEmailPec.split(",")));
+        List<String> emails = new ArrayList<String>(Arrays.asList(listaEmailPec.split(";")));
 
         boolean found = false;
         for (String s : emails) {
@@ -512,7 +531,7 @@ public class PecCANotificaEsitoCommittente {
         }
     }
 
-    public void salvaNotificaAccettazioneRifiuto(Exchange msgExchange) throws FatturaPAException, FatturaPaPersistenceException, FatturaPAFatturaNonTrovataException {
+    public void salvaNotificaAccettazioneRifiuto(Exchange msgExchange) throws FatturaPAException, FatturaPAFatturaNonTrovataException {
 
         Message msg = msgExchange.getIn();
 

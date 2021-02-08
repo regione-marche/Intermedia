@@ -58,7 +58,7 @@
             <cm:property name="ente.pec.ca.subject.attestazione.trasmissione.fattura" value="Attestazione Trasmissione Fattura"/>
             <cm:property name="ente.pec.ca.subject.scarto.esito.committente" value="Notifica Scarto Esito Committente"/>
 
-
+            <cm:property name="ente.bridge.pec.ca.template.fattura.versione.1.2.1" value="fatturapa_v1.2.1.xsl"/>
             <cm:property name="ente.bridge.pec.ca.template.fattura.versione.1.2" value="fatturapa_v1.2.xsl"/>
             <cm:property name="ente.bridge.pec.ca.template.fattura.versione.1.1" value="fatturapa_v1.1.xsl"/>
             <cm:property name="ente.bridge.pec.ca.template.fattura.versione.default" value="fatturapa_v1.2.xsl"/>

@@ -133,17 +133,59 @@ public class NotificaFromEntiManager {
     }
 
     public String getNomeFileECFromIdentificativoSdi(BigInteger identificativoSdi) throws FatturaPAEnteNonTrovatoException, FatturaPaPersistenceException {
+
+        String nomeFile;
+
         EntityManager entityManager = null;
+
         try {
+
             entityManager = entityManagerFactory.createEntityManager();
+
             NotificaFromEntiEntity notificaFromEntiEntity = notificaFromEntiDao.getNotificaEsitoCommittenteByIdentificativiSdI(identificativoSdi, entityManager);
 
-            return notificaFromEntiEntity.getNomeFile();
+            nomeFile = notificaFromEntiEntity.getNomeFile();
 
         } catch (FatturaPAFatturaNonTrovataException e) {
-            return null;
+
+            nomeFile = null;
+
+        } finally {
+
+            if (entityManager != null && entityManager.isOpen()) {
+
+                entityManager.close();
+            }
         }
 
+        return nomeFile;
+    }
+
+    public NotificaFromEntiEntity getNotificaECFromIdentificativoSdi(BigInteger identificativoSdi) throws FatturaPAEnteNonTrovatoException, FatturaPaPersistenceException, FatturaPAException {
+
+        NotificaFromEntiEntity notificaFromEntiEntity = null;
+
+        EntityManager entityManager = null;
+
+        try {
+
+            entityManager = entityManagerFactory.createEntityManager();
+
+            notificaFromEntiEntity = notificaFromEntiDao.getNotificaEsitoCommittenteByIdentificativiSdI(identificativoSdi, entityManager);
+
+        } catch (FatturaPAFatturaNonTrovataException e) {
+
+            throw new FatturaPAException(e.getMessage(), e);
+
+        } finally {
+
+            if (entityManager != null && entityManager.isOpen()) {
+
+                entityManager.close();
+            }
+        }
+
+        return notificaFromEntiEntity;
     }
 
     public NotificaFromEntiDao getNotificaFromEntiDao() {

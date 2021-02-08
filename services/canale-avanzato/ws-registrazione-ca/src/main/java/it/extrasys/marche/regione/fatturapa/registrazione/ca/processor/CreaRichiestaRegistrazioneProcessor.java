@@ -7,6 +7,11 @@ import it.extrasys.marche.regione.fatturapa.core.utils.file.JaxBUtils;
 import it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.FatturaElettronicaWrapper;
 import it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaDecorrenzaTerminiWrapper;
 import it.extrasys.marche.regione.fatturapa.enti.bridge.paleo.model.NotificaScartoEsitoCommittenteWrapper;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaDecorrenzaTerminiDao;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.FileFatturaEntity;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.NotificaDecorrenzaTerminiEntity;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaFatturaManager;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificaDecorrenzaTerminiManager;
 import it.marche.regione.intermediamarche.fatturazione.registrazione.services.fattura.FatturaRequestType;
 import it.marche.regione.intermediamarche.fatturazione.registrazione.services.fattura.FatturaType;
 import it.marche.regione.intermediamarche.fatturazione.registrazione.services.fattura.XMLType;
@@ -20,6 +25,7 @@ import org.apache.camel.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 public class CreaRichiestaRegistrazioneProcessor implements Processor {
@@ -28,6 +34,9 @@ public class CreaRichiestaRegistrazioneProcessor implements Processor {
 
     private static final String IDENTIFICATIVO_SDI_HEADER = "identificativoSdI";
     private static final String NOME_FILE_HEADER = "nomeFile";
+
+    private FatturazionePassivaFatturaManager fatturazionePassivaFatturaManager;
+    private FatturazionePassivaNotificaDecorrenzaTerminiManager notificaDecorrenzaTerminiManager;
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -53,7 +62,12 @@ public class CreaRichiestaRegistrazioneProcessor implements Processor {
 
             XMLType fatturaXmlType = new XMLType();
             fatturaXmlType.setNomeFile(nomeFile);
-            fatturaXmlType.setValue(fatturaElettronicaWrapper.getFatturaElettronica().getBytes());
+
+            // Dentro il modulo SdI Inbound si elimina dalla fattura la firma e poichè per il CA vogliamo inviare la fattura così come ci arriva dallo SdI
+            // la riprendiamo dal DB cosa che si fa anche per PEC ed FTP
+            FileFatturaEntity fileFatturaEntity = fatturazionePassivaFatturaManager.getFileFatturaEntityByIdentificativiSdI(identificativoSdI);
+            //fatturaXmlType.setValue(fatturaElettronicaWrapper.getFatturaElettronica().getBytes());
+            fatturaXmlType.setValue(fileFatturaEntity.getContenutoFile());
 
             fatturaType.setXML(fatturaXmlType);
 
@@ -115,7 +129,12 @@ public class CreaRichiestaRegistrazioneProcessor implements Processor {
             it.marche.regione.intermediamarche.fatturazione.registrazione.services.notifica.XMLType notificaXmlType =
                     new it.marche.regione.intermediamarche.fatturazione.registrazione.services.notifica.XMLType();
             notificaXmlType.setNomeFile(nomeFile);
-            notificaXmlType.setValue(notificaDecorrenzaTerminiWrapper.getNotificaDecorrenzaTermini().getBytes());
+
+            // Dentro il modulo SdI Inbound si elimina dalla notifica la firma e poichè per il CA vogliamo inviare la notifica così come ci arriva dallo SdI
+            // la riprendiamo dal DB cosa che si fa anche per PEC ed FTP
+            NotificaDecorrenzaTerminiEntity notificaDecorrenzaTerminiEntity = notificaDecorrenzaTerminiManager.getNotificaDecorrenzaTerminiByIdentificativoSDI(new BigInteger(identificativoSdI));
+            //notificaXmlType.setValue(notificaDecorrenzaTerminiWrapper.getNotificaDecorrenzaTermini().getBytes());
+            notificaXmlType.setValue(notificaDecorrenzaTerminiEntity.getContenutoFile());
 
             notificaType.setXML(notificaXmlType);
 
@@ -123,5 +142,21 @@ public class CreaRichiestaRegistrazioneProcessor implements Processor {
 
             exchange.getIn().setBody(notificaRequest);
         }
+    }
+
+    public FatturazionePassivaFatturaManager getFatturazionePassivaFatturaManager() {
+        return fatturazionePassivaFatturaManager;
+    }
+
+    public void setFatturazionePassivaFatturaManager(FatturazionePassivaFatturaManager fatturazionePassivaFatturaManager) {
+        this.fatturazionePassivaFatturaManager = fatturazionePassivaFatturaManager;
+    }
+
+    public FatturazionePassivaNotificaDecorrenzaTerminiManager getNotificaDecorrenzaTerminiManager() {
+        return notificaDecorrenzaTerminiManager;
+    }
+
+    public void setNotificaDecorrenzaTerminiManager(FatturazionePassivaNotificaDecorrenzaTerminiManager notificaDecorrenzaTerminiManager) {
+        this.notificaDecorrenzaTerminiManager = notificaDecorrenzaTerminiManager;
     }
 }

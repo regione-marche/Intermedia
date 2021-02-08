@@ -13,8 +13,15 @@ public class ValidatoreSubjectNotificaEsitoCommittente {
 
         String[] subjectSplit = subject.split("-");
 
+        /*
         if(subjectSplit.length == 1 || subjectSplit.length > 2)
             return false;
+        */
+
+        //if(subjectSplit.length != 4 || !subject.contains("Notifica Esito")) {
+        if(!subject.contains("Notifica Esito")) {
+            return false;
+        }
 
         String idSdi = subjectSplit[0].trim();
         String nomeFileEC = subjectSplit[1].trim();

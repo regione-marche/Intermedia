@@ -73,9 +73,9 @@
                         <when>
                             <simple>${header.versioneFattura} == 'FPA12'</simple>
 
-                            <log message="PEC: ENTI BRIDGE PEC INVIO FATTURA versione fatturapa 1.2" loggingLevel="INFO"/>
+                            <log message="PEC: ENTI BRIDGE PEC INVIO FATTURA versione fatturapa 1.2.1" loggingLevel="INFO"/>
 
-                            <to uri="xslt:xsl/{{ente.bridge.pec.template.fattura.versione.1.2}}"/>
+                            <to uri="xslt:xsl/{{ente.bridge.pec.template.fattura.versione.1.2.1}}"/>
                         </when>
                         <when>
                             <simple>${header.versioneFattura} == '1.1'</simple>

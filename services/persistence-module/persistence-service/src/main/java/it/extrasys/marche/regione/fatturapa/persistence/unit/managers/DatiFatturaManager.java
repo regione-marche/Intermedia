@@ -112,16 +112,16 @@ public class DatiFatturaManager {
         LOG.info("REGISTRAZIONE FATTURE MANAGER END - IDENTIFICATIVO SDI " + identificativoSdI);
     }
 
-    @Deprecated
-    public void registraFattura(String idFiscaleCommittente, String numeroProtocollo, String numeroFattura) throws FatturaPaPersistenceException, FatturaPAException {
+    public void registraFattura(String codiceUfficio, String numeroProtocollo, String numeroFattura) throws FatturaPaPersistenceException, FatturaPAException {
 
         String codificaStatoEntity = CodificaStatiEntity.CODICI_STATO_FATTURA.REGISTRATA.getValue();
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        //FIXME cambiare la successiva con la funzione che cerca per codiceUfficio e non idFiscaleCommittente
-        DatiFatturaEntity fattura = getFatturaByNumeroFatturaAndIdFiscaleCommittente(idFiscaleCommittente, numeroProtocollo, numeroFattura);
+        //DatiFatturaEntity fattura = getFatturaByNumeroFatturaAndIdFiscaleCommittente(idFiscaleCommittente, numeroProtocollo, numeroFattura);
+        List<DatiFatturaEntity> datiFatturaEntityList = getFatturaByNumeroProtocolloCodiceUfficioAndNumeroFattura(numeroProtocollo, codiceUfficio, numeroFattura);
+        DatiFatturaEntity fattura = datiFatturaEntityList.get(0);
+
         aggiornaStatoFatturaEsito(fattura.getIdDatiFattura(), codificaStatoEntity);
     }
-
 
     public void rifiutaFatturaPerValidazioneFallita(String identificativoSdI) throws FatturaPaPersistenceException, FatturaPAException, FatturaPAFatturaNonTrovataException {
 
