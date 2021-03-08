@@ -95,6 +95,8 @@ it:
     cie: false
     pagopa: true
     spid: false
+  riuso:
+    codiceIPA: r_marche
 legal:
   license: GPL-2.0-or-later
 localisation:
@@ -115,4 +117,3 @@ platforms:
 releaseDate: '2020-09-30'
 softwareType: standalone/backend
 url: 'https://github.com/regione-marche/Intermedia.git'
-codiceIPA: r_marche
