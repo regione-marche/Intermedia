@@ -44,6 +44,8 @@
     <bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
     <bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
     <bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+    <bean id="fileFatturaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FileFatturaDao"/>
+    <bean id="notificaDecorrenzaTerminiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaDecorrenzaTerminiDao"/>
 
     <!-- Manager -->
     <bean id="enteManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.EnteManager">
@@ -92,6 +94,20 @@
         <property name="chiaveDao" ref="chiaveDao"/>
     </bean>
 
+    <bean id="fatturazionePassivaFatturaManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaFatturaManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="statoFatturaDao" ref="statoFatturaDao"/>
+        <property name="codificaStatiDao" ref="codificaStatiDao"/>
+        <property name="fileFatturaDao" ref="fileFatturaDao"/>
+    </bean>
+
+    <bean id="notificaDecorrenzaTerminiManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificaDecorrenzaTerminiManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="datiFatturaDao" ref="datiFatturaDao"/>
+        <property name="notificaDecorrenzaTerminiDao" ref="notificaDecorrenzaTerminiDao"/>
+    </bean>
+
     <!-- Processor -->
     <bean id="registrazioneCAManager" class="it.extrasys.marche.regione.fatturapa.registrazione.ca.RegistrazioneCAManager">
         <!-- Ref Manager -->
@@ -99,7 +115,10 @@
         <property name="notificheAttivaFromSdiManager" ref="notificheAttivaFromSdiManager"/>
         <property name="chiaveManager" ref="chiaveManager"/>
     </bean>
-    <bean id="creaRichiestaRegistrazioneProcessor" class="it.extrasys.marche.regione.fatturapa.registrazione.ca.processor.CreaRichiestaRegistrazioneProcessor"/>
+    <bean id="creaRichiestaRegistrazioneProcessor" class="it.extrasys.marche.regione.fatturapa.registrazione.ca.processor.CreaRichiestaRegistrazioneProcessor">
+        <property name="fatturazionePassivaFatturaManager" ref="fatturazionePassivaFatturaManager"/>
+        <property name="notificaDecorrenzaTerminiManager" ref="notificaDecorrenzaTerminiManager"/>
+    </bean>
     <bean id="aggiornaStatoProcessor" class="it.extrasys.marche.regione.fatturapa.registrazione.ca.processor.AggiornaStatoProcessor">
         <property name="datiFatturaManager" ref="datiFatturaManager"/>
     </bean>

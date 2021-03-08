@@ -147,7 +147,21 @@ ${body}
 			</choice>
 
 			<!-- cambia stato alla fattura in REGISTRATA -->
-			<to uri="bean:datiFatturaManager?method=registraFattura(${headers.idFiscaleCommittente}, ${headers.numeroProtocollo}, ${headers.numeroFattura})" />
+			<!--to uri="bean:datiFatturaManager?method=registraFattura(${headers.idFiscaleCommittente}, ${headers.numeroProtocollo}, ${headers.numeroFattura})" /-->
+			<choice>
+				<when>
+					<simple>${headers.fatto409} == true</simple>
+
+					<!-- Nel caso in cui la chiamata torna 409 non bisogna fare nulla in quanto è già registrata -->
+					<log loggingLevel="INFO" message="GIUNTA: REGISTRAZIONE: FATTURA CON IDENTIFICATIVO SDI ${in.header.identificativoSdI} GIA' REGISTRATA SU FATTO!"/>
+
+				</when>
+				<otherwise>
+
+					<to uri="bean:datiFatturaManager?method=registraFattura(${headers.codiceUfficio}, ${headers.numeroProtocollo}, ${headers.numeroFattura})" />
+
+				</otherwise>
+			</choice>
 
 			<log message="GIUNTA: REGISTRAZIONE: FATTURA CON IDENTIFICATIVO SDI: ${headers.identificativoSdI} NUMERO FATTURA: ${headers.numeroFattura}  REGISTRATA SUL DB"
 				 loggingLevel="INFO"/>
@@ -208,7 +222,7 @@ ${body}
 				<simple>multipart/form-data; boundary={{extraFormBoundary}}</simple>
 			</setHeader>
 
-			<setHeader headerName="fattoGiunta409">
+			<setHeader headerName="fatto409">
 				<simple>false</simple>
 			</setHeader>
 
@@ -226,13 +240,24 @@ ${body}
 						<simple>true</simple>
 					</handled>
 
-					<setHeader headerName="fattoGiunta409">
-						<simple>true</simple>
-					</setHeader>
-
 					<process ref="log"/>
 
 					<log message="GIUNTA: REGISTRAZIONE STATUS ${headers.rejectCode} - ${headers.rejectDescription} - ${headers.response}: IDENTIFICATIVO SDI: ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+					<choice>
+						<when>
+							<simple>${headers.rejectCode} == '409' || ${headers.rejectCode} == 409</simple>
+							<!-- 409 significa che la fattura è già stata registrata quindi non bisogna fare nulla -->
+							<!-- E' già stata inserita una fattura con lo stesso numero/data fattura, stessa iva prestatore e stessa segnatura di protocollo. -->
+
+							<setHeader headerName="fatto409">
+								<simple>true</simple>
+							</setHeader>
+						</when>
+						<otherwise>
+							<throwException ref="fatturaPAFatalException"/>
+						</otherwise>
+					</choice>
 
 				</doCatch>
 				<doCatch>
@@ -243,11 +268,23 @@ ${body}
 
 					<process ref="log"/>
 
-					<setHeader headerName="fattoGiunta409">
-						<simple>true</simple>
-					</setHeader>
-
 					<log message="GIUNTA: REGISTRAZIONE STATUS ${headers.rejectCode} - ${headers.rejectDescription} - ${headers.response}: IDENTIFICATIVO SDI: ${headers.identificativoSdI}" loggingLevel="INFO"/>
+
+					<choice>
+						<when>
+							<simple>${headers.rejectCode} == '409' || ${headers.rejectCode} == 409</simple>
+							<!-- 409 significa che la fattura è già stata registrata quindi non bisogna fare nulla -->
+							<!-- E' già stata inserita una fattura con lo stesso numero/data fattura, stessa iva prestatore e stessa segnatura di protocollo. -->
+
+							<setHeader headerName="fatto409">
+								<simple>true</simple>
+							</setHeader>
+						</when>
+						<otherwise>
+							<throwException ref="fatturaPAFatalException"/>
+						</otherwise>
+					</choice>
+
 				</doCatch>
 			</doTry>
 
@@ -266,8 +303,7 @@ ${body}
 
 			</onException>
 
-			<log message="GIUNTA: REGISTRAZIONE: END rs1Route IDENTIFICATIVO SDI: ${headers.identificativoSdI}"
-				 loggingLevel="INFO"/>
+			<log message="GIUNTA: REGISTRAZIONE: END rs1Route IDENTIFICATIVO SDI: ${headers.identificativoSdI}" loggingLevel="INFO"/>
 
 		</route>
 

@@ -105,7 +105,7 @@ localisation:
   localisationReady: false
 maintenance:
   contacts:
-    - name: Agostino Leoni
+    - name: Gianfranco Amatore
   contractors:
     - name: Extra Red s.r.l.
       until: '2021-12-31'

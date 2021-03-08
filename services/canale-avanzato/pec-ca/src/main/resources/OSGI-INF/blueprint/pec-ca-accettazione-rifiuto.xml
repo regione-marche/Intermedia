@@ -325,8 +325,8 @@
                                 <constant>ricezioneNotifica</constant>
                             </setHeader>
 
-                            <to uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
                             <to uri="{{aggiorna.stato.notifica.ca.queue}}"/>
+                            <to uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
 
                             <inOnly uri="{{enti.bridge.pec.ca.notifica.esito.committente.esito.operazione.inoltro}}"/>
 
@@ -433,6 +433,15 @@
             <to uri="velocity:velocity/creaFileEsitoOperazioneEsitoCommTemplate.vm"/>
 
         </route>
+
+ <!--
+ ToDo: Attenzione verificare il perchè manca quasta rotta! (Era commentata) Per la coda enti.bridge.pec.ca.notifica.esito.inoltro.errore non c'è nessun consumatore FARE DEI TEST
+ -->
+        <route id="enti.bridge.pec.ca.notifica.esito.committente.inoltro.errore">
+            <from uri="{{enti.bridge.pec.ca.notifica.esito.inoltro.errore}}"/>
+            <to uri="direct:enti.bridge.pec.ca.notifica.esito.inoltro.errore"/>
+        </route>
+
 
         <route id="enti.bridge.pec.ca.notifica.esito.inoltro.errore">
             <from uri="direct:enti.bridge.pec.ca.notifica.esito.inoltro.errore"/>
@@ -577,8 +586,8 @@
                 <constant>protocollazioneNotifica</constant>
             </setHeader>
 
-            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
             <inOnly uri="{{aggiorna.stato.notifica.ca.queue}}"/>
+            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
 
             <choice>
                 <when>
@@ -616,8 +625,8 @@
                 <constant>registrazioneNotifica</constant>
             </setHeader>
 
-            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
             <inOnly uri="{{aggiorna.stato.notifica.ca.queue}}"/>
+            <inOnly uri="direct:enti.bridge.pec.ca.salva.notifica.accettazione.rifiuto"/>
 
         </route>
 

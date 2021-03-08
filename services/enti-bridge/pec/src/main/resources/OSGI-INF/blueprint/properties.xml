@@ -54,6 +54,7 @@
             <cm:property name="ente.pec.subject.esito" value="Notifica Esito"/>
             <cm:property name="ente.pec.subject.attestazione.trasmissione.fattura" value="Attestazione Trasmissione Fattura"/>
 
+            <cm:property name="ente.bridge.pec.template.fattura.versione.1.2.1" value="fatturapa_v1.2.1.xsl"/>
             <cm:property name="ente.bridge.pec.template.fattura.versione.1.2" value="fatturapa_v1.2.xsl"/>
             <cm:property name="ente.bridge.pec.template.fattura.versione.1.1" value="fatturapa_v1.1.xsl"/>
             <cm:property name="ente.bridge.pec.template.fattura.versione.default" value="fatturapa_v1.2.xsl"/>

@@ -1,8 +1,12 @@
 package it.extrasys.marche.regione.fatturapa.enti.bridge.pec.ca.processors;
 
 import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.DatiFatturaEntity;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.NotificaDecorrenzaTerminiEntity;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.enti.NotificaFromEntiEntity;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.from.sdi.NotificaFromSdiEntity;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.DatiFatturaManager;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificaDecorrenzaTerminiManager;
+import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromEntiManager;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.managers.NotificaFromSdiManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -11,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class PecCAFatturaPassivaCreaSubjectProcessor implements Processor {
@@ -26,8 +32,11 @@ public class PecCAFatturaPassivaCreaSubjectProcessor implements Processor {
     private DatiFatturaManager datiFatturaManager;
     private FatturazionePassivaNotificaDecorrenzaTerminiManager notificaDecorrenzaTerminiManager;
     private NotificaFromSdiManager notificaFromSdiManager;
+    private NotificaFromEntiManager notificaFromEntiManager;
 
     private String firstPartSubject;
+
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -41,36 +50,57 @@ public class PecCAFatturaPassivaCreaSubjectProcessor implements Processor {
 
         LOG.info("PecCAFatturaPassivaCreaSubjectProcessor - identificativoSdI [" + identificativoSdi + "], tipo messaggio [" + tipoMessaggio + "]" );
 
+        List<DatiFatturaEntity> datiFatturaEntityList = datiFatturaManager.getFatturaByIdentificativoSDI(new BigInteger(identificativoSdi));
+        DatiFatturaEntity datiFatturaEntity = datiFatturaEntityList.get(0);
+
+        //Informazione che serve per la composizione del Subject
+        String nomeCedentePrestatore = datiFatturaEntityList.get(0).getNomeCedentePrestatore();
+
         switch (tipoMessaggio) {
 
             case "FatturaElettronica":
 
-                List<DatiFatturaEntity> datiFatturaEntityList = datiFatturaManager.getFatturaByIdentificativoSDI(new BigInteger(identificativoSdi));
+                String nomeFileFattura = datiFatturaEntity.getNomeFile();
+                Date dataCreazione = datiFatturaEntityList.get(0).getDataCreazione();
+                String dataCreazioneFormattata = sdf.format(dataCreazione);
 
-                DatiFatturaEntity datiFatturaEntity = datiFatturaEntityList.get(0);
-
-                subject = identificativoSdi + " - " + datiFatturaEntity.getNomeFile();
+                subject = identificativoSdi + " - " + nomeFileFattura + " - Fattura " + nomeCedentePrestatore + " - Data Ricezione SDI " + dataCreazioneFormattata;
 
                 break;
 
             case "NotificaDecorrenzaTermini":
 
-                String nomeFileDetTermini = message.getHeader("nomeFile", String.class);
-                subject = identificativoSdi + " - " + nomeFileDetTermini;
+                NotificaDecorrenzaTerminiEntity notificaDecorrenzaTerminiEntity = notificaDecorrenzaTerminiManager.getNotificaDecorrenzaTerminiByIdentificativoSDI(new BigInteger(identificativoSdi));
+
+                String nomeFileDecTermini = message.getHeader("nomeFile", String.class);
+                Date dataRicezioneDecTermini = notificaDecorrenzaTerminiEntity.getDataRicezione();
+                String dataRicezioneDecTerminiFormattata = sdf.format(dataRicezioneDecTermini);
+
+                subject = identificativoSdi + " - " + nomeFileDecTermini + " - Decorrenza Termini " + nomeCedentePrestatore + " - Data Ricezione SDI " + dataRicezioneDecTerminiFormattata;
 
                 break;
 
             case "NotificaEsitoCommittente":
 
+                NotificaFromEntiEntity notificaFromEntiEntity = notificaFromEntiManager.getNotificaECFromIdentificativoSdi(new BigInteger(identificativoSdi));
+
                 String nomeFileEC = message.getHeader("nomeFile", String.class);
-                subject = identificativoSdi + " - " + nomeFileEC;
+                Date dataRicezioneEC = notificaFromEntiEntity.getDataRicezioneFromEnte();
+                String dataRicezioneECFormattata = sdf.format(dataRicezioneEC);
+
+                subject = identificativoSdi + " - " + nomeFileEC + " - Notifica Esito " + nomeCedentePrestatore + " - Data Ricezione Ente " + dataRicezioneECFormattata;
 
                 break;
 
             case "NotificaScartoEsito":
 
+                NotificaFromSdiEntity notificaFromSdiEntity = notificaFromSdiManager.getScartoEsitoFromSdI(new BigInteger(identificativoSdi));
+
                 String nomeFileScarto = message.getHeader("nomeFile", String.class);
-                subject = identificativoSdi + " - " + nomeFileScarto;
+                Date dataRicezioneScarto = notificaFromSdiEntity.getDataRicezioneRispostaSDI();
+                String dataRicezioneScartoFormattata = sdf.format(dataRicezioneScarto);
+
+                subject = identificativoSdi + " - " + nomeFileScarto + " - Notifica Scarto " + nomeCedentePrestatore + " - Data Ricezione SDI " + dataRicezioneScartoFormattata;
 
                 break;
         }
@@ -110,5 +140,13 @@ public class PecCAFatturaPassivaCreaSubjectProcessor implements Processor {
 
     public void setNotificaFromSdiManager(NotificaFromSdiManager notificaFromSdiManager) {
         this.notificaFromSdiManager = notificaFromSdiManager;
+    }
+
+    public NotificaFromEntiManager getNotificaFromEntiManager() {
+        return notificaFromEntiManager;
+    }
+
+    public void setNotificaFromEntiManager(NotificaFromEntiManager notificaFromEntiManager) {
+        this.notificaFromEntiManager = notificaFromEntiManager;
     }
 }

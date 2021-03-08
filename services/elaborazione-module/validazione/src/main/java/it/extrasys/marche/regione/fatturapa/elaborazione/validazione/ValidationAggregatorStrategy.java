@@ -24,7 +24,9 @@ public class ValidationAggregatorStrategy implements AggregationStrategy {
 
 		if (oldExchange == null) {
 
-			validationResult = checkHeaders(newExchange);
+			//Commentato controllo per richiesta di Stefano Barbabietolini ed autorizzato da Pacetti 12/01/2021
+			//validationResult = checkHeaders(newExchange);
+			validationResult = true;
 
 			if(validationResult == false){
 
@@ -49,7 +51,9 @@ public class ValidationAggregatorStrategy implements AggregationStrategy {
 			return newExchange;
 		}
 
-		validationResult = checkHeaders(newExchange);
+		//Commentato controllo per richiesta di Stefano Barbabietolini ed autorizzato da Pacetti 12/01/2021
+		//validationResult = checkHeaders(newExchange);
+		validationResult = true;
 
 		Boolean oldResult = (Boolean) oldExchange.getIn().getHeader("validationResult");
 
@@ -87,6 +91,7 @@ public class ValidationAggregatorStrategy implements AggregationStrategy {
 
 	}
 
+	//Controllo non più utilizzato per richiesta di Stefano Barbabietolini ed autorizzato da Pacetti 12/01/2021
 	public static boolean checkHeaders(Exchange newExchange) {
 
 		String tipoDoc = (String) newExchange.getIn().getHeader("tipoDocumento");

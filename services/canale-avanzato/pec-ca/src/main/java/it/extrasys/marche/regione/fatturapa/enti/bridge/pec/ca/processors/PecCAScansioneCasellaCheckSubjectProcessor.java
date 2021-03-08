@@ -65,11 +65,22 @@ public class PecCAScansioneCasellaCheckSubjectProcessor implements Processor {
 
         LOG.info("PecCAScansioneCasellaCheckSubjectProcessor: subject dopo decode = [" + subject + "]");
 
+        subject = subject.replaceAll("(\r\n|\r|\n|\n\r)", "");
         message.setHeader(SUBJECT_PEC, subject);
 
         String[] split = subject.split("-");
-        //ToDo: Verificare Oggetto
-        String fileTipoMex = split[split.length - 1].trim();
+
+        //String fileTipoMex = split[split.length - 1].trim();
+        String fileTipoMex = "";
+        if(split.length < 2){
+
+            LOG.info("PecCAScansioneCasellaCheckSubjectProcessor: *** Subject non conforme! ***");
+            fileTipoMex = split[split.length - 1].trim();
+
+        }else{
+            
+            fileTipoMex = split[1].trim();
+        }
 
         if(subject.startsWith(ACCETTAZIONE_PART)) {
 

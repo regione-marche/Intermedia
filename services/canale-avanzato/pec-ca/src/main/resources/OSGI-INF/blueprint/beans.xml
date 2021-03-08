@@ -161,6 +161,7 @@
         <property name="datiFatturaManager" ref="datiFatturaManager"/>
         <property name="notificaDecorrenzaTerminiManager" ref="notificaDecorrenzaTerminiManager"/>
         <property name="notificaFromSdiManager" ref="notificaFromSdiManager"/>
+        <property name="notificaFromEntiManager" ref="notificaFromEntiManager"/>
         <property name="firstPartSubject" value="${ente.pec.ca.subject.fattura}"/>
     </bean>
 

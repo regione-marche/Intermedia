@@ -61,7 +61,8 @@
 										<choice>
 											<when>
 												<simple>${header.validaFatturaCheck} == 'true'</simple>
-												<to uri="direct:checkValues" />
+												<!-- Controllo non più utilizzato per richiesta di Stefano Barbabietolini ed autorizzato da Pacetti 12/01/2021 -->
+												<!--to uri="direct:checkValues" /-->
 											</when>
 											<otherwise>
 												<log message="VALIDAZIONE: !!! PERFORM VALIDATION !!! - IDENTIFICATIVO SDI ${headers.identificativoSdI} TIPO DOCUMENTO ${header.tipoDocumento} NON SOGGETTO A VALIDAZIONE" loggingLevel="INFO"/>
@@ -109,6 +110,7 @@
 
 		</route>
 
+		<!-- Controllo non più utilizzato per richiesta di Stefano Barbabietolini ed autorizzato da Pacetti 12/01/2021 -->
 		<route id="checkValuesRoute">
 			<from uri="direct:checkValues" />
 			<log loggingLevel="INFO" message="VALIDAZIONE:CONTROLLO VALORI PER DATIORDINEACQUISTO/IDDOCUMENTO  - IDENTIFICATIVO SDI ${headers.identificativoSdI}" />
