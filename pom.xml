@@ -59,7 +59,7 @@
         <!-- driver per la versione vecchia del database
         <postgresql-jdbc-driver.version>9.3-1102-jdbc41</postgresql-jdbc-driver.version>-->
         <postgresql-jdbc-driver.version>42.2.2</postgresql-jdbc-driver.version>
-        <bouncycastle.version>1.56</bouncycastle.version>
+        <bouncycastle.version>1.67</bouncycastle.version>
         <juniversalchardet.version>1.0.3</juniversalchardet.version>
         <xmlunit.version>1.5</xmlunit.version>
         <cucumber.version>1.1.7</cucumber.version>
