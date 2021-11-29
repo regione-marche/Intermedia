@@ -66,7 +66,7 @@
         <mybatis.version>3.2.8</mybatis.version>
         <icu4j.version>63.1</icu4j.version>
         <cxf.xjc.version>2.7.0</cxf.xjc.version>
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.9.10.8</jackson.version>
     </properties>
 
 
