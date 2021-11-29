@@ -119,6 +119,7 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
         return enteEntityList;
     }
 
+
     public EnteEntity getEnteByCodiceUfficio(String codiceUfficio, EntityManager entityManager) throws FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
         EnteEntity enteEntity = null;
 
@@ -127,6 +128,28 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
         try {
             TypedQuery<EnteEntity> query = entityManager.createQuery("SELECT ente FROM EnteEntity ente WHERE UPPER(ente.codiceUfficio) = :codiceUfficio", EnteEntity.class);
             query.setParameter("codiceUfficio", codiceUfficio.toUpperCase());
+
+            enteEntity = query.getSingleResult();
+
+        } catch (NoResultException e) {
+            throw new FatturaPAEnteNonTrovatoException("Ente non trovato per codiceUfficio " + codiceUfficio);
+        } catch (PersistenceException e) {
+            throw new FatturaPaPersistenceException();
+        }
+
+        return enteEntity;
+    }
+
+
+    public EnteEntity getEnteByCodiceUfficioFlussoSemplificato(String codiceUfficio, EntityManager entityManager) throws FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
+        EnteEntity enteEntity = null;
+
+        LOG.info("*************** EnteDao: getEnteByCodiceUfficioFlussoSemplificato ***************");
+
+        try {
+            TypedQuery<EnteEntity> query = entityManager.createQuery("SELECT ente FROM EnteEntity ente WHERE UPPER(ente.codiceUfficio) = :codiceUfficio AND (ente.ambienteCicloPassivo IS NULL OR ente.ambienteCicloPassivo = :ambCicloPassivo)", EnteEntity.class);
+            query.setParameter("codiceUfficio", codiceUfficio.toUpperCase());
+            query.setParameter("ambCicloPassivo", "PRODUZIONE");
 
             enteEntity = query.getSingleResult();
 
@@ -163,7 +186,7 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
     public List<EnteEntity> getEnteFtpInvioSingoloByTipoCanale(String tipoCanale, EntityManager entityManager) throws FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
         List<EnteEntity> enteEntity = null;
 
-        LOG.info("*************** EnteDao: getEnteFtpInvioSingoloByTipoCanale ***************");
+        //LOG.info("*************** EnteDao: getEnteFtpInvioSingoloByTipoCanale ***************");
 
         try {
             String queryString = "SELECT ente FROM EnteEntity ente JOIN ente.endpointProtocolloCa prot WHERE ente.tipoCanale.codTipoCanale = '004' AND ente.endpointRegistrazioneCa IS NULL " +
@@ -185,7 +208,7 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
     public List<EnteEntity> getEnteFtpInvioProtocolloByTipoCanale(String tipoCanale, EntityManager entityManager) throws FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
         List<EnteEntity> enteEntity = null;
 
-        LOG.info("*************** EnteDao: getEnteFtpInvioProtocolloByTipoCanale ***************");
+        //LOG.info("*************** EnteDao: getEnteFtpInvioProtocolloByTipoCanale ***************");
 
         try {
             String queryString = "SELECT ente FROM EnteEntity ente JOIN ente.endpointProtocolloCa prot WHERE ente.tipoCanale.codTipoCanale = '004' AND ente.endpointRegistrazioneCa IS NOT NULL" +
@@ -251,7 +274,7 @@ public class EnteDao extends GenericDao<EnteEntity, BigInteger> {
     public List<EnteEntity> getEnteFtpRicezioneFatturaByTipoCanale(String tipoCanale, EntityManager entityManager) throws FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
         List<EnteEntity> enteEntity = null;
 
-        LOG.info("*************** EnteDao: getEnteFtpRicezioneFatturaByTipoCanale ***************");
+        //LOG.info("*************** EnteDao: getEnteFtpRicezioneFatturaByTipoCanale ***************");
 
         try {
             String queryString = "SELECT ente FROM EnteEntity ente JOIN ente.endpointFattureAttivaCa reg WHERE ente.tipoCanale.codTipoCanale = '004' AND ente.endpointFattureAttivaCa IS NOT NULL " +

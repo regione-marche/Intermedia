@@ -30,13 +30,16 @@
                 <simple>{{fatturapa.ftp.ca.stato.scarto.ec.invio.unico}}</simple>
             </setHeader>
 
-            <to uri="direct:invio-scarto-esito"/>
+            <!--to uri="direct:invio-scarto-esito"/-->
+            <inOnly uri="{{enti.bridge.ente.ftp.ca.invio.seda.queue}}"/>
+
         </route>
 
 
 
         <route id="enti.bridge.ftp.ca.scarto.esito.invio">
-            <from uri="direct:invio-scarto-esito"/>
+            <!--<from uri="direct:invio-scarto-esito"/>-->
+            <from uri="{{enti.bridge.ente.ftp.ca.invio.seda.queue}}"/>
 
             <split>
                 <simple>${body}</simple>
@@ -53,7 +56,11 @@
                     <when>
                         <simple>${body.size} > 0</simple>
 
+                            <!--
                             <to uri="direct:crea-invia-zip"/>
+                            -->
+                            <!-- Sostituito direct con coda in quanto il thred che effettua la query non stacca la connessione al DB -->
+                            <inOnly uri="{{enti.bridge.ente.ftp.ca.crea.invia.zip.seda.queue}}"/>
 
                         <log message="BATCH FTP CA - INVIO SCARTO ESITO - OUTBOUND FINISHED"/>
                     </when>

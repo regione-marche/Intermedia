@@ -42,6 +42,10 @@
         <property name="statoConverter" ref="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
     </bean>
 
+    <bean id="ftpReportStManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FtpReportStManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="ftpReportStDao" ref="ftpReportStDao"/>
+    </bean>
 
     <bean id="notifichePersistenceCAManagerXA" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FatturazionePassivaNotificheCAManagerXAImpl">
         <jpa:unit property="entityManagerFactory" unitname="persistence-unit-xa" />
@@ -53,7 +57,6 @@
     </bean>
 
     <bean id="fatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" class="it.extrasys.marche.regione.fatturapa.persistence.unit.converters.FatturaElettronicaAttivaToStatoFatturaAttivaEntityConverter" />
-
 
     <bean id="dynamicStartRoutes"
           class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.processor.DynamicStartRoutes">
@@ -85,6 +88,10 @@
         <property name="fatturazionePassivaNotificheCAManagerXA" ref="notifichePersistenceCAManagerXA" />
     </bean>
 
+    <bean id="ftpReportStProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.processor.FtpReportStProcessor">
+        <property name="ftpReportStManager" ref="ftpReportStManager"/>
+    </bean>
+
     <!-- DAO -->
     <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao"/>
     <bean id="statoFatturaAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.StatoFatturaAttivaDao" />
@@ -102,6 +109,7 @@
     <bean id="endpointCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EndpointCaDao"/>
     <bean id="canaleCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CanaleCaDao"/>
     <bean id="entePaleoCaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EntePaleoCaDao"/>
+    <bean id="ftpReportStDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FtpReportStDao"/>
 
     <bean id="XA_TX_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
         <property name="transactionManager" ref="platformTxManager" />

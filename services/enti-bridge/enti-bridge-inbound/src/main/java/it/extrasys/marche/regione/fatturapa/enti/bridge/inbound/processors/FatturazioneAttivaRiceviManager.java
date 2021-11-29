@@ -4,7 +4,9 @@ import it.extrasys.marche.regione.fatturapa.contracts.fatturazione.elettronica.b
 import it.extrasys.marche.regione.fatturapa.contracts.fatturazione.elettronica.beans.FormatoTrasmissioneType;
 import it.extrasys.marche.regione.fatturapa.contracts.inoltro.fatturazione.attiva.beans.FileType;
 import it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAException;
+import it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAMaxSizeException;
 import it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAValidazioneFallitaException;
+import it.extrasys.marche.regione.fatturapa.core.utils.CommonUtils;
 import it.extrasys.marche.regione.fatturapa.core.utils.file.FileUtils;
 import it.extrasys.marche.regione.fatturapa.core.utils.file.JaxBUtils;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteEntity;
@@ -90,6 +92,19 @@ public class FatturazioneAttivaRiceviManager {
 
             final InputStream in = dataHandler.getInputStream();
             byte[] fileFattureOriginale = IOUtils.toByteArray(in);
+
+            //Controllo dimensione Fattura Attiva
+            double maxMB = Double.valueOf(exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.ws.fatturazione.attiva.max.size}}"));
+            String unit = exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.ws.fatturazione.attiva.size.unit}}");
+
+            String sizeFattura = CommonUtils.convertToStringRepresentation(fileFattureOriginale.length, unit);
+
+            double sizeFattAttiva = Double.parseDouble(sizeFattura.replaceAll(" " + unit, ""));
+
+            if(sizeFattAttiva > maxMB){
+                LOG.error("Ricevuta Fattura Attiva " + nomeFile + " con size " + sizeFattura + " (Max Size " + maxMB + " " + unit + ")");
+                throw new FatturaPAMaxSizeException();
+            }
 
             String fatturaElettronica = FileUtils.getFatturaElettonicaSenzaFirma(nomeFile, fileFattureOriginale);
 

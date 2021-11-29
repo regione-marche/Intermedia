@@ -11,6 +11,14 @@
 
         <cm:default-properties>
 
+            <!-- ########## ACTIVEMQ ########## -->
+            <cm:property name="fatturapa.activemq.brokerURL" value="discovery:(fabric:fatturapa-broker)" />
+            <cm:property name="fatturapa.activemq.username" value="admin" />
+            <cm:property name="fatturapa.activemq.password" value="admin" />
+            <cm:property name="fatturapa.activemq.max.connections" value="10" />
+            <cm:property name="fatturapa.activemq.cacheLevelName" value="CACHE_CONSUMER"/>
+            <cm:property name="fatturapa.activemq.concurrent.consumers" value="5" />
+
             <cm:property name="enable.trace" value="false"/>
             <cm:property name="fatturapa.component.ftp" value="ftp://"/>
             <cm:property name="fatturapa.ftp.start.timer" value="OFF"/>
@@ -69,6 +77,25 @@
             <cm:property name="fatturapa.ftp.ca.stato.scarto.ec.invio.registrazione" value="068"/>
 
             <cm:property name="fatturapa.ftp.ca.stato.notifica.esito.committente.invio.protocollo" value="069"/>
+
+            <cm:property name="enti.bridge.ente.ftp.ca.crea.invia.zip.seda.queue" value="seda:creaInviaZip"/>
+            <cm:property name="enti.bridge.ente.ftp.ca.invio.seda.queue" value="seda:ftpCaInvio"/>
+
+            <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+
+            <cm:property name="fatturapa.ftp.report.st.invio.start.timer" value="ON"/>
+            <cm:property name="fatturapa.ftp.report.st.fo.header.csv" value="Nome File Inviato;Data consegna;Time consegna;Ambiente"/>
+            <cm:property name="fatturapa.ftp.report.st.fi.header.csv" value="Nome File Prelevato;Data Prelevamento;Time Prelevamento;Nome File Inviato;Data consegna;Time consegna;Ambiente;Stato"/>
+            <cm:property name="fatturapa.ftp.report.st.ambiente" value="TEST"/>
+            <cm:property name="fatturapa.ftp.report.st.pathTmpFileCsv" value="/home/esbadmin/FTP_CA/REPORTST"/>
+            <cm:property name="fatturapa.ftp.timer.report.st.invio" value="timer://ftpReportStInvio?fixedRate=true&amp;period=300000&amp;delay=120000"/>
+            <cm:property name="fatturapa.ftp.jetty.report.st.invio" value="jetty:http://0.0.0.0:8888/batchFtp/reportST"/>
+            <cm:property name="fatturapa.dir.report.st.invio" value="/home/esbadmin/FTP_CA/REPORTST/"/>
+            <cm:property name="DLQ.ftp.report.st.fi.invio" value="activemq:DLQ.ftp.report.st.fi.invio.queue"/>
+            <cm:property name="DLQ.ftp.report.st.fo.invio" value="activemq:DLQ.ftp.report.st.fo.invio.queue"/>
+            <cm:property name="fatturapa.ftp.report.st.ext.file" value=".csv.run"/>
+            <cm:property name="ftp.report.st.fo.invio.queue" value="activemq:ftp.report.st.fo.invio.queue"/>
+            <cm:property name="ftp.report.st.fi.invio.queue" value="activemq:ftp.report.st.fi.invio.queue"/>
 
         </cm:default-properties>
     </cm:property-placeholder>

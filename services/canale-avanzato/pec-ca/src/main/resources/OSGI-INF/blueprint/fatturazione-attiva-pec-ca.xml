@@ -184,6 +184,44 @@
 
         </onException>
 
+        <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAMaxSizeException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <setHeader headerName="tipoErrore">
+                <simple>maxSizeSuperato</simple>
+            </setHeader>
+
+            <setHeader headerName="codiceEsito">
+                <simple>FA02</simple>
+            </setHeader>
+            <setHeader headerName="descrizioneEsito">
+                <simple>dimensione massima fattura ({{enti.bridge.pec.ca.fatturazione.attiva.max.size}} {{enti.bridge.pec.ca.fatturazione.attiva.size.unit}}) superata</simple>
+            </setHeader>
+
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+            <removeHeader headerName="exception"/>
+
+            <log message="FatturaPAAllegatoAttivaNonTrovatoException"/>
+            <to uri="log:it.extrasys.marche.regione.fatturapa.tracing?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+
+            <setBody>
+                <simple resultType="java.lang.String">null</simple>
+            </setBody>
+
+            <to uri="direct:enti.bridge.pec.ca.attiva.inoltro.errori"/>
+
+        </onException>
+
         <onException useOriginalMessage="true" redeliveryPolicyRef="pecCAAttivaInvioFatturaRedeliveryPolicyConfig">
             <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPaPersistenceException</exception>
 

@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -31,7 +33,9 @@ public class CreaFileEsito implements Processor {
 
         String unzipDir = (String) exchange.getIn().getHeader(FtpConstants.DIR_UNZIP);
         String nomeFileZip = (String) exchange.getIn().getHeader(FtpConstants.FILE_NAME_ZIP);
-        String nomeFileEsito = "E".concat(nomeFileZip.substring(1));
+        //String nomeFileEsito = "E".concat(nomeFileZip.substring(1));
+        //G1G4
+        String nomeFileEsito = "EO".concat(nomeFileZip.substring(2)); //Deve essere sempre EO
         String replace = nomeFileEsito.replace(FtpConstants.EXT_ZIP_DONE, ".xml");
 
         //Crea il file di esito
@@ -60,6 +64,7 @@ public class CreaFileEsito implements Processor {
 
     //Sposta i file validi da elaborare scartando il file di quadratura
     private static void cancellaCartellaUnzipAndMoveFileValidi(String unzipDir, String zipFile) throws IOException {
+
         File dir = new File(unzipDir);
         File dirDest = new File(dir.getParent().concat(File.separator).concat(FtpConstants.DIR_DA_ELABORARE).concat(File.separator).concat(dir.getName()));
 
@@ -83,7 +88,6 @@ public class CreaFileEsito implements Processor {
             FileUtils.forceDelete(new File(dir.getParent().concat(File.separator).concat(FtpConstants.DIR_ELABORATI).concat(File.separator).concat(zipFile)));
             FileUtils.moveFileToDirectory(new File(dir.getParent().concat(File.separator).concat(zipFile)), new File(dir.getParent().concat(File.separator).concat(FtpConstants.DIR_ELABORATI)), true);
         }
-
     }
 
 
@@ -102,5 +106,18 @@ public class CreaFileEsito implements Processor {
             FileUtils.forceDelete(new File(zipFile.getParent().concat(File.separator).concat(FtpConstants.DIR_SOSPESI).concat(File.separator).concat(zipFile.getName())));
             FileUtils.moveFileToDirectory(zipFile, new File(zipFile.getParent().concat(File.separator).concat(FtpConstants.DIR_SOSPESI).concat(File.separator).concat(zipFile.getName())), true);
         }
+    }
+
+    private static String gestioneDoppiaCartella(String unzipDir){
+
+        //Verifico se presente doppia cartella
+        String[] unzipDirSplit = unzipDir.split(File.separator);
+        String doubleFolderUnzipDir = unzipDir + File.separator + unzipDirSplit[unzipDirSplit.length -1];
+
+        if(new File(doubleFolderUnzipDir).exists()){
+            return doubleFolderUnzipDir;
+        }
+
+        return unzipDir;
     }
 }

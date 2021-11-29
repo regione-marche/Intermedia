@@ -104,12 +104,12 @@
                     <when>
                         <simple>${body.size} > 0</simple>
 
-                       <!-- <split>-->
-                          <!--  <simple>${body}</simple>-->
+                        <!--
+                       <to uri="direct:crea-invia-zip"/>
+                       -->
+                        <!-- Sostituito direct con coda in quanto il thred che effettua la query non stacca la connessione al DB -->
+                        <inOnly uri="{{enti.bridge.ente.ftp.ca.crea.invia.zip.seda.queue}}"/>
 
-                            <to uri="direct:crea-invia-zip"/>
-
-                        <!--</split>-->
                         <log message="BATCH FTP CA - INVIO DECORRENZA TERMINI - OUTBOUND FINISHED"/>
 
                         <!--Caso in cui la registrazione NON è un canale FTP ma il protocollo si-->

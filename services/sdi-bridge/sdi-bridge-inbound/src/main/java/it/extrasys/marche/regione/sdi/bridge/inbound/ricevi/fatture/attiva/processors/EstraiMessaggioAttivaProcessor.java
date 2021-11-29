@@ -190,7 +190,15 @@ public class EstraiMessaggioAttivaProcessor implements Processor {
                     //Ricavo il codice ente destinatario
                     BigInteger idSdI = notificaDecorrenza.getIdentificativoSdI();
 
-                    String codiceEnteDestinatario = getCodiceEnteDestinatario(idSdI);
+                    String codiceEnteDestinatario = null;
+
+                    //Nel caso di Flusso Semplificato = true: si fa la query sulla tab DatiFattura per prendere il codUff destinatario
+                    //Nel caso di Flusso Semplificato = false: il codUff destinatario si prende direttamente dall'entity FatturaAttiva
+                    if(fatturaAttivaEntity.getFatturazioneInterna()){
+                        codiceEnteDestinatario = getCodiceEnteDestinatario(idSdI);
+                    }else{
+                        codiceEnteDestinatario = fatturaAttivaEntity.getEnte().getCodiceUfficio();
+                    }
 
                     exchange.getIn().setHeader(CHECK_FLUSSO_SEMPLIFICATO_HEADER, CHECK_FLUSSO_SEMPLIFICATO_HEADER);
                     exchange.getIn().setHeader(CODICE_ENTE_DESTINATARIO_FLUSSO_SEMPLIFICATO_HEADER, codiceEnteDestinatario);

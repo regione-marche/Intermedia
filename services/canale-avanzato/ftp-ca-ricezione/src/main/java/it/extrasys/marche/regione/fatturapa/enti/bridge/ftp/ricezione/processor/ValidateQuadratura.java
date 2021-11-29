@@ -4,11 +4,15 @@ import it.extrasys.marche.regione.fatturapa.contracts.ca.ftp.beans.QuadraturaFTP
 import it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.utils.FtpConstants;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 
 public class ValidateQuadratura implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
         //sottrae il file di esito
         Integer numeroFileTotale = ((Integer) exchange.getProperty(FtpConstants.NUMERO_FILE_TOTALE)) - 1;
 

@@ -10,7 +10,6 @@ import org.apache.camel.Exchange;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +35,7 @@ public class FtpUtils {
 
 
     public void creaFileZip(Exchange exchange) throws IOException, JAXBException {
+
         List<FatturaFtpModel> fatture = (List<FatturaFtpModel>) exchange.getIn().getBody();
         Map<String, List<FatturaFtpModel>> zipFileMap = new HashMap<>();
         String tipoInvio = (String) exchange.getIn().getHeader("tipoFile");
@@ -57,7 +57,8 @@ public class FtpUtils {
         zipFileMap.put(fileZip.getName(), new ArrayList<>());
 
         //Genera il file xml di esito
-        String fileNameEsito = FtpUtils.generateFileName(now, codFiscale, dirZip, FtpConstants.EO_FILE, "001", ".xml");
+        //String fileNameEsito = FtpUtils.generateFileName(now, codFiscale, dirZip, FtpConstants.EO_FILE, "001", ".xml");
+        String fileNameEsito = FtpUtils.generateFileName(now, codFiscale, dirZip, FtpConstants.FO_FILE, "001", ".xml");
 
         ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(fileZip));
         ZipEntry zipEntry = null;
@@ -181,7 +182,8 @@ public class FtpUtils {
             esito.getNumeroFile().setNotificaDecorrenzaTermini(BigInteger.valueOf(fatture.size()));
         }  else if ("SCARTO_ESITO".equalsIgnoreCase(tipoInvio)){
             esito.setNumeroFile(new NumeroFileType());
-            esito.getNumeroFile().setNotificaScarto(BigInteger.valueOf(fatture.size()));
+            //esito.getNumeroFile().setNotificaScarto(BigInteger.valueOf(fatture.size()));
+            esito.getNumeroFile().setScartoEsitoCommittente(BigInteger.valueOf(fatture.size()));
         }
 
         JAXBElement<QuadraturaFTPType> fileEsitoFTP = factory.createFileQuadraturaFTP(esito);
@@ -234,21 +236,27 @@ public class FtpUtils {
 
 
     private static String generateFileName(Instant instant, String codFiscale, String dir, String tipoFile, String numberDoc, String extension) {
+
         int ddd = instant.atZone(ZoneOffset.UTC).get(ChronoField.DAY_OF_YEAR);
         int aaaa = instant.atZone(ZoneOffset.UTC).get(ChronoField.YEAR);
         int hh = instant.atZone(ZoneOffset.UTC).get(ChronoField.HOUR_OF_DAY);
         int mm = instant.atZone(ZoneOffset.UTC).get(ChronoField.MINUTE_OF_HOUR);
 
-       /* int ddd = dateTime.getDayOfYear();
-        int aaaa = dateTime.getYear();
-        int hh = dateTime.getHourOfDay();
-        int mm = dateTime.getMinuteOfHour();
-*/
         StringBuilder sb = new StringBuilder();
         sb.append(dir);
         sb.append(File.separator);
         sb.append(tipoFile).append(".");
-        sb.append(codFiscale).append(".");
+
+        if(extension.contains(".zip.done")){
+            sb.append(codFiscale.replaceAll("IT", "")).append(".");
+        }else{
+            if((tipoFile.contains("FO") || tipoFile.contains("FI")) && extension.contains(".xml")){
+                sb.append(codFiscale.replaceAll("IT", "")).append(".");
+            }else{
+                sb.append(codFiscale).append(".");
+            }
+        }
+
         sb.append(aaaa).append(ddd).append(".");
         sb.append(hh).append(mm).append(".");
         sb.append(numberDoc);

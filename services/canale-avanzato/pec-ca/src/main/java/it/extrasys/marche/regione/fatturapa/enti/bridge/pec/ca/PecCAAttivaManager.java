@@ -233,6 +233,19 @@ public class PecCAAttivaManager {
             final InputStream in = fileFattura.getInputStream();
             byte[] fileFattureOriginale = IOUtils.toByteArray(in);
 
+            //Controllo dimensione Fattura Attiva
+            double maxMB = Double.valueOf(exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.pec.ca.fatturazione.attiva.max.size}}"));
+            String unit = exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.pec.ca.fatturazione.attiva.size.unit}}");
+
+            String sizeFattura = CommonUtils.convertToStringRepresentation(fileFattureOriginale.length, unit);
+
+            double sizeFattAttiva = Double.parseDouble(sizeFattura.replaceAll(" " + unit, ""));
+
+            if(sizeFattAttiva > maxMB){
+                LOG.error("Ricevuta Fattura Attiva " + nomeFileFattura + " con size " + sizeFattura + " (Max Size " + maxMB + " " + unit + ")");
+                throw new FatturaPAMaxSizeException();
+            }
+
             String formatoTrasmissione = null;
             String codiceUfficioInternoFattura  = null;
             String pecDestinatario = null;
@@ -247,9 +260,6 @@ public class PecCAAttivaManager {
                 codiceUfficioInternoFattura = fatturaElettronicaType.getFatturaElettronicaHeader().getDatiTrasmissione().getCodiceDestinatario();
                 pecDestinatario = fatturaElettronicaType.getFatturaElettronicaHeader().getDatiTrasmissione().getPECDestinatario();
 
-                /**
-                 * NOTA in questo punto si deve aggiungere un controllo sulla dimensione del file, che non superi una dimensione particolare
-                 */
             }catch (Exception ex){
                 throw new FatturaPAValidazioneFallitaException();
             }

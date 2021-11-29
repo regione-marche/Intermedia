@@ -2,6 +2,7 @@ package it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.routes;
 
 import it.extrasys.marche.regione.fatturapa.contracts.ca.ftp.beans.EsitoTrasferimentoFTPType;
 import it.extrasys.marche.regione.fatturapa.core.utils.CommonUtils;
+import it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.processor.FtpReportStProcessor;
 import it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.utils.FtpConstants;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteEntity;
 import org.apache.camel.Exchange;
@@ -45,41 +46,67 @@ public class DynamicFtpRoutes extends RouteBuilder {
       - salva il file zippato nella cartella con il nome dell'ente
     */
         from( enteEntity.getEndpointFattureAttivaCa().getEndpoint() + File.separator + enteEntity.getEndpointFattureAttivaCa().getPath() /*dirRoot*/ + File.separator + dirIn + "?include=.*done&username=" + enteEntity.getEndpointFattureAttivaCa().getUsername() + "&password=" + password + "&localWorkDirectory=" + dirZip + File.separator + "DOWNLOAD&filter=#ftpFilter&passiveMode=true&binary=true&delay={{fatturapa.ftp.delay}}&move=processati" + File.separator + "${file:name}.ok&stepwise=false&ftpClient.connectTimeout=500000")
-                .routeId(FtpConstants.FTP_FILE_ROUTE.concat(enteEntity.getCodiceUfficio()))
-                .onException(Exception.class)
+            .routeId(FtpConstants.FTP_FILE_ROUTE.concat(enteEntity.getCodiceUfficio()))
+
+            .onException(Exception.class)
                 .log("FTP CA RICEZIONE: [ROUTE ${routeId}] Exception")
                 .log("FTP CA RICEZIONE: STACKTRACE: ${property." + Exchange.EXCEPTION_CAUGHT + "}")
+
+                //Update record tabella FTP_REPORT_ST
+                .setHeader(FtpConstants.FTP_REPORT_ST_TIPO_OPERZIONE, simple(FtpConstants.REPORT_ST_UPDATE_FI_SUPPORTO))
+                .setHeader(FtpConstants.FTP_REPORT_ST_ERRORE, constant(true))
+                .setHeader(FtpConstants.FTP_REPORT_ST_EXCEPTION, simple("${property." + Exchange.EXCEPTION_CAUGHT + "}"))
+                .process("ftpReportStProcessor")
+                //.removeProperty(FtpConstants.ID_FTP_REPORT_ST_FI)
+                .removeHeader(FtpConstants.FTP_REPORT_ST_EXCEPTION)
+
                 .setHeader(FtpConstants.ESITO_FTP, simple(EsitoTrasferimentoFTPType.ET_02.value()))
                 .to(FtpConstants.INVIA_FILE_ESITO_ENDPOINT)
+
                 .handled(true)
-                .end()
+            .end()
 
-                .setHeader(FtpConstants.FTP, simple(componentFtp))
-                .setHeader(FtpConstants.ENDPOINT_FTP, simple(enteEntity.getEndpointFattureAttivaCa().getEndpoint()))
-                .setHeader(FtpConstants.DIR_ROOT, simple(dirRoot))
-                .setHeader(FtpConstants.DIR_OUT, simple(dirOut))
-                .setHeader(FtpConstants.USERNAME, simple(enteEntity.getEndpointFattureAttivaCa().getUsername()))
-                .setHeader(FtpConstants.PASSWORD, simple(password))
+            .setHeader(FtpConstants.FTP, simple(componentFtp))
+            .setHeader(FtpConstants.ENDPOINT_FTP, simple(enteEntity.getEndpointFattureAttivaCa().getEndpoint()))
+            .setHeader(FtpConstants.DIR_ROOT, simple(dirRoot))
+            .setHeader(FtpConstants.DIR_OUT, simple(dirOut))
+            .setHeader(FtpConstants.USERNAME, simple(enteEntity.getEndpointFattureAttivaCa().getUsername()))
+            .setHeader(FtpConstants.PASSWORD, simple(password))
 
-                .log("FTP CA RICEZIONE: [ROUTE ${routeId}] STARTED")
-                .to("file://" + dirZip + enteEntity.getCodiceUfficio())
+            .process(exchange -> {
+                exchange.getIn().setHeader(FtpConstants.FILE_NAME_ZIP, exchange.getIn().getHeader(Exchange.FILE_NAME));
+                exchange.getIn().setHeader(FtpConstants.FTP_REPORT_ST_ENTE, enteEntity.getCodiceUfficio());
+            })
 
-                //Salvo l'orario di ricezione del file e il codice fiscale dell'ente
-                .process(exchange -> {
-                    exchange.getIn().setHeader(FtpConstants.FILE_NAME_ZIP, exchange.getIn().getHeader(Exchange.FILE_NAME));
-                    exchange.getIn().setHeader(FtpConstants.ORA_RICEZIONE, new Date());
-                    exchange.getIn().setHeader(FtpConstants.COD_FISCALE_ENTE, enteEntity.getIdFiscaleCommittente());
-                })
+            //Insert record tabella FTP_REPORT_ST
+            .setHeader(FtpConstants.FTP_REPORT_ST_TIPO_OPERZIONE, simple(FtpConstants.REPORT_ST_INSERT_FI))
+            .process("ftpReportStProcessor")
 
-                .log("FTP CA RICEZIONE: [ROUTE ${routeId}] Salvato il file: ${headers." + Exchange.FILE_NAME_PRODUCED + "}")
+            .log("FTP CA RICEZIONE: [ROUTE ${routeId}] STARTED")
+            .to("file://" + dirZip + enteEntity.getCodiceUfficio())
 
-                //Devo usare il wiretap per forzare l'ftp a spostare il file appena finito di scaricarlo
-                .wireTap(FtpConstants.UNZIP_FILE_ENDPOINT.concat("-").concat(enteEntity.getCodiceUfficio()))
+            //Salvo l'orario di ricezione del file e il codice fiscale dell'ente
+            .process(exchange -> {
+                exchange.getIn().setHeader(FtpConstants.FILE_NAME_ZIP, exchange.getIn().getHeader(Exchange.FILE_NAME));
+                exchange.getIn().setHeader(FtpConstants.ORA_RICEZIONE, new Date());
+                exchange.getIn().setHeader(FtpConstants.COD_FISCALE_ENTE, enteEntity.getIdFiscaleCommittente());
+            })
 
-                .log("FTP CA RICEZIONE: [ROUTE ${routeId}] FINISHED");
+            .log("FTP CA RICEZIONE: [ROUTE ${routeId}] Salvato il file: ${headers." + Exchange.FILE_NAME_PRODUCED + "}")
 
+            /*
+            //Update record tabella FTP_REPORT_ST
+            .setHeader(FtpConstants.FTP_REPORT_ST_TIPO_OPERZIONE, simple(FtpConstants.REPORT_ST_UPDATE_FI_SUPPORTO))
+            .setHeader(FtpConstants.FTP_REPORT_ST_ERRORE, constant(false))
+            .process("ftpReportStProcessor")
+            .removeProperty(FtpConstants.ID_FTP_REPORT_ST_FI)
+            */
 
+            //Devo usare il wiretap per forzare l'ftp a spostare il file appena finito di scaricarlo
+            .wireTap(FtpConstants.UNZIP_FILE_ENDPOINT.concat("-").concat(enteEntity.getCodiceUfficio()))
 
+            .log("FTP CA RICEZIONE: [ROUTE ${routeId}] FINISHED")
+        ;
     }
 
 

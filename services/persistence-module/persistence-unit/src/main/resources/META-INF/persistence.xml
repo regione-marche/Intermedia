@@ -51,6 +51,10 @@
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStati2Entity</class>
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CampoOpzionaleFatturaEntity</class>
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteCampoOpzionaleAssociazioneEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpReportStEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpCodificaStatiSupportoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpCodificaStatiEsitoEntity</class>
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
            <!-- <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction=refresh)"/>-->
@@ -132,6 +136,10 @@
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.CodificaStati2Entity</class>
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.CampoOpzionaleFatturaEntity</class>
         <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteCampoOpzionaleAssociazioneEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpReportStEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpCodificaStatiSupportoEntity</class>
+        <class>it.extrasys.marche.regione.fatturapa.persistence.unit.entities.ftp.FtpCodificaStatiEsitoEntity</class>
+
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
            <!-- <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true,SchemaAction=refresh)"/>-->

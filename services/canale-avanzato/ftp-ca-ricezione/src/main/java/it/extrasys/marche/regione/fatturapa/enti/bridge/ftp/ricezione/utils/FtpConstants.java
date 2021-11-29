@@ -9,6 +9,10 @@ public class FtpConstants {
     public static final String DIR_DA_ELABORARE = "DA_ELABORARE";
     public static final String NOTIFICA_ESITO_COMMITTENTE = "NotificaEsitoCommittente";
 
+    public static final String REPORT_ST_INSERT_FI = "insertFI";
+    public static final String REPORT_ST_UPDATE_FI_SUPPORTO = "updateFISupporto";
+    public static final String REPORT_ST_UPDATE_FI_ESITO = "updateFIEsito";
+    public static final String ID_FTP_REPORT_ST_FI = "idFtpReportStFI";
 
     //NOMI HEADERS
     public static final String ORA_RICEZIONE = "oraRicezioneZip";
@@ -32,11 +36,16 @@ public class FtpConstants {
     public static final String DIR_OUT="dirOut";
     public static final String USERNAME="username";
     public static final String PASSWORD="password";
-
+    public static final String ABSOLUTE_PATH_FILE_FATTURA="absolutePathFileFattura";
 
     public static final String ROUTE = "route-";
     public static final String DIRECT = "direct:";
     public static final String SEDA = "seda:";
+
+    public static final String FTP_REPORT_ST_TIPO_OPERZIONE = "ftpReportStTipoOperazione";
+    public static final String FTP_REPORT_ST_ERRORE = "ftpReportStErrore";
+    public static final String FTP_REPORT_ST_ENTE = "ente";
+    public static final String FTP_REPORT_ST_EXCEPTION = "exception";
 
     //Endpoint
     public static final String UNZIP_FILE_ENDPOINT = SEDA.concat("ftp-unzip-file");

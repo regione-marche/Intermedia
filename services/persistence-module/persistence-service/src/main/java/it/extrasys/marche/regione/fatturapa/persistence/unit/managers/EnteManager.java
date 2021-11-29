@@ -303,7 +303,7 @@ public class EnteManager {
         EntityManager entityManager = null;
         List<EnteEntity> enteEntityList;
 
-        LOG.info("*************** EnteManager: getEnteFtpInvioSingoloByTipoCanale ***************");
+        //LOG.info("*************** EnteManager: getEnteFtpInvioSingoloByTipoCanale ***************");
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -329,7 +329,7 @@ public class EnteManager {
         EntityManager entityManager = null;
         List<EnteEntity> enteEntityList;
 
-        LOG.info("*************** EnteManager: getEnteFtpInvioProtocolloByTipoCanale ***************");
+        //LOG.info("*************** EnteManager: getEnteFtpInvioProtocolloByTipoCanale ***************");
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -355,7 +355,7 @@ public class EnteManager {
         EntityManager entityManager = null;
         List<EnteEntity> enteEntityList;
 
-        LOG.info("*************** EnteManager: getEnteFtpInvioGestionaleByTipoCanale ***************");
+        //LOG.info("*************** EnteManager: getEnteFtpInvioGestionaleByTipoCanale ***************");
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -432,7 +432,7 @@ public class EnteManager {
         EntityManager entityManager = null;
         List<EnteEntity> enteEntityList;
 
-        LOG.info("*************** EnteManager: getEnteFtpRicezioneFatturaByTipoCanale ***************");
+        //LOG.info("*************** EnteManager: getEnteFtpRicezioneFatturaByTipoCanale ***************");
 
         try {
             entityManager = entityManagerFactory.createEntityManager();
@@ -1700,6 +1700,35 @@ public class EnteManager {
         ret.add(pathFtp);
 
         return ret;
+    }
+
+    public List<EnteEntity> getEnteByCodiceUfficioFtpReportSt(String codiceUfficio) throws FatturaPAException, FatturaPaPersistenceException, FatturaPAEnteNonTrovatoException {
+
+        EntityManager entityManager = null;
+        EnteEntity enteEntity;
+        List<EnteEntity> enteEntityList = new ArrayList<>();
+
+        try {
+
+            entityManager = entityManagerFactory.createEntityManager();
+
+            enteEntity = enteDao.getEnteByCodiceUfficio(codiceUfficio, entityManager);
+            enteEntityList.add(enteEntity);
+
+        } catch (FatturaPaPersistenceException | FatturaPAEnteNonTrovatoException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new FatturaPAException(e.getMessage(), e);
+        } finally {
+            if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+
+        return enteEntityList;
     }
 
     public EntityManagerFactory getEntityManagerFactory() {

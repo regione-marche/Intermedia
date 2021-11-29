@@ -566,7 +566,9 @@ public class FatturaAttivaManagerImpl {
 
         try {
 
-            EnteEntity enteEntity = enteDao.getEnteByCodiceUfficio(codiceDestinatario, entityManager);
+            //EnteEntity enteEntity = enteDao.getEnteByCodiceUfficio(codiceDestinatario, entityManager);
+            //Fatta query in modo da escludere gli enti in stato STAGING
+            EnteEntity enteEntity = enteDao.getEnteByCodiceUfficioFlussoSemplificato(codiceDestinatario, entityManager);
 
             LOG.info("FatturaAttivaManagerImpl - isFlussoSemplificato - ENTE " + codiceDestinatario + " aderente al servizio IntermediaMarche; FlussoSemplificato = true");
 

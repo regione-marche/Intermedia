@@ -162,6 +162,33 @@
         </onException>
 
         <onException useOriginalMessage="true">
+            <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPAMaxSizeException</exception>
+
+            <handled>
+                <constant>true</constant>
+            </handled>
+
+            <log message="FatturaPAMaxSizeException EXCEPTION MESSAGE=${exception.message} STACKTRACE=${exception.stacktrace}" loggingLevel="ERROR"/>
+
+            <setHeader headerName="esitoRisposta">
+                <constant>FA02</constant>
+            </setHeader>
+
+            <setBody>
+                <simple>FILE FATTURA RIFIUTATO: DIMENSIONE MASSIMA FATTURA ({{enti.bridge.ws.ca.fatturazione.attiva.max.size}} {{enti.bridge.ws.ca.fatturazione.attiva.size.unit}}) SUPERATA</simple>
+            </setBody>
+
+            <process ref="creaRispostaRicezioneFatturaAttivaProcessor"/>
+            <!--Mette in coda lo stacktrace-->
+            <setHeader headerName="exception">
+                <simple>${exception.stacktrace}</simple>
+            </setHeader>
+
+            <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+        </onException>
+
+        <onException useOriginalMessage="true">
             <exception>it.extrasys.marche.regione.fatturapa.core.exceptions.FatturaPACampiObbligatoriNonValorizzatiException</exception>
 
             <handled>

@@ -1,6 +1,8 @@
 package it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.processor;
 
 import it.extrasys.marche.regione.fatturapa.contracts.fatturazione.elettronica.beans.FatturaElettronicaType;
+import it.extrasys.marche.regione.fatturapa.core.utils.file.FileUtils;
+import it.extrasys.marche.regione.fatturapa.core.utils.file.JaxBUtils;
 import it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ricezione.utils.FtpConstants;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.EnteEntity;
 import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.fattura.attiva.FatturaAttivaEntity;
@@ -17,9 +19,18 @@ public class SalvaFatturaAttivaProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
+        /*
         String file=(String) exchange.getProperty("fileOriginale");
         byte[] fileOriginale = file.getBytes();
         FatturaElettronicaType fatturaElettronicaType = (FatturaElettronicaType) exchange.getIn().getBody();
+        */
+        String nomeFile = exchange.getIn().getHeader(FtpConstants.NOME_FILE, String.class);
+        byte[] fileOriginale = exchange.getIn().getBody(byte[].class);
+        String fatturaElettronica = FileUtils.getFatturaElettonicaSenzaFirma(nomeFile, fileOriginale);
+        FatturaElettronicaType fatturaElettronicaType = JaxBUtils.getFatturaElettronicaType(fatturaElettronica);
+
+
         String codiceUfficio = (String)exchange.getIn().getHeader("codiceUfficio");
 
         String formatoTrasmissione = fatturaElettronicaType.getFatturaElettronicaHeader().getDatiTrasmissione().getFormatoTrasmissione().value();

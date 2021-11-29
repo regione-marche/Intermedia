@@ -22,7 +22,8 @@ public class GestioneScartoEsitoManager {
     public void getScartoEsitoByEnte(Exchange exchange) throws FatturaPAException, FatturaPaPersistenceException {
         EnteEntity ente = (EnteEntity) exchange.getIn().getBody();
         List<FatturaFtpModel> fatturaModels = new ArrayList<>();
-        List<NotificaFromSdiEntity> scartoEsitoFtpByEnte = notificaFromSdiManager.getScartoEsitoFtpByEnte(ente.getCodiceUfficio());
+        //List<NotificaFromSdiEntity> scartoEsitoFtpByEnte = notificaFromSdiManager.getScartoEsitoFtpByEnte(ente.getCodiceUfficio());
+        List<NotificaFromSdiEntity> scartoEsitoFtpByEnte = notificaFromSdiManager.getScartoEsitoFtpByEnteG1G4(ente.getCodiceUfficio());
         if (scartoEsitoFtpByEnte.size() > 0) {
 
             fatturaModels = mapScartoEsitoToFatturaModels(scartoEsitoFtpByEnte, ente.getCodiceUfficio());

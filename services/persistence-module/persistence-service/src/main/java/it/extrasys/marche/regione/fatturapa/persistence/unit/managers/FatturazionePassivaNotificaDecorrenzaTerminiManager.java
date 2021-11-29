@@ -175,10 +175,11 @@ public class FatturazionePassivaNotificaDecorrenzaTerminiManager {
 
     public List<NotificaDecorrenzaTerminiEntity> getNotificaDecorrenzaTerminiFtpByEnte(String codDest) throws FatturaPAException {
         EntityManager entityManager = null;
-        List<NotificaDecorrenzaTerminiEntity> notificaDecorrenzaTermini;
+        List<NotificaDecorrenzaTerminiEntity> notificaDecorrenzaTerminiList;
         try {
             entityManager = entityManagerFactory.createEntityManager();
-            notificaDecorrenzaTermini = notificaDecorrenzaTerminiDao.getNotificaDecorrenzaTerminiFtpByEnte(codDest, entityManager);
+            //notificaDecorrenzaTermini = notificaDecorrenzaTerminiDao.getNotificaDecorrenzaTerminiFtpByEnte(codDest, entityManager);
+            notificaDecorrenzaTerminiList = notificaDecorrenzaTerminiDao.getNotificaDecorrenzaTerminiFtpByEnteG1G4(codDest, entityManager);
         } catch (Exception e) {
             throw new FatturaPAException(e.getMessage(), e);
         } finally {
@@ -189,7 +190,7 @@ public class FatturazionePassivaNotificaDecorrenzaTerminiManager {
                 entityManager.close();
             }
         }
-        return notificaDecorrenzaTermini;
+        return notificaDecorrenzaTerminiList;
     }
 
 

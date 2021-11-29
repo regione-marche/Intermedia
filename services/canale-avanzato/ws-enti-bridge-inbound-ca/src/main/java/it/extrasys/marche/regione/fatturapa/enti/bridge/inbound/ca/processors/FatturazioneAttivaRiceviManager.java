@@ -147,6 +147,19 @@ public class FatturazioneAttivaRiceviManager {
             final InputStream in = dataHandler.getInputStream();
             byte[] fileFattureOriginale = IOUtils.toByteArray(in);
 
+            //Controllo dimensione Fattura Attiva
+            double maxMB = Double.valueOf(exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.ws.ca.fatturazione.attiva.max.size}}"));
+            String unit = exchange.getContext().resolvePropertyPlaceholders("{{enti.bridge.ws.ca.fatturazione.attiva.size.unit}}");
+
+            String sizeFattura = CommonUtils.convertToStringRepresentation(fileFattureOriginale.length, unit);
+
+            double sizeFattAttiva = Double.parseDouble(sizeFattura.replaceAll(" " + unit, ""));
+
+            if(sizeFattAttiva > maxMB){
+                LOG.error("Ricevuta Fattura Attiva " + nomeFile + " con size " + sizeFattura + " (Max Size " + maxMB + " " + unit + ")");
+                throw new FatturaPAMaxSizeException();
+            }
+
             String fatturaElettronica = FileUtils.getFatturaElettonicaSenzaFirma(nomeFile, fileFattureOriginale);
 
             //TODO REVO-3

@@ -327,6 +327,34 @@ public class NotificaFromSdiManager {
         return notificaFromSdiEntityList;
     }
 
+    public List<NotificaFromSdiEntity> getScartoEsitoFtpByEnteG1G4(String codiceUfficio) throws FatturaPAException {
+
+        EntityManager entityManager = null;
+
+        List<NotificaFromSdiEntity> notificaFromSdiEntityList = null;
+
+        try {
+
+            entityManager = entityManagerFactory.createEntityManager();
+            notificaFromSdiEntityList = notificaFromEntiDao.getScartoEsitoFtpByEnteG1G4(codiceUfficio, entityManager);
+
+        } catch (Exception e) {
+
+            throw new FatturaPAException(e.getMessage(), e);
+
+        } finally {
+
+            if (entityManager != null && entityManager.getTransaction() != null && entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+
+            if (entityManager != null && entityManager.isOpen()) {
+                entityManager.close();
+            }
+        }
+        return notificaFromSdiEntityList;
+    }
+
     public NotificaFromSdiEntity getScartoEsitoFromSdI(BigInteger identificativoSdI) throws FatturaPAException {
 
         EntityManager entityManager = null;

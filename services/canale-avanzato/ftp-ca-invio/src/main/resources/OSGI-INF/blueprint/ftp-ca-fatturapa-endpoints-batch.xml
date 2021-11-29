@@ -139,6 +139,33 @@
                 </when>
             </choice>
         </route>
+
+        <!-- START INVIO REPORT ST -->
+        <route id="enti.bridge.ftp.ca.report.st.invio.jetty">
+            <from uri="{{fatturapa.ftp.jetty.report.st.invio}}"/>
+
+            <setHeader headerName="startReportStFtpFromJetty">
+                <constant>true</constant>
+            </setHeader>
+
+            <to uri="direct:batch-report-st-ftp"/>
+
+        </route>
+
+        <route id="enti.bridge.ftp.ca.report.st.invio.batch">
+            <from uri="{{fatturapa.ftp.timer.report.st.invio}}"/>
+
+            <setHeader headerName="startReportStFtpFromJetty">
+                <constant>false</constant>
+            </setHeader>
+
+            <choice>
+                <when>
+                    <simple>'{{fatturapa.ftp.report.st.invio.start.timer}}' == 'ON'</simple>
+                    <to uri="direct:batch-report-st-ftp"/>
+                </when>
+            </choice>
+        </route>
     </routeContext>
 
 </blueprint>

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -115,5 +116,44 @@ public class CommonUtils {
         return new String(decrypted);
     }
 
+    //Rappresentazione
+    private static final long B = 1;
+    private static final long KB = 1024;
+    private static final long MB = KB * KB;
+    private static final long GB = MB * KB;
+    private static final long TB = GB * KB;
 
+    public static String convertToStringRepresentation(final long value, final String unit){
+
+        switch (unit){
+
+            case "B":
+
+                final double resultB = B > 1 ? (double) value / (double) B : (double) value;
+                return new DecimalFormat("#,##0.#").format(resultB) + " " + unit;
+
+            case "KB":
+
+                final double resultKB = KB > 1 ? (double) value / (double) KB : (double) value;
+                return new DecimalFormat("#,##0.#").format(resultKB) + " " + unit;
+
+            case "MB":
+
+                final double resultMB = MB > 1 ? (double) value / (double) MB : (double) value;
+                return new DecimalFormat("#,##0.#").format(resultMB) + " " + unit;
+
+            case "GB":
+
+                final double resultGB = GB > 1 ? (double) value / (double) GB : (double) value;
+                return new DecimalFormat("#,##0.#").format(resultGB) + " " + unit;
+
+            case "TB":
+
+                final double resultTB = TB > 1 ? (double) value / (double) TB : (double) value;
+                return new DecimalFormat("#,##0.#").format(resultTB) + " " + unit;
+
+        }
+
+        return "0,0";
+    }
 }

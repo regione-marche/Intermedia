@@ -17,6 +17,11 @@ public class GestioneEntiManager {
 
     private EnteManager enteManager;
 
+    public void getEnteByCodiceUfficioFtpReportSt(Exchange exchange) throws FatturaPAException, FatturaPAEnteNonTrovatoException, FatturaPaPersistenceException {
+        List<EnteEntity> entiFtp = enteManager.getEnteByCodiceUfficioFtpReportSt(exchange.getIn().getHeader("codiceEnte", String.class));
+        exchange.getIn().setBody(entiFtp);
+    }
+
     public void recuperaEntiInvioSingolo(Exchange exchange) throws FatturaPAException, FatturaPAEnteNonTrovatoException, FatturaPaPersistenceException {
         List<EnteEntity> entiFtp = enteManager.getEnteFtpInvioSingoloByTipoCanale(CanaleCaEntity.CANALE_CA.FTP.getValue());
         exchange.getIn().setBody(entiFtp);

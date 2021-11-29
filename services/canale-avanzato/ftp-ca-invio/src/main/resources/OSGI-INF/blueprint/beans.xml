@@ -13,10 +13,19 @@
         <property name="chiaveManager" ref="chiaveManager"/>
     </bean>
 
-    <bean id="gestioneEntiManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.GestioneEntiManager">
+    <bean id="ftpReportStProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.processor.FtpReportStProcessor">
+        <property name="ftpReportStManager" ref="ftpReportStManager"/>
+    </bean>
+
+    <bean id="createReportSTProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.processor.CreateReportSTProcessor">
         <property name="enteManager" ref="enteManagerImpl"/>
     </bean>
 
+    <bean id="deleteReportSTProcessor" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.processor.DeleteReportSTProcessor"/>
+
+    <bean id="gestioneEntiManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.GestioneEntiManager">
+        <property name="enteManager" ref="enteManagerImpl"/>
+    </bean>
 
     <bean id="gestioneDatiFatturaManager" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.GestioneDatiFatturaManager">
         <property name="datiFatturaManager" ref="datiFatturaManagerImpl"/>
@@ -104,10 +113,12 @@
         <property name="statoAttivaNotificaDecorrenzaTerminiDao" ref="statoAttivaNotificaDecorrenzaTerminiDao"/>
     </bean>
 
-
+    <bean id="ftpReportStManager" class="it.extrasys.marche.regione.fatturapa.persistence.unit.managers.FtpReportStManager">
+        <jpa:unit property="entityManagerFactory" unitname="persistence-unit" />
+        <property name="ftpReportStDao" ref="ftpReportStDao"/>
+    </bean>
 
     <bean id="aggregatePollEnrichHeaders" class="it.extrasys.marche.regione.fatturapa.enti.bridge.ftp.ca.aggregator.PollEnrichAggregator"/>
-
 
     <!-- DAO -->
     <bean id="enteDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.EnteDao"/>
@@ -121,7 +132,7 @@
     <bean id="notificaFromSdiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromSdiDao"/>
     <bean id="notificaFromEntiDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.NotificaFromEntiDao"/>
     <bean id="chiaveDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.ChiaveDao"/>
-
+    <bean id="ftpReportStDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.FtpReportStDao"/>
 
     <!-- ATTIVA MANAGER -->
     <bean id="codificaStatiAttivaDao" class="it.extrasys.marche.regione.fatturapa.persistence.unit.dao.CodificaStatiAttivaDao"/>

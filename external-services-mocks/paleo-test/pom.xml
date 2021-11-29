@@ -3,7 +3,7 @@
     <parent>
         <artifactId>external-services-mocks</artifactId>
         <groupId>it.extrasys.marche.regione.fatturapa</groupId>
-        <version>2.0.14-SNAPSHOT</version>
+        <version>2.0.29-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>it.extrasys.marche.regione.fatturapa.enti-bridge</groupId>
             <artifactId>giunta</artifactId>
-            <version>2.0.14-SNAPSHOT</version>
+            <version>2.0.29-SNAPSHOT</version>
         </dependency>
 
         <dependency>

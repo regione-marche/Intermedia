@@ -145,6 +145,11 @@
             <cm:property name="enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher" value="direct:enti.bridge.pec.ca.fatturazione.attiva.ricevi.fatture.validation.enricher"/>
 
             <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+
+            <!-- Valore in MB -->
+            <cm:property name="enti.bridge.pec.ca.fatturazione.attiva.max.size" value="5"/>
+            <cm:property name="enti.bridge.pec.ca.fatturazione.attiva.size.unit" value="MB"/>
+
         </cm:default-properties>
 
     </cm:property-placeholder>

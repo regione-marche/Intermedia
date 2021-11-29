@@ -74,6 +74,13 @@
             <cm:property name="fatturapa.ftp.quartz.ripulitura.file" value="quartz2://ripulitura?cron=0 0 0 ? * SUN *"/>
             <cm:property name="fatturapa.ftp.ripulitara.day" value="30"/>
             <cm:property name="fatturapa.ftp.jetty.ripulitura.file" value="jetty:http://0.0.0.0:8080/"/>
+
+            <cm:property name="gestione.stacktrace.in.queue" value="activemq:gestione.stacktrace.in.queue"/>
+
+            <!-- Valore in MB -->
+            <cm:property name="enti.bridge.ftp.ca.fatturazione.attiva.max.size" value="5"/>
+            <cm:property name="enti.bridge.ftp.ca.fatturazione.attiva.size.unit" value="MB"/>
+
         </cm:default-properties>
     </cm:property-placeholder>
 </blueprint>

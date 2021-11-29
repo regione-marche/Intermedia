@@ -14,11 +14,14 @@ http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/cor
 
     <camelContext managementNamePattern="#symbolicName#-#counter#" useMDCLogging="true"
                   xmlns="http://camel.apache.org/schema/blueprint" id="ctx.enti.bridge.ftp.ca.invio.fattura.batch">
+
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.fattura.passiva"/>
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.decorrenza.termini"/>
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.fattura.attiva"/>
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.common"/>
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.endpoints"/>
         <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.scarto.esito"/>
+        <routeContextRef ref="enti.bridge.ftp.ca.fattura.invio.report.st.ctx"/>
+
     </camelContext>
 </blueprint>

@@ -8,10 +8,7 @@ import it.extrasys.marche.regione.fatturapa.persistence.unit.entities.notifiche.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -19,6 +16,7 @@ import java.util.List;
  * Created by Luigi De Masi <luigi.demasi@extrasys.it> on 20/02/15.
  */
 public class NotificaFromEntiDao extends GenericDao<NotificaFromEntiEntity, BigInteger> {
+
     private static final Logger LOG = LoggerFactory.getLogger(NotificaFromEntiDao.class);
 
     public NotificaFromEntiEntity getNotificaFromEntiByIdComunicazione(String idComunicazione, EntityManager entityManager) throws FatturaPAEnteNonTrovatoException, FatturaPaPersistenceException {
@@ -83,6 +81,53 @@ public class NotificaFromEntiDao extends GenericDao<NotificaFromEntiEntity, BigI
             query.setParameter("codDest", codDest);
             notificaFromSdiEntityList = query.getResultList();
 
+
+        } catch (NoResultException e) {
+            throw new FatturaPAFatturaNonTrovataException();
+        } catch (PersistenceException e) {
+            throw new FatturaPaPersistenceException();
+        }
+
+        return notificaFromSdiEntityList;
+    }
+
+    public List<NotificaFromSdiEntity> getScartoEsitoFtpByEnteG1G4(String codDest, EntityManager entityManager) throws FatturaPAFatturaNonTrovataException, FatturaPaPersistenceException {
+
+        List<NotificaFromSdiEntity> notificaFromSdiEntityList = null;
+
+        try {
+
+            String queryString =
+                    "SELECT nfs.* " +
+                    "FROM notifiche_from_sdi nfs " +
+                    "WHERE nfs.esito='ES00' " +
+                    "AND nfs.contenuto_file IS NOT NULL " +
+                    "AND nfs.identificativo_sdi IS NOT NULL " +
+                    "AND nfs.identificativo_sdi IN ( " +
+                        "SELECT DISTINCT dati.identificativo_sdi " +
+                        "FROM stato_fattura dfe, dati_fattura dati " +
+                        "where dfe.id_dati_fattura = dati.id_dati_fattura " +
+                        "AND dati.codice_destinatario = ? " +
+                        "AND dfe.id_cod_stato = '011' AND dfe.data = ( " +
+                            "SELECT MAX(dfe2.data) " +
+                            "FROM stato_fattura dfe2, dati_fattura dati2 " +
+                            "WHERE dfe2.id_dati_fattura = dati2.id_dati_fattura " +
+                            "AND dati2.identificativo_sdi = dati.identificativo_sdi " +
+                            "AND dati2.codice_destinatario = ? " +
+                        ")" +
+                    ")";
+
+            LOG.info("@@@@@ Codice Dest: "+codDest+" @@@@@");
+
+            Query query = entityManager.createNativeQuery(queryString, NotificaFromSdiEntity.class);
+            query.setParameter(1, codDest);
+            query.setParameter(2, codDest);
+
+            //LOG.info("@@@@@ Query:\n\n" + query.toString() + "\n\n@@@@@");
+
+            notificaFromSdiEntityList = (List<NotificaFromSdiEntity>)query.getResultList();
+
+            LOG.info("@@@@@ Numero righe trovate: "+notificaFromSdiEntityList.size()+" @@@@@");
 
         } catch (NoResultException e) {
             throw new FatturaPAFatturaNonTrovataException();

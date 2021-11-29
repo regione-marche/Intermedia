@@ -16,7 +16,7 @@ public class ChiaveDao extends GenericDao<ChiaveEntity, BigInteger> {
 
     public String getChiave(EntityManager entityManager) {
 
-        LOG.info("*************** getChiave ***************");
+        //LOG.info("*************** getChiave ***************");
 
         TypedQuery<ChiaveEntity> query = entityManager.createQuery("SELECT c FROM ChiaveEntity c", ChiaveEntity.class);
         ChiaveEntity chiaveEntity = query.getSingleResult();

@@ -1,4 +1,4 @@
-# This repository adheres to the publiccode.yml standard by including this 
+# This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
 # More info at https://github.com/italia/publiccode.yml
 
@@ -35,51 +35,29 @@ description:
       protocollo che con i sistemi contabili degli enti, o inserendo dei
       controlli su specifici campi della fattura secondo logiche proprie di ogni
       ente, così diminuendo la gestione manuale della fatture
-
-
       In particolare è possibile configurare le varie fase del ciclo per la
       gestione delle fatture passive ed attive, come da schema seguente
-
-
       **Configurazione Ciclo Passivo**
-
-
       - Ricezione verso Sistema di Protocollo: per la ricezione del file Fattura
       e delle notifiche, e l'indirizzamento verso il sistema di protocollo
       dell’ente;
-
       - Ricezione verso Sistema di Registrazione: per la ricezione del file
       Fattura e delle notifiche, e l'indirizzamento verso il sistema
       gestionale/contabile dell’ente;
-
       - Invio Notifiche Esito Committente: per l'invio delle notifiche di esito
       committente di accettazione/rifiuto del file fattura;
-
       - Pre-Validazione Campi Opzionali: per definire specifici criteri di
       scarto delle fatture, aggiuntivi a quelli già imposti da normativa
       nazionale;
-
-
       **Configurazione Ciclo Attivo**
-
-
       - Invio Fatture: per l'invio delle fatture attive;
-
       - Ricezione Notifiche: per la ricezione delle Notifiche, e l'eventuale
       'indirizzamento verso il sistema gestionale/contabile dell’ente.
-
-
       Per ogni fase invio/ricezione di fatture e notifiche è possibile scegliere
       tra i seguenti canali:
-
-
       a) Canale PEC: Sistema di posta elettronica certificata
-
-
       b) Canale FTP: Sistema di trasmissione dati tra terminali remoti basato su
       protocollo FTP
-
-
       c) Canale Web Service (WS): Sistema di integrazione tramite Web Services.
     shortDescription: Gestione inoltro fatture elettroniche per/da la PA
 developmentStatus: stable

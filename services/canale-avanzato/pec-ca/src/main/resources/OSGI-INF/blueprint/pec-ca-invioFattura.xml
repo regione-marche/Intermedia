@@ -146,6 +146,9 @@
                         <xpath resultType="java.lang.String">//*[local-name()='FatturaElettronica']/@versione</xpath>
                     </setHeader>
 
+                    <!-- Ripulisco xml da caratteri strani non UTF-8 -->
+                    <to uri="xslt:xsl/cleaner_xml.xsl"/>
+
                     <choice>
                         <when>
                             <simple>${header.versioneFattura} == 'FPA12'</simple>

@@ -4,13 +4,13 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
                                http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-
-    <routeContext id="enti.bridge.ftp.ca.fattura.invio.common"
-                  xmlns="http://camel.apache.org/schema/blueprint">
-
+    <routeContext  id="enti.bridge.ftp.ca.fattura.invio.common" xmlns="http://camel.apache.org/schema/blueprint">
 
         <route id="enti.bridge.ftp.ca.fattura.batch.crea.invia.zip">
-            <from uri="direct:crea-invia-zip"/>
+            <!--from uri="direct:crea-invia-zip"/-->
+
+            <!-- Sostituito direct con coda in quanto il thred che effettua la query non stacca la connessione al DB -->
+            <from uri="{{enti.bridge.ente.ftp.ca.crea.invia.zip.seda.queue}}"/>
 
             <bean ref="ftpUtils" method="creaFileZip"/>
 
@@ -25,7 +25,23 @@
                     <simple>file://${headers.dirZip}?fileName=${body}&amp;noop=true</simple>
                 </pollEnrich>
 
+                <!-- Insert record tabella FTP_REPORT_ST -->
+                <setHeader headerName="ftpReportStTipoOperazione">
+                    <constant>insertFO</constant>
+                </setHeader>
+                <process ref="ftpReportStProcessor"/>
+
                 <toD uri="${headers.urlFtp}/${headers.path}/{{fatturapa.ftp.dir.out}}?username=${headers.username}&amp;password=${headers.password}&amp;passiveMode=true&amp;tempFileName=${file:name.noext}.TEMP&amp;binary=true"/>
+
+                <!-- Update record tabella FTP_REPORT_ST -->
+                <setHeader headerName="ftpReportStTipoOperazione">
+                    <constant>updateFO</constant>
+                </setHeader>
+                <setHeader headerName="ftpReportStErrore">
+                    <constant>false</constant>
+                </setHeader>
+                <process ref="ftpReportStProcessor"/>
+                <removeProperty propertyName="idFtpReportStFO"/>
 
                 <removeHeaders pattern="*" excludePattern="nomeFileZip|CamelFilePath|codiceStatoFattura|endpointRegistrazioneCa|tipoCanaleRegistrazioneCa|tipoInvio"/>
 
@@ -43,6 +59,38 @@
                     </otherwise>
                 </choice>
             </split>
+
+            <onException useOriginalMessage="true" >
+                <exception>java.lang.Exception</exception>
+                <redeliveryPolicy maximumRedeliveries="0"/>
+
+                <!--Mette in coda lo stacktrace-->
+                <setHeader headerName="exception">
+                    <simple>${exception.stacktrace}</simple>
+                </setHeader>
+
+                <wireTap uri="{{gestione.stacktrace.in.queue}}"/>
+
+                <choice>
+                    <when>
+                        <simple>${property.idFtpReportStFO} == null</simple>
+                        <log message="idFtpReportStFO: id null per effettuare l'update sulla tabella FTP_REPORT_ST"/>
+                    </when>
+                    <otherwise>
+                        <setHeader headerName="ftpReportStTipoOperazione">
+                            <constant>updateFO</constant>
+                        </setHeader>
+                        <setHeader headerName="ftpReportStErrore">
+                            <constant>true</constant>
+                        </setHeader>
+                        <process ref="ftpReportStProcessor"/>
+                        <removeProperty propertyName="idFtpReportStFO"/>
+                    </otherwise>
+                </choice>
+
+                <to uri="log:it.extrasys.marche.regione.fatturapa.tracing.persistence?level=ERROR&amp;showAll=true&amp;multiline=true"/>
+            </onException>
+
         </route>
 
 
@@ -155,6 +203,7 @@
             </setHeader>
 
         </route>
+
     </routeContext>
 
 </blueprint>

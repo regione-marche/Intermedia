@@ -94,10 +94,17 @@ public class PecCAFatturaPassivaCreaSubjectProcessor implements Processor {
 
             case "NotificaScartoEsito":
 
+                /*
                 NotificaFromSdiEntity notificaFromSdiEntity = notificaFromSdiManager.getScartoEsitoFromSdI(new BigInteger(identificativoSdi));
 
                 String nomeFileScarto = message.getHeader("nomeFile", String.class);
                 Date dataRicezioneScarto = notificaFromSdiEntity.getDataRicezioneRispostaSDI();
+                String dataRicezioneScartoFormattata = sdf.format(dataRicezioneScarto);
+                */
+
+                String nomeFileScarto = message.getHeader("nomeFile", String.class);
+                //String nomeFileScarto = message.getHeader("nomeFileScartoEsito", String.class);
+                Date dataRicezioneScarto = new Date();
                 String dataRicezioneScartoFormattata = sdf.format(dataRicezioneScarto);
 
                 subject = identificativoSdi + " - " + nomeFileScarto + " - Notifica Scarto " + nomeCedentePrestatore + " - Data Ricezione SDI " + dataRicezioneScartoFormattata;

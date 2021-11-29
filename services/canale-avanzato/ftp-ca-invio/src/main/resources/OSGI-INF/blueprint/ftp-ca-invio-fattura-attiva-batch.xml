@@ -42,7 +42,11 @@
                             <simple>{{fatturapa.ftp.ca.stato.fattura.attiva.invio}}</simple>
                         </setHeader>
 
-                        <to uri="direct:crea-invia-zip"/>
+                        <!--
+                           <to uri="direct:crea-invia-zip"/>
+                           -->
+                        <!-- Sostituito direct con coda in quanto il thred che effettua la query non stacca la connessione al DB -->
+                        <inOnly uri="{{enti.bridge.ente.ftp.ca.crea.invia.zip.seda.queue}}"/>
 
                         <log message="BATCH FTP CA - INVIO FATTURA ATTIVA FINISHED"/>
                     </when>
