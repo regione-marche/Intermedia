@@ -32,7 +32,7 @@
         <fabric.version>1.2.0.redhat-630416</fabric.version>
         <commons-io.version>2.4.0.redhat-1</commons-io.version>
         <commons.pool2.version>2.4.2</commons.pool2.version>
-        <commons.collections.version>3.2.2.redhat-2</commons.collections.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
         <commons-lang.version>2.6.0.redhat-5</commons-lang.version>
         <commons-codec-version>1.10.0.redhat-5</commons-codec-version>
         <org.slf4j.version>1.7.22.redhat-2</org.slf4j.version>
