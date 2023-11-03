@@ -83,7 +83,7 @@ localisation:
   localisationReady: false
 maintenance:
   contacts:
-    - name: Gianfranco Amatore
+    - name: Giovanni Capaldo <giovanni.capaldo@regione.marche.it>
   contractors:
     - name: Extra Red s.r.l.
       until: '2021-12-31'
