@@ -44,7 +44,7 @@
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <jline.version>3.0.0.M1</jline.version>
         <!--<wsdl2java.version>2.6.0.redhat-610379</wsdl2java.version>-->
-        <derby.version>10.11.1.1</derby.version>
+        <derby.version>10.14.2.0</derby.version>
         <asm.version>5.0.4</asm.version>
         <asm.bundle.version>3.3.1_1</asm.bundle.version>
         <tranql-connector-postgresql-common.version>1.5</tranql-connector-postgresql-common.version>
