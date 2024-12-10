@@ -63,7 +63,7 @@
         <juniversalchardet.version>1.0.3</juniversalchardet.version>
         <xmlunit.version>1.5</xmlunit.version>
         <cucumber.version>1.1.7</cucumber.version>
-        <mybatis.version>3.2.8</mybatis.version>
+        <mybatis.version>3.5.6</mybatis.version>
         <icu4j.version>63.1</icu4j.version>
         <cxf.xjc.version>2.7.0</cxf.xjc.version>
         <jackson.version>2.9.9</jackson.version>
