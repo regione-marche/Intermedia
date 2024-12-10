@@ -18,7 +18,7 @@
         <!-- Java 8 with its additional syntax is not compatible with OpenJPA 2.3.0 class enhancement. Usiamo la 1.7 per compilare  -->
         <java.openjpa.version>1.7</java.openjpa.version>
         <build.helper.maven.plugin>1.8</build.helper.maven.plugin>
-        <camel.version>2.17.0.redhat-630416</camel.version>
+        <camel.version>2.24.0</camel.version>
         <!-- per il camel test bluprint non è ancora presente la 630377 -->
         <camel-test-blueprint.version>2.17.0.redhat-630371</camel-test-blueprint.version>
         <test.harness-version>1.0.2</test.harness-version>
