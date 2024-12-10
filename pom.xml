@@ -30,7 +30,7 @@
         <activemq.version>5.11.0.redhat-630416</activemq.version>
         <jboss.fuse.version>6.3.0.redhat-416</jboss.fuse.version>
         <fabric.version>1.2.0.redhat-630416</fabric.version>
-        <commons-io.version>2.4.0.redhat-1</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <commons.pool2.version>2.4.2</commons.pool2.version>
         <commons.collections.version>3.2.2.redhat-2</commons.collections.version>
         <commons-lang.version>2.6.0.redhat-5</commons-lang.version>
