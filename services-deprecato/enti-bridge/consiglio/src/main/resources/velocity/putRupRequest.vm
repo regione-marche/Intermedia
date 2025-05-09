@@ -1,0 +1,7 @@
+{
+ "RupCf": "${headers.rupCf}",
+ "RupNome": "${headers.rupNome}",
+ "RupCognome": "${headers.rupCognome}",
+ "UoCodiceDescr": "${headers.rupUoCodiceDescr}",
+ "Ruolo": "${headers.rupruolo}"
+}
