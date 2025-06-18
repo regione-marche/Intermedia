@@ -1,7 +1,0 @@
-##########################################
-### Create fabric profiles	version    ###
-##########################################
-
-PROFILE_VERSION=$1
-
-fabric:version-create --default $PROFILE_VERSION

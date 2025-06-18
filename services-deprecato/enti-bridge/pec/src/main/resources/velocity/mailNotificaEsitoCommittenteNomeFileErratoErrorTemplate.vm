@@ -1,6 +1,0 @@
-Il nome della notifica esito committente  inviata associata alla fattura con #if(${headers.identificativoSdI})identificativo SdI "${headers.identificativoSdI}"
-dell'email con#end oggetto "$!{headers.oldSubject}" non risulta essere conforme alle specifiche definite dal Sistema di Interscambio .
-
-Vi preghiamo pertanto di verificare la nomenclatura del file e di procedere con il re-inoltro
-<br>
----

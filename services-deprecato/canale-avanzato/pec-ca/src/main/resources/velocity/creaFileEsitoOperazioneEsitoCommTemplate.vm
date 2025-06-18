@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-    <Codice>${headers.codiceEsito}</Codice>
-    <Descrizione>${headers.descrizioneEsito}</Descrizione>
-    <nomeFattura>${headers.nomeFileFattura}</nomeFattura>
-    <numeroFattura>${headers.numeroFattura}</numeroFattura>
-</Response>

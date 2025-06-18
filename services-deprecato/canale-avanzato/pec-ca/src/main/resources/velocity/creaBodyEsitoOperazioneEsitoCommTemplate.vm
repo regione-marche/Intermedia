@@ -1,8 +1,0 @@
-<h3>IntermediaMarche</h3>
-<h2>Esito Invio Esito Committente</h2>
-<ul>
-    <li>Codice Esito: <b>${headers.codiceEsito}</b></li>
-    <li>Descrizione Esito: <b>${headers.descrizioneEsito}</b></li>
-    <li>Nome File Fattura: <b>${headers.nomeFileFattura}</b></li>
-    <li>Numero Fattura: <b>${headers.numeroFattura}</b></li>
-</ul>

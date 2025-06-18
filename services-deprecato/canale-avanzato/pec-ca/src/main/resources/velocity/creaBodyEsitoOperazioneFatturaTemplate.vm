@@ -1,9 +1,0 @@
-<h3>IntermediaMarche</h3>
-<h2>Esito Invio Fattura</h2>
-<ul>
-    <li>Data Ricezione: <b>${headers.dataRicezione}</b></li>
-    <li>Codice Esito: <b>${headers.codiceEsito}</b></li>
-    <li>Descrizione Esito: <b>${headers.descrizioneEsito}</b></li>
-    <li>Nome File Fattura: <b>${headers.nomeFileFattura}</b></li>
-    <li>Ricevuta Comunicazione: <b>${headers.ricevutaComunicazione}</b></li>
-</ul>

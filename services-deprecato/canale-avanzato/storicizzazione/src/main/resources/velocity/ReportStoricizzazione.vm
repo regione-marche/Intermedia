@@ -1,4 +1,0 @@
-IdentificativoSdi;Esito
-#foreach ($report in $body)
-$report.identificativoSdI;$report.esito
-#end

@@ -1,9 +1,0 @@
-<typ:esitoFatturaMessageRequest xmlns:typ="http://fatturapa.marche.regione.it/esitoFatturaFromEnte/types">
-    <numeroProtocollo>234752398520</numeroProtocollo>
-    <idFiscaleCommittente>09876543210</idFiscaleCommittente>
-    <dataFattura>2014-12-18</dataFattura>
-    <numeroFattura>123</numeroFattura>
-    <esito>EC02</esito>
-    <descrizione>blablabla</descrizione>
-    <messageIdCommittente>239047340527</messageIdCommittente>
-</typ:esitoFatturaMessageRequest>
